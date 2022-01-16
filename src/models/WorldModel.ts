@@ -21,8 +21,9 @@ export class WorldModel {
 
     constructor(x: number = 10, y: number = 10, z: number = 10) {
         this.fields = initEmpty3DArray(x, y, z);
-        this.setField(x/2,y/2,0, FieldType.dirtBlock);
-        this.setField(0,y/2,0, FieldType.grassBlock);
+        this.setField(x-1,0,0, FieldType.dirtBlock);
+        this.setField(0,0,z-1, FieldType.grassBlock);
+        this.setField(x-1,0,z-1, FieldType.grassBlock);
         this.setField(0,0,0, FieldType.karol);
     }
 

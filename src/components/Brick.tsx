@@ -4,12 +4,6 @@ import {observer} from "mobx-react";
 
 function BrickInternal<T>(props: any|{texture: any}) {
     const meshRef = useRef<THREE.Mesh>(null);
-    // useFrame((state, delta) => {
-    //     // @ts-ignore
-    //     meshRef.current.rotation.x += 0.01;
-    //     // @ts-ignore
-    //     meshRef.current.rotation.y += 0.02;
-    // });
 
     return <mesh ref={meshRef} {...props}>
         {[...Array(6)].map((_, index) => (
