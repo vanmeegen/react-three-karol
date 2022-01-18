@@ -6,7 +6,7 @@ const model = new WorldModel();
 
 function App() {
     return (
-        <div className="App" style={{width: 800, height: 800}}>
+        <div className="App">
             <p>Hello Karol the Robot!</p>
             <World3D model={model}/>
         </div>
