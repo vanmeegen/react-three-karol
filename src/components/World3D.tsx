@@ -52,7 +52,9 @@ const DashedLine = (props: { from: [number, number, number], to: [number, number
 
 declare function Plane(props: any): any;
 
+
 function World3DInternal(props: { model: WorldModel }): ReactElement<typeof props> {
+    console.log("rendering world");
     const range = [];
     for(let i = 0; i < 11; i++){
         range.push(i);
