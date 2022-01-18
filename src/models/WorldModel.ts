@@ -17,7 +17,7 @@ export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): Fiel
 export type FieldInfo = { content: FieldType, x: number, y: number, z: number };
 
 export class WorldModel {
-    @observable private fields: FieldType[][][] = [];
+    @observable private readonly fields: FieldType[][][] = [];
 
     constructor(x: number = 10, y: number = 10, z: number = 10) {
         this.fields = initEmpty3DArray(x, y, z);

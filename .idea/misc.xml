@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ANTLRGenerationPreferences">
+    <option name="perGrammarGenerationSettings">
+      <list>
+        <PerGrammarGenerationSettings>
+          <option name="fileName" value="$PROJECT_DIR$/antlrgrammar/karel.g4" />
+          <option name="autoGen" value="true" />
+          <option name="outputDir" value="src/parser/generated" />
+          <option name="libDir" value="" />
+          <option name="encoding" value="UTF-8" />
+          <option name="pkg" value="karel" />
+          <option name="language" value="JavaScript" />
+          <option name="generateVisitor" value="true" />
+        </PerGrammarGenerationSettings>
+      </list>
+    </option>
+  </component>
+</project>

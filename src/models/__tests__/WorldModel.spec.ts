@@ -8,13 +8,13 @@ describe("The world model initializes a 3dimensional array correctly", () => {
 
     it("initializes all nested arrays of a 2x2x2 world", () =>{
         const world = new WorldModel(2,2,2);
-        expect(world.asArray()).toEqual([[[3,0],[1,0]],[[0,0],[2,0]]]);
+        expect(world.asArray()).toEqual([[[3,1],[0,2]],[[2,1],[0,0]]]);
     });
 
     it("can get fields", () =>{
         const world = new WorldModel(2,2,2);
-        expect(world.getField(1,1,0)).toEqual(FieldType.dirtBlock);
-        expect(world.getField(0,1,0)).toEqual(FieldType.grassBlock);
+        expect(world.getField(1,1,0)).toEqual(FieldType.empty);
+        expect(world.getField(0,1,0)).toEqual(FieldType.empty);
     });
 
     it("Karol is placed in left lower corner", () =>{
