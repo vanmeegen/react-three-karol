@@ -6,21 +6,17 @@ import {ControlPanel} from "./components/ControlPanel";
 const world = new WorldModel();
 
 function App() {
-    const exampleProgram = `BEGINNING-OF-PROGRAM
-DEFINE turnright AS
- BEGIN
-   turnleft
-   turnleft
-   turnleft
- END
-
- BEGINNING-OF-EXECUTION
-   ITERATE 3 TIMES
-     turnright
-
-   turnoff
- END-OF-EXECUTION
-END-OF-PROGRAM
+    const exampleProgram = `{Karol legt links neben sich eine Reihe Ziegel}
+wiederhole 18 mal
+    Schritt
+    LinksDrehen
+    Hinlegen
+    RechtsDrehen
+    wenn IstWand dann
+        LinksDrehen
+        LinksDrehen
+    endewenn
+endewiederhole
 `;
     return (
         <div className="App">
