@@ -1,18 +1,24 @@
-import antlr4, {Parser, Recognizer, Token} from "antlr4";
+import antlr4, {Lexer, Parser, ParserRuleContext, Recognizer, Token} from "antlr4";
 // @ts-ignore  no typings for generated lexer, parser
-import KarolLexer from "./generated/karel/karelLexer";
+import KarolLexer from "./generated/Karol/KarolLexer";
 // @ts-ignore
-import KarolParser from "./generated/karel/karelParser";
-import {ParseTree} from "antlr4/tree/Tree";
+import KarolParser from "./generated/Karol/KarolParser";
+
 
 // vM20220118 need workaround for non es compatible typescript typing of ErrorListener class
 declare class ErrorListener {
     syntaxError(recognizer: Recognizer, offendingSymbol: Token, line: number, column: number, msg: string, e: any): void;
+
     reportAmbiguity(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, exact: any, ambigAlts: any, configs: any): void;
+
     reportAttemptingFullContext(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, conflictingAlts: any, configs: any): void;
+
     reportContextSensitivity(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, conflictingAlts: any, configs: any): void;
 }
+
 const TypedErrorListener: ErrorListener = (antlr4 as any).error.ErrorListener;
+const Trees = (antlr4 as any).tree.Trees;
+
 // noinspection JSUnusedLocalSymbols
 /**
  * Custom Error Listener
@@ -46,13 +52,15 @@ class MyErrorListener extends TypedErrorListener {
         this._errorCount = this._errorCount + 1;
 
     };
+
     // noinspection JSUnusedLocalSymbols
-    reportAttemptingFullContext(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, conflictingAlts: any, configs: any): void{
+    reportAttemptingFullContext(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, conflictingAlts: any, configs: any): void {
         this._errorCount = this._errorCount + 1;
 
     };
+
     // noinspection JSUnusedLocalSymbols
-    reportContextSensitivity(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, conflictingAlts: any, configs: any): void{
+    reportContextSensitivity(recognizer: Recognizer, dfa: any, startIndex: number, stopIndex: number, conflictingAlts: any, configs: any): void {
         this._errorCount = this._errorCount + 1;
     };
 
@@ -65,15 +73,16 @@ class MyErrorListener extends TypedErrorListener {
     }
 }
 
-export function parseKarol(input: string): ParseTree | undefined {
+export function parseKarol(input: string,): ParserRuleContext | undefined {
     const chars = new antlr4.InputStream(input);
     const lexer = new KarolLexer(chars);
     const tokens = new antlr4.CommonTokenStream(lexer);
-    const parser: Parser & { karel: () => ParseTree; _syntaxErrors: number } = new KarolParser(tokens);
+    const parser: IKarolParser = new KarolParser(tokens);
     const myErrorListener = new MyErrorListener();
     parser.addErrorListener(myErrorListener);
-    const tree = parser.karel();
-    return myErrorListener.errorCount === 0 ? tree : undefined;
+    const tree = parser.karol();
+    console.log("Parse Tree: " + printParseTree(parser, tree));
+    return myErrorListener.errorCount === 0 || tree === null ? tree : undefined;
 }
 
 // usage:
@@ -97,4 +106,51 @@ class Visitor {
         }
     }
 }
+
+// reexport weakly typed version of parser
+export type IKarolParser = Parser & {
+    karol: () => ParserRuleContext;
+    ruleNames: string[];
+    RULE_karel: number;
+    RULE_definition: number;
+    RULE_statement: number;
+    RULE_block: number;
+    RULE_iteration: number;
+    RULE_loop: number;
+    RULE_conditional: number;
+    RULE_instruction: number;
+    RULE_condition: number;
+    RULE_number: number;
+}
+
+export type IKarolLexer = Lexer & {
+    IDENTIFIER: number;
+    LETTER: number;
+    DIGIT: number;
+    WS: number;
+}
+
+export const TypedKarolLexer: IKarolLexer = KarolLexer;
+
+export const TypedKarolParser: IKarolParser = KarolParser;
+
+export function printParseTree(parser: IKarolParser, root: any): string {
+    return recursive(root, 0, parser.ruleNames);
+}
+
+function recursive(aRoot: any, offset: number, ruleNames: string[]) {
+    let buf = "";
+    for (let i = 0; i < offset; i++) {
+        buf = buf + "  ";
+    }
+    buf = buf + Trees.getNodeText(aRoot, ruleNames) + "\n";
+    if (aRoot instanceof ParserRuleContext) {
+        const prc: ParserRuleContext = aRoot;
+        for (let c = 0; c < prc.getChildCount(); c++) {
+            buf += recursive(prc.getChild(c), offset + 1, ruleNames);
+        }
+    }
+    return buf;
+}
+
 

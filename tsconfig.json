@@ -17,6 +17,7 @@
     "jsx": "react-jsx",
     "types": ["vite/client","vitest/global"],
     "experimentalDecorators": true,
+    "incremental": true,
     "sourceMap": true
   },
   "include": [

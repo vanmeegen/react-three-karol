@@ -1,15 +1,16 @@
-BEGINNING-OF-PROGRAM
- DEFINE turnright AS
- BEGIN
-   turnleft
-   turnleft
-   turnleft
- END
+{ Karol steht zwischen Ziegelstapel.
+Schreibe ein Programm, das alle Ziegel abbaut
+und am Schluss Karol zum niedrigsten Stapel
+dreht. }
+wiederhole solange IstZiegel
+    Aufheben
+    LinksDrehen
+endewiederhole
+wiederhole 3 mal
+    LinksDrehen
+        wiederhole solange IstZiegel
+        Aufheben
+        endewiederhole
+endewiederhole
+LinksDrehen
 
- BEGINNING-OF-EXECUTION
-   ITERATE 3 TIMES
-     turnright
-
-   turnoff
- END-OF-EXECUTION
-END-OF-PROGRAM
