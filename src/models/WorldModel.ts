@@ -5,11 +5,11 @@ export type Coord3D = { x: number, y: number, z: number };
 
 export enum FieldType {
     empty = 0,
-    grassBlock = 1,
-    dirtBlock = 2,
-    karol = 3,
-    marker = 4,
-    wall = 5
+    karol = 1,
+    brick = 2,
+    marker = 3,
+    wall = 4,
+    grassBlock = 5
 }
 
 export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): FieldType[][][] {
@@ -33,14 +33,26 @@ const OFFSETS = {
     [Direction.West]: {x: -1, z: 0}
 };
 
+export class Karol {
+    @observable public position: Coord3D = {x: 0, y: 0, z: 0};
+    @observable public direction: Direction = Direction.East;
+
+    /**
+     * @return the next position Karol would take when moving forward
+     */
+    public get nextPosition(): Coord3D {
+        const {x, y, z} = this.position;
+        const offset = OFFSETS[this.direction];
+        return {x: x + offset.x, y, z: z + offset.z};
+    }
+}
 
 export class WorldModel {
     /**
      * world array addressed by fields[x][y][z]
      */
     @observable private readonly fields: FieldType[][][] = [];
-    @observable private karolPosition: Coord3D = {x: 0, y: 0, z: 0};
-    @observable private karolDirection: Direction = Direction.East;
+    @observable private readonly karol: Karol = new Karol();
     /**
      * @private world size in each direction as coordinates
      */
@@ -49,21 +61,32 @@ export class WorldModel {
     constructor(x: number = 10, y: number = 10, z: number = 10) {
         this.dimensions = {x, y, z};
         this.fields = initEmpty3DArray(x, y, z);
-        this.setField(x - 1, 0, 0, FieldType.dirtBlock);
-        this.setField(0, 0, z - 1, FieldType.grassBlock);
-        this.setField(0, 1, z - 1, FieldType.dirtBlock);
-        this.setField(x - 1, 0, z - 1, FieldType.grassBlock);
-        this.setField(this.karolPosition.x, this.karolPosition.y, this.karolPosition.z, FieldType.karol);
+        this.setField(x - 1, 0, 0, FieldType.grassBlock);
+        this.setField(0, 0, z - 1, FieldType.brick);
+        this.setField(0, 1, z - 1, FieldType.grassBlock);
+        this.setField(x - 1, 0, z - 1, FieldType.brick);
+        this.setFieldByCoord(this.karol.position, FieldType.karol);
     }
 
-    getKarol(): {position: Coord3D, direction: Direction}{
-        return {position: this.karolPosition, direction: this.karolDirection};
+    getKarol(): Karol {
+        return this.karol;
     }
+
+    getFieldByCoord(position: Coord3D): FieldType {
+        const {x, y, z} = position;
+        return this.getField(x, y, z);
+    }
+
     getField(x: number, y: number, z: number): FieldType {
         if (!this.isValid({x, y, z})) {
             throw Error(`The position x: $x y: $y z: $z is not valid`);
         }
         return this.fields[x][y][z];
+    }
+
+    setFieldByCoord(position: Coord3D, type: FieldType): void {
+        const {x, y, z} = position;
+        this.setField(x, y, z, type);
     }
 
     setField(x: number, y: number, z: number, type: FieldType): void {
@@ -94,35 +117,89 @@ export class WorldModel {
     }
 
     @action moveKarol(): Coord3D {
-        const {x, y, z} = this.karolPosition;
-        const offset = OFFSETS[this.karolDirection];
-        const nextPosition = {x: x + offset.x, y, z: z + offset.z};
-        if (this.isValid(nextPosition)) {
-            const nextField = this.getField(nextPosition.x, nextPosition.y, nextPosition.z);
-            if (nextField === FieldType.empty) {
-                this.setField(x, y, z, FieldType.empty);
-                this.karolPosition = nextPosition;
-                this.setField(nextPosition.x, nextPosition.y, nextPosition.z, FieldType.karol);
-                console.log("moved");
-                return nextPosition;
-            } else {
-                throw Error("Ouch. Bumped into something");
+        const nextPosition = this.karol.nextPosition;
+        this.validateNextPosition(nextPosition, true);
+        this.setFieldByCoord(this.karol.position, FieldType.empty);
+        this.karol.position = nextPosition;
+        this.setFieldByCoord(nextPosition, FieldType.karol);
+        console.log("moved");
+        return nextPosition;
+    }
+
+    /**
+     * checkis if Karol can move to the given position, i.e. that it is a valid position in the world,
+     * and the field is empty
+     * @param position
+     * @param throwOnFailure if true, in error case an error is thrown, otherwise a result is returned
+     * @return undefined if next position is valid. If invalid an error string is returned or an Error thrown with the string
+     */
+    validateNextPosition(position: Coord3D, throwOnFailure: boolean): string | undefined {
+        let result = undefined;
+        if (this.isValid(position)) {
+            const nextField = this.getFieldByCoord(position);
+            if (nextField !== FieldType.empty) {
+                result = "Da ist was im Weg!";
             }
         } else {
-            throw Error("Ouch. Falling off the world!");
+            result = "Da ist eine Wand!";
         }
+        if (throwOnFailure && result !== undefined) {
+            throw Error(result);
+        }
+        return result;
     }
 
     @action turnKarolLeft(): Direction {
-        this.karolDirection = (4 + this.karolDirection  - 1) % 4;
+        this.karol.direction = (4 + this.karol.direction - 1) % 4;
         console.log("turned left");
-        return this.karolDirection;
+        return this.karol.direction;
     }
 
     @action turnKarolRight(): Direction {
-        this.karolDirection = (this.karolDirection + 1) % 4;
+        this.karol.direction = (this.karol.direction + 1) % 4;
         console.log("turned right");
-        return this.karolDirection;
+        return this.karol.direction;
+    }
+
+    @action layBrick() {
+        const nextPosition = this.karol.nextPosition;
+        if (this.isValid(nextPosition)) {
+            // move up if bricks are stacked
+            while (this.getFieldByCoord(nextPosition) === FieldType.brick && this.isValid(nextPosition)) {
+                nextPosition.y++;
+            }
+            if (this.isValid(nextPosition)) {
+                const fieldType = this.getFieldByCoord(nextPosition);
+                if (fieldType === FieldType.empty) {
+                    this.setFieldByCoord(nextPosition, FieldType.brick);
+                } else if (fieldType === FieldType.wall) {
+                    throw Error("Der Stapel ist schon so hoch wie die Welt!")
+                } else if (fieldType === FieldType.brick) {
+                    throw Error("Da ist eine Wand!")
+                } else {
+                    throw Error("Huch? Das dürfte da aber nicht sein!");
+                }
+            }
+        } else {
+            throw Error("Da ist eine Wand!");
+        }
+    }
+
+    pickupBrick() {
+        const nextPosition = this.karol.nextPosition;
+        if (this.isValid(nextPosition)) {
+            // move up if bricks are stacked
+            let lastBrickPosition = undefined;
+            while (this.getFieldByCoord(nextPosition) === FieldType.brick && this.isValid(nextPosition)) {
+                lastBrickPosition = {...nextPosition};
+                nextPosition.y++;
+            }
+            if (lastBrickPosition) {
+                this.setFieldByCoord(lastBrickPosition, FieldType.empty);
+            } else {
+                throw Error("Da ist kein Ziegel!");
+            }
+        }
     }
 }
 

@@ -18,11 +18,11 @@ function mapField(content: FieldType, position: [number, number, number]) {
     let result;
     const key = `${position[0]}_${position[1]}_${position[2]}`;
     switch (content) {
+        case FieldType.brick:
+            result = <Brick key={key} position={position} texture={DirtTexture} heightUnits={0.5}/>;
+            break;
         case FieldType.grassBlock:
             result = <Brick key={key} position={position} texture={GrassTexture} heightUnits={0.5}/>;
-            break;
-        case FieldType.dirtBlock:
-            result = <Brick key={key} position={position} texture={DirtTexture} heightUnits={0.5}/>;
             break;
         case FieldType.karol:
             result = <Brick key={key} position={position} texture={KarolTexture} heightUnits={2}/>;

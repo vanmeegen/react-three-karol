@@ -9,7 +9,7 @@ describe("The world model initializes a 3dimensional array correctly", () => {
 
     it("initializes all nested arrays of a 2x2x2 world", () => {
         const world = new WorldModel(2, 2, 2);
-        expect(world.asArray()).toEqual([[[3, 1], [0, 2]], [[2, 1], [0, 0]]]);
+        expect(world.asArray()).toEqual([[[FieldType.karol, FieldType.brick], [0, FieldType.grassBlock]], [[FieldType.grassBlock, FieldType.brick], [0, 0]]]);
     });
 
     it("can get fields", () => {
