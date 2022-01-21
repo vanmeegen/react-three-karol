@@ -88,11 +88,11 @@ export class WorldModel {
     constructor(x: number = 10, y: number = 10, z: number = 10) {
         this.dimensions = {x, y, z};
         this.fields = initEmpty3DArray(x, y, z);
-        this.setField(x - 1, 0, 0, FieldType.grassBlock);
-        this.setField(0, 0, z - 1, FieldType.brick);
-        this.setField(0, 1, z - 1, FieldType.grassBlock);
-        this.setField(x - 1, 0, z - 1, FieldType.brick);
-        this.setMarker({x: x-1, y: 1, z: z-1}, Color.yellow);
+        // this.setField(x - 1, 0, 0, FieldType.grassBlock);
+        // this.setField(0, 0, z - 1, FieldType.brick);
+        // this.setField(0, 1, z - 1, FieldType.grassBlock);
+        // this.setField(x - 1, 0, z - 1, FieldType.brick);
+        // this.setMarker({x: x-1, y: 1, z: z-1}, Color.yellow);
         this.setFieldByCoord(this.karol.position, FieldType.karol);
     }
 

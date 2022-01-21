@@ -60,13 +60,6 @@ describe("The KarelInterpreter changes the World by programming", () => {
         });
     });
 
-    describe("it understands loops", () => {
-        it("'wiederhole 2 mal Schritt endewiederhole' moves Karol 2 times in the current direction", () => {
-            executeProgram("wiederhole 2 mal Schritt endewiederhole", world);
-            expect(world.getKarol().position).toEqual({x: 2, y: 0, z: 0});
-        });
-    });
-
     describe("it understands conditions", () => {
         it("'IstWand' is true if the next field is a wall", () => {
             expect(executeCondition("IstWand", world)).toBeFalsy();
@@ -129,6 +122,25 @@ describe("The KarelInterpreter changes the World by programming", () => {
             expect(executeCondition("nicht IstOsten", world)).toBeFalsy();
             world.turnKarolLeft();
             expect(executeCondition("nicht IstOsten", world)).toBeTruthy();
+        });
+    });
+
+    describe("it understands loops", () => {
+        it("'wiederhole 2 mal Schritt endewiederhole' moves Karol 2 times in the current direction", () => {
+            executeProgram("wiederhole 2 mal Schritt endewiederhole", world);
+            expect(world.getKarol().position).toEqual({x: 2, y: 0, z: 0});
+        });
+        it("'wiederhole solange nicht IstWand Schritt endewiederhole' moves Karol to the end of the field", () => {
+            executeProgram("wiederhole solange nicht IstWand Schritt endewiederhole", world);
+            expect(world.getKarol().position).toEqual({x: 9, y: 0, z: 0});
+        });
+        it("'wiederhole Schritt endewiederhole bis IstWand' moves Karol to the end of the field", () => {
+            executeProgram("wiederhole Schritt endewiederhole bis IstWand", world);
+            expect(world.getKarol().position).toEqual({x: 9, y: 0, z: 0});
+        });
+        it("'wiederhole Schritt endewiederhole solange nicht IstWand' moves Karol to the end of the field", () => {
+            executeProgram("wiederhole Schritt endewiederhole solange nicht IstWand", world);
+            expect(world.getKarol().position).toEqual({x: 9, y: 0, z: 0});
         });
     });
 

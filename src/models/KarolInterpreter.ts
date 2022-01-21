@@ -37,7 +37,35 @@ class KarolInterpreter extends KarolVisitor {
 
     // Visit a parse tree produced by karelParser#loop.
     visitLoop(ctx: ParserRuleContext) {
-        return this.visitChildren(ctx);
+        // check which kind of loop
+        let solangeIndex = undefined;
+        let bisIndex = undefined;
+        for (let i = 0; i < ctx.getChildCount(); i++){
+            const text = ctx.getChild(i).getText();
+            if (text === "solange"){
+                solangeIndex = i;
+            } else if (text === "bis"){
+                bisIndex = i;
+            }
+        }
+        if (solangeIndex === 1){
+            // wiederhole solange conditionExpression statement*
+            while (this.visit(ctx.getChild(2))){
+                this.visitChildren(ctx);
+            }
+        } else if (solangeIndex !== undefined && solangeIndex > 1){
+            // wiederhole statement* endewiederhole solange condition
+            do {
+                this.visitChildren(ctx);
+            } while (this.visit(ctx.getChild(solangeIndex + 1)));
+        } else if (bisIndex !== undefined){
+            // wiederhole statement* endewiederhole bis condition
+            do {
+                this.visitChildren(ctx);
+            } while (!this.visit(ctx.getChild(bisIndex + 1)));
+        } else {
+            throw Error("Interner Fehler: Dieses Schleifenkonstrukt sollte vom Parser nicht erlaubt sein");
+        }
     }
 
     visitConditionexpression(ctx: ParserRuleContext) {
