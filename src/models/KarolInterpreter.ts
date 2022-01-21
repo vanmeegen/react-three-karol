@@ -40,25 +40,25 @@ class KarolInterpreter extends KarolVisitor {
         // check which kind of loop
         let solangeIndex = undefined;
         let bisIndex = undefined;
-        for (let i = 0; i < ctx.getChildCount(); i++){
+        for (let i = 0; i < ctx.getChildCount(); i++) {
             const text = ctx.getChild(i).getText();
-            if (text === "solange"){
+            if (text === "solange") {
                 solangeIndex = i;
-            } else if (text === "bis"){
+            } else if (text === "bis") {
                 bisIndex = i;
             }
         }
-        if (solangeIndex === 1){
+        if (solangeIndex === 1) {
             // wiederhole solange conditionExpression statement*
-            while (this.visit(ctx.getChild(2))){
+            while (this.visit(ctx.getChild(2))) {
                 this.visitChildren(ctx);
             }
-        } else if (solangeIndex !== undefined && solangeIndex > 1){
+        } else if (solangeIndex !== undefined && solangeIndex > 1) {
             // wiederhole statement* endewiederhole solange condition
             do {
                 this.visitChildren(ctx);
             } while (this.visit(ctx.getChild(solangeIndex + 1)));
-        } else if (bisIndex !== undefined){
+        } else if (bisIndex !== undefined) {
             // wiederhole statement* endewiederhole bis condition
             do {
                 this.visitChildren(ctx);
@@ -68,9 +68,37 @@ class KarolInterpreter extends KarolVisitor {
         }
     }
 
+    visitConditional(ctx: ParserRuleContext) {
+        // wenn cond dann statement* (sonst statement*) endewenn
+        let sonstIndex;
+        for (let i = 0; i < ctx.getChildCount(); i++) {
+            const text = ctx.getChild(i).getText();
+            if (text === "sonst") {
+                sonstIndex = i;
+            }
+        }
+        const condition = this.visit(ctx.getChild(1));
+        console.log("Conditional is " + condition);
+        if (condition === true) {
+            console.log("executing then statements");
+            // condition true: evaluate all statements before sonstIndex or all if no sonst
+            for (let i = 0; i < (sonstIndex ?? ctx.getChildCount()); i++) {
+                this.visit(ctx.getChild(i));
+            }
+        } else {
+            console.log("executing else statements");
+            if (sonstIndex !== undefined) {
+                // condition false: evaluate all statements before sonstIndex or all if no sonst
+                for (let i = sonstIndex + 1; i < ctx.getChildCount(); i++) {
+                    this.visit(ctx.getChild(i));
+                }
+            }
+        }
+    }
+
     visitConditionexpression(ctx: ParserRuleContext) {
-        if (ctx.getChildCount() === 1){
-        return this.visit(ctx.getChild(0));
+        if (ctx.getChildCount() === 1) {
+            return this.visit(ctx.getChild(0));
         } else {
             return !this.visit(ctx.getChild(1));
         }
@@ -80,7 +108,7 @@ class KarolInterpreter extends KarolVisitor {
         const position = this.world.getKarol().position;
         const direction = this.world.getKarol().direction;
         const nextPosition = this.world.getKarol().nextPosition;
-        const nextFieldType = this.world.isValid(nextPosition) ? this.world.getFieldByCoord(nextPosition): FieldType.wall;
+        const nextFieldType = this.world.isValid(nextPosition) ? this.world.getFieldByCoord(nextPosition) : FieldType.wall;
         switch (ctx.getText().toLowerCase()) {
             case "istwand":
                 return nextFieldType === FieldType.wall;

@@ -142,6 +142,19 @@ describe("The KarelInterpreter changes the World by programming", () => {
             executeProgram("wiederhole Schritt endewiederhole solange nicht IstWand", world);
             expect(world.getKarol().position).toEqual({x: 9, y: 0, z: 0});
         });
+        it("'wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn' moves Karol if free", () => {
+            const program = "wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn";
+            executeProgram(program, world);
+            expect(world.getKarol().position).toEqual({x: 1, y: 0, z: 0});
+            expect(world.getKarol().direction).toEqual(Direction.East);
+        });
+        it("'wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn' turns right if not free", () => {
+            const program = "wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn";
+            world.turnKarolLeft();
+            executeProgram(program, world);
+            expect(world.getKarol().position).toEqual({x:0 , y: 0, z: 0});
+            expect(world.getKarol().direction).toEqual(Direction.East);
+        });
     });
 
 });
