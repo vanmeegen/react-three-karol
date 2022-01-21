@@ -1,4 +1,4 @@
-import {Color, WorldModel} from "./WorldModel";
+import {Color, Direction, FieldType, WorldModel} from "./WorldModel";
 import {ParserRuleContext} from "antlr4";
 import KarolVisitor from "../parser/generated/Karol/KarolVisitor";
 import {assertCondition} from "../util/AssertCondition";
@@ -8,8 +8,8 @@ import {assertCondition} from "../util/AssertCondition";
  * @param tree
  * @param model
  */
-export function execute(tree: ParserRuleContext, model: WorldModel): void {
-    new KarolInterpreter(model).visit(tree);
+export function execute(tree: ParserRuleContext, model: WorldModel): boolean {
+    return new KarolInterpreter(model).visit(tree);
 }
 
 export async function beep() {
@@ -40,8 +40,48 @@ class KarolInterpreter extends KarolVisitor {
         return this.visitChildren(ctx);
     }
 
+    visitConditionexpression(ctx: ParserRuleContext) {
+        if (ctx.getChildCount() === 1){
+        return this.visit(ctx.getChild(0));
+        } else {
+            return !this.visit(ctx.getChild(1));
+        }
+    }
+
     visitCondition(ctx: ParserRuleContext): boolean {
-        return super.visitCondition(ctx);
+        const position = this.world.getKarol().position;
+        const direction = this.world.getKarol().direction;
+        const nextPosition = this.world.getKarol().nextPosition;
+        const nextFieldType = this.world.isValid(nextPosition) ? this.world.getFieldByCoord(nextPosition): FieldType.wall;
+        switch (ctx.getText().toLowerCase()) {
+            case "istwand":
+                return nextFieldType === FieldType.wall;
+            case "nichtistwand":
+                return nextFieldType !== FieldType.wall;
+            case "istziegel":
+                return nextFieldType === FieldType.brick;
+            case "nichtistziegel":
+                return nextFieldType !== FieldType.brick;
+            case "istmarke":
+                return this.world.getMarker(position) !== undefined;
+            case "nichtistmarke":
+                return this.world.getMarker(position) === undefined;
+            case "istsüden":
+                return direction === Direction.South;
+            case "istnorden":
+                return direction === Direction.North;
+            case "istwesten":
+                return direction === Direction.West;
+            case "istosten":
+                return direction === Direction.East;
+            case "istvoll":
+            case "nichtistvoll":
+            case "istleer":
+            case "nichtistleer":
+            case "hatziegel":
+            default:
+                throw new Error(ctx.getText() + " nicht implementiert");
+        }
     }
 
     visitInstruction(ctx: ParserRuleContext) {

@@ -73,14 +73,14 @@ class MyErrorListener extends TypedErrorListener {
     }
 }
 
-export function parseKarol(input: string,): ParserRuleContext | undefined {
+export function parseKarol(input: string,startRule: "karol"|"conditionexpression"|"instruction" = "karol"): ParserRuleContext | undefined {
     const chars = new antlr4.InputStream(input);
     const lexer = new KarolLexer(chars);
     const tokens = new antlr4.CommonTokenStream(lexer);
     const parser: IKarolParser = new KarolParser(tokens);
     const myErrorListener = new MyErrorListener();
     parser.addErrorListener(myErrorListener);
-    const tree = parser.karol();
+    const tree = (parser as any)[startRule]();
     console.log("Parse Tree: " + printParseTree(parser, tree));
     return myErrorListener.errorCount === 0 || tree === null ? tree : undefined;
 }
@@ -111,15 +111,18 @@ class Visitor {
 export type IKarolParser = Parser & {
     karol: () => ParserRuleContext;
     ruleNames: string[];
-    RULE_karel: number;
+    RULE_karol: number;
     RULE_definition: number;
+    RULE_methoddefinition: number;
+    RULE_conditiondefinition: number;
     RULE_statement: number;
-    RULE_block: number;
     RULE_iteration: number;
     RULE_loop: number;
     RULE_conditional: number;
     RULE_instruction: number;
+    RULE_conditionexpression: number;
     RULE_condition: number;
+    RULE_color: number;
     RULE_number: number;
 }
 
