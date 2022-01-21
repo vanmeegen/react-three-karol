@@ -1,4 +1,4 @@
-import {action, observable, toJS} from "mobx";
+import {action, computed, observable, toJS} from "mobx";
 
 export type Coord2D = { x: number, z: number };
 export type Coord3D = { x: number, y: number, z: number };
@@ -12,9 +12,32 @@ export enum FieldType {
     grassBlock = 5
 }
 
+export enum Color {
+    yellow = "yellow", red = "red", blue = "blue", green = "green", black = "black"
+}
+
 export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): FieldType[][][] {
     // must fill array, otherwise map does not work
     return observable(Array(xmax).fill(FieldType.empty).map(() => Array(ymax).fill(FieldType.empty).map(() => Array(zmax).fill(FieldType.empty))));
+}
+
+/**
+ *
+ * @param position
+ * @return string which can be used to map a position to a value
+ */
+export function coordToKey(position: Coord3D): string {
+    return `${position.x}_${position.y}_${position.z}`;
+}
+
+/**
+ *
+ * @param coordKey
+ * @return position parsed from x,y,z value in coordKey
+ */
+export function keyToCoord(coordKey: string): Coord3D {
+    const [x, y, z] = coordKey.split("_").map(n => parseInt(n));
+    return {x, y, z};
 }
 
 export type FieldInfo = { content: FieldType, x: number, y: number, z: number };
@@ -57,6 +80,10 @@ export class WorldModel {
      * @private world size in each direction as coordinates
      */
     @observable private dimensions: Coord3D;
+    /**
+     *  @private has a color entry for the key (field coordinates concatenated to string) if this field has a marker
+     */
+    @observable private marker: Map<string, Color> = new Map();
 
     constructor(x: number = 10, y: number = 10, z: number = 10) {
         this.dimensions = {x, y, z};
@@ -65,6 +92,7 @@ export class WorldModel {
         this.setField(0, 0, z - 1, FieldType.brick);
         this.setField(0, 1, z - 1, FieldType.grassBlock);
         this.setField(x - 1, 0, z - 1, FieldType.brick);
+        this.setMarker({x: x-1, y: 1, z: z-1}, Color.yellow);
         this.setFieldByCoord(this.karol.position, FieldType.karol);
     }
 
@@ -100,7 +128,17 @@ export class WorldModel {
         return toJS(this.fields);
     }
 
-    asFields(): FieldInfo[] {
+    @computed markers(): { position: Coord3D, color: Color }[] {
+        return Array.from(this.marker.keys()).map(key => ({
+                position: keyToCoord(key), color: this.marker.get(key)!
+            })
+        )
+            ;
+    }
+
+    asFields()
+        :
+        FieldInfo[] {
         const result: FieldInfo[] = [];
         this.fields.forEach((row, x) => row.forEach((col, y) => col.forEach((content, z) => {
             result.push({x, y, z, content})
@@ -112,11 +150,18 @@ export class WorldModel {
      * @return true if the position is part of the world, false if not
      * @param position coordinates of position
      */
-    isValid(position: Coord3D): boolean {
+    isValid(position
+                :
+                Coord3D
+    ):
+        boolean {
         return position.x >= 0 && position.y >= 0 && position.z >= 0 && position.x < this.dimensions.x && position.y < this.dimensions.y && position.z < this.dimensions.z;
     }
 
-    @action moveKarol(): Coord3D {
+    @action
+    moveKarol()
+        :
+        Coord3D {
         const nextPosition = this.karol.nextPosition;
         this.validateNextPosition(nextPosition, true);
         this.setFieldByCoord(this.karol.position, FieldType.empty);
@@ -133,15 +178,21 @@ export class WorldModel {
      * @param throwOnFailure if true, in error case an error is thrown, otherwise a result is returned
      * @return undefined if next position is valid. If invalid an error string is returned or an Error thrown with the string
      */
-    validateNextPosition(position: Coord3D, throwOnFailure: boolean): string | undefined {
+    validateNextPosition(position
+                             :
+                             Coord3D, throwOnFailure
+                             :
+                             boolean
+    ):
+        string | undefined {
         let result = undefined;
         if (this.isValid(position)) {
             const nextField = this.getFieldByCoord(position);
             if (nextField !== FieldType.empty) {
-                result = "Da ist was im Weg!";
+                result = "Da ist was im Weg";
             }
         } else {
-            result = "Da ist eine Wand!";
+            result = "Da ist eine Wand";
         }
         if (throwOnFailure && result !== undefined) {
             throw Error(result);
@@ -149,19 +200,26 @@ export class WorldModel {
         return result;
     }
 
-    @action turnKarolLeft(): Direction {
+    @action
+    turnKarolLeft()
+        :
+        Direction {
         this.karol.direction = (4 + this.karol.direction - 1) % 4;
         console.log("turned left");
         return this.karol.direction;
     }
 
-    @action turnKarolRight(): Direction {
+    @action
+    turnKarolRight()
+        :
+        Direction {
         this.karol.direction = (this.karol.direction + 1) % 4;
         console.log("turned right");
         return this.karol.direction;
     }
 
-    @action layBrick() {
+    @action
+    layBrick() {
         const nextPosition = this.karol.nextPosition;
         if (this.isValid(nextPosition)) {
             // move up if bricks are stacked
@@ -173,15 +231,15 @@ export class WorldModel {
                 if (fieldType === FieldType.empty) {
                     this.setFieldByCoord(nextPosition, FieldType.brick);
                 } else if (fieldType === FieldType.wall) {
-                    throw Error("Der Stapel ist schon so hoch wie die Welt!")
+                    throw Error("Der Stapel ist schon so hoch wie die Welt")
                 } else if (fieldType === FieldType.brick) {
-                    throw Error("Da ist eine Wand!")
+                    throw Error("Da ist eine Wand")
                 } else {
-                    throw Error("Huch? Das dürfte da aber nicht sein!");
+                    throw Error("Huch? Das dürfte da aber nicht sein");
                 }
             }
         } else {
-            throw Error("Da ist eine Wand!");
+            throw Error("Da ist eine Wand");
         }
     }
 
@@ -197,9 +255,50 @@ export class WorldModel {
             if (lastBrickPosition) {
                 this.setFieldByCoord(lastBrickPosition, FieldType.empty);
             } else {
-                throw Error("Da ist kein Ziegel!");
+                throw Error("Da ist kein Ziegel");
             }
         }
     }
+
+    setMarker(position
+                  :
+                  Coord3D, color
+                  :
+                  Color
+    ):
+        void {
+        if (this.isValid(position)
+        ) {
+            this.marker.set(coordToKey(position), color);
+        } else {
+            throw Error("Die Marker Position ist ungültig")
+        }
+    }
+
+    getMarker(position
+                  :
+                  Coord3D
+    ):
+        Color | undefined {
+        return this.marker.get(coordToKey(position));
+    }
+
+    deleteMarker(position
+                     :
+                     Coord3D
+    ):
+        void {
+        const coordKey = coordToKey(position);
+        if (this.isValid(position)
+        ) {
+            const existed = this.marker.delete(coordKey);
+            if (!existed) {
+                throw Error("Da ist keine Marke zum Entfernen");
+            }
+        } else {
+            throw Error("Die Marker Position ist ungültig");
+        }
+    }
+
 }
 

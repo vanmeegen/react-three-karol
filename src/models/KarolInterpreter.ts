@@ -1,4 +1,4 @@
-import {WorldModel} from "./WorldModel";
+import {Color, WorldModel} from "./WorldModel";
 import {ParserRuleContext} from "antlr4";
 import KarolVisitor from "../parser/generated/Karol/KarolVisitor";
 import {assertCondition} from "../util/AssertCondition";
@@ -56,6 +56,12 @@ class KarolInterpreter extends KarolVisitor {
                 break;
             case "aufheben":
                 this.world.pickupBrick();
+                break;
+            case "markesetzen":
+                this.world.setMarker(this.world.getKarol().position, Color.yellow);
+                break;
+            case "markelöschen":
+                this.world.deleteMarker(this.world.getKarol().position);
                 break;
             default:
                 throw Error("Instruction " + ctx.getText() + " not implemented");
