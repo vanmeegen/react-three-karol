@@ -1,8 +1,5 @@
-import { WorldModel } from "../models/WorldModel";
-import { ParserRuleContext } from "antlr4";
-import { parseKarol } from "../parser/KarolParserFacade";
-import { ChangeEvent, useState } from "react";
-import { executeSteps } from "../interpreter/KarolInterpreterGenerator";
+import { Color, FieldType, WorldModel } from "../models/WorldModel";
+import { action } from "mobx";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -14,55 +11,42 @@ function handleError(f: () => void): () => void {
   };
 }
 
-export function ControlPanel(props: { world: WorldModel; defaultValue: string }) {
-  const [program, setProgram] = useState(props.defaultValue);
-
-  function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
-    setProgram(evt.target.value);
-  }
-
-  function move() {
-    props.world.moveKarol();
-  }
-
-  function left() {
-    props.world.turnKarolLeft();
-  }
-
-  function right() {
-    props.world.turnKarolRight();
-  }
-
-  function run() {
-    const tree: ParserRuleContext | undefined = parseKarol(program);
-    if (tree) {
-      const steps = executeSteps(tree, props.world);
-      const doStep = () => {
-        let result = steps.next();
-        if (!result.done) {
-          setTimeout(doStep, 200);
-        }
-      };
-      doStep();
+export function ControlPanel(props: { world: WorldModel }) {
+  function toggleMarker() {
+    const position = props.world.getKarol().position;
+    if (props.world.getMarker(position)) {
+      props.world.deleteMarker(position);
     } else {
-      alert("Program contains Syntax Errors");
+      props.world.setMarker(position, Color.yellow);
+    }
+  }
+
+  function setQuader() {
+    const position = props.world.getKarol().nextPosition;
+    if (props.world.isValid(position) && props.world.getFieldByCoord(position) === FieldType.empty) {
+      props.world.setFieldByCoord(position, FieldType.wall);
+    }
+  }
+
+  function deleteQuader() {
+    const position = props.world.getKarol().nextPosition;
+    if (props.world.isValid(position) && props.world.getFieldByCoord(position) === FieldType.wall) {
+      props.world.setFieldByCoord(position, FieldType.empty);
     }
   }
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <button onClick={handleError(run)}>Run</button>
-        <button onClick={handleError(move)}>move</button>
-        <button onClick={handleError(left)}>turn left</button>
-        <button onClick={handleError(right)}>turn right</button>
+        <button onClick={handleError(() => props.world.turnKarolLeft())}>&larr;</button>
+        <button onClick={handleError(() => props.world.moveKarol())}>&uarr;</button>
+        <button onClick={handleError(() => props.world.turnKarolRight())}>&rarr;</button>
+        <button onClick={handleError(() => props.world.layBrick())}>H</button>
+        <button onClick={handleError(() => props.world.pickupBrick())}>A</button>
+        <button onClick={handleError(action(toggleMarker))}>M</button>
+        <button onClick={handleError(action(setQuader))}>Q</button>
+        <button onClick={handleError(action(deleteQuader))}>E</button>
       </div>
-
-      <textarea
-        style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}
-        value={program}
-        onChange={onTextChanged}
-      />
     </div>
   );
 }

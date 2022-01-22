@@ -66,7 +66,7 @@ const OFFSETS = {
   [Direction.North]: { x: 0, z: -1 },
   [Direction.East]: { x: 1, z: 0 },
   [Direction.South]: { x: 0, z: 1 },
-  [Direction.West]: { x: -1, z: 0 },
+  [Direction.West]: { x: -1, z: 0 }
 };
 
 export class KarolModel {
@@ -87,26 +87,30 @@ export class WorldModel {
   /**
    * world array addressed by fields[x][y][z]
    */
-  @observable private readonly fields: FieldType[][][] = [];
+  @observable private fields: FieldType[][][] = [];
   @observable private readonly karol: KarolModel = new KarolModel();
   /**
    * @private world size in each direction as coordinates
    */
-  @observable private dimensions: Coord3D;
+  @observable private dimensions: Coord3D = { x: 10, y: 10, z: 10 };
   /**
    *  @private has a color entry for the key (field coordinates concatenated to string) if this field has a marker
    */
   @observable private marker: Map<string, Color> = new Map();
 
   constructor(x: number = 10, y: number = 10, z: number = 10) {
+    this.init(x, y, z);
+  }
+
+  init(x: number = 10, y: number = 10, z: number = 10) {
     this.dimensions = { x, y, z };
     this.fields = initEmpty3DArray(x, y, z);
-    // this.setField(x - 1, 0, 0, FieldType.grassBlock);
-    // this.setField(0, 0, z - 1, FieldType.brick);
-    // this.setField(0, 1, z - 1, FieldType.grassBlock);
-    // this.setField(x - 1, 0, z - 1, FieldType.brick);
-    // this.setMarker({x: x-1, y: 1, z: z-1}, Color.yellow);
     this.setFieldByCoord(this.karol.position, FieldType.karol);
+  }
+
+  @action
+  public reset() {
+    this.init(this.dimensions.x, this.dimensions.y, this.dimensions.z);
   }
 
   getKarol(): KarolModel {
@@ -144,7 +148,7 @@ export class WorldModel {
   @computed markers(): { position: Coord3D; color: Color }[] {
     return Array.from(this.marker.keys()).map((key) => ({
       position: keyToCoord(key),
-      color: this.marker.get(key)!,
+      color: this.marker.get(key)!
     }));
   }
 
@@ -153,7 +157,7 @@ export class WorldModel {
     this.fields.forEach((row, x) =>
       row.forEach((col, y) =>
         col.forEach((content, z) => {
-          result.push({ x, y, z, content });
+          result.push(observable({ x, y, z, content }));
         })
       )
     );
@@ -175,8 +179,7 @@ export class WorldModel {
     );
   }
 
-  @action
-  moveKarol(): Coord3D {
+  @action moveKarol(): Coord3D {
     const nextPosition = this.karol.nextPosition;
     this.validateNextPosition(nextPosition, true);
     this.setFieldByCoord(this.karol.position, FieldType.empty);

@@ -2,6 +2,7 @@ import "./App.css";
 import { World3D } from "./components/World3D";
 import { WorldModel } from "./models/WorldModel";
 import { ControlPanel } from "./components/ControlPanel";
+import { ProgramControlPanel } from "./components/ProgramControlPanel";
 
 const world = new WorldModel();
 
@@ -25,8 +26,11 @@ endewiederhole
         <div>by Marco van Meegen 2022</div>
       </div>
       <div style={{ display: "flex", flexDirection: "row", columns: 2 }}>
-        <ControlPanel world={world} defaultValue={exampleProgram} />
-        <World3D model={world} />
+        <ProgramControlPanel world={world} defaultValue={exampleProgram} />
+        <div>
+          <World3D model={world} />
+          <ControlPanel world={world} />
+        </div>
       </div>
     </div>
   );

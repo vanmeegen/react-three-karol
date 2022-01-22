@@ -35,7 +35,7 @@ function FieldInternal(props: {
       result = <Karol key={key} position={props.position} karol={props.karol} />;
       break;
     case FieldType.wall:
-      result = <Brick key={key} position={props.position} color="gray" heightUnits={10} />;
+      result = <Brick key={key} position={props.position} color="gray" heightUnits={1} />;
       break;
     case FieldType.empty:
       result = null; // <Brick position={position} color="none" opacity={0}/>;
