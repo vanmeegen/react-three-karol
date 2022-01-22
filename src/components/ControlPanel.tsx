@@ -2,7 +2,7 @@ import { WorldModel } from "../models/WorldModel";
 import { ParserRuleContext } from "antlr4";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { ChangeEvent, useState } from "react";
-import { execute } from "../models/KarolInterpreter";
+import { execute } from "../interpreter/KarolInterpreter";
 
 function handleError(f: () => void): () => void {
   return () => {

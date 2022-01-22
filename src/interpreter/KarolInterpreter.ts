@@ -1,4 +1,4 @@
-import { Color, Direction, FieldType, WorldModel } from "./WorldModel";
+import { Color, Direction, FieldType, WorldModel } from "../models/WorldModel";
 import { ParserRuleContext } from "antlr4";
 import KarolVisitor from "../parser/generated/Karol/KarolVisitor";
 import { assertCondition } from "../util/AssertCondition";
