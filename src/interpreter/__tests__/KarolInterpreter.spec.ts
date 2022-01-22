@@ -2,7 +2,7 @@ import { parseKarol, TypedKarolParser } from "../../parser/KarolParserFacade";
 import { assertCondition, assertDefined } from "../../util/AssertCondition";
 import { ParserRuleContext } from "antlr4";
 import { Color, Direction, FieldType, WorldModel } from "../../models/WorldModel";
-import { execute } from "../KarolInterpreter";
+import { execute } from "../KarolInterpreterGenerator";
 import { beforeEach } from "vitest";
 
 function executeProgram(program: string, world: WorldModel): void {
@@ -16,7 +16,7 @@ function executeProgram(program: string, world: WorldModel): void {
   execute(ruleStatement, world);
 }
 
-function executeCondition(condition: string, world: WorldModel): boolean|undefined {
+function executeCondition(condition: string, world: WorldModel): boolean | undefined {
   const tree: ParserRuleContext | undefined = parseKarol(condition, "conditionexpression");
   assertDefined(tree, "There were syntax errors parsing the condition '" + condition + "'");
   assertCondition(
@@ -33,7 +33,7 @@ describe("The KarelInterpreter changes the World by programming", () => {
     world.turnKarolLeft();
   });
   describe("it understands instructions", () => {
-    it.only("'Schritt' moves Karol in the current direction", () => {
+    it("'Schritt' moves Karol in the current direction", () => {
       executeProgram("Schritt", world);
       expect(world.getKarol().position).toEqual({ x: 1, y: 0, z: 0 });
     });

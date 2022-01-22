@@ -182,7 +182,7 @@ export class WorldModel {
     this.setFieldByCoord(this.karol.position, FieldType.empty);
     this.karol.position = nextPosition;
     this.setFieldByCoord(nextPosition, FieldType.karol);
-    console.log("moved");
+    // console.log("moved");
     return nextPosition;
   }
 
@@ -214,13 +214,13 @@ export class WorldModel {
 
   @action turnKarolLeft(): Direction {
     this.karol.direction = (4 + this.karol.direction - 1) % 4;
-    console.log("turned left");
+    // console.log("turned left");
     return this.karol.direction;
   }
 
   @action turnKarolRight(): Direction {
     this.karol.direction = (this.karol.direction + 1) % 4;
-    console.log("turned right");
+    // console.log("turned right");
     return this.karol.direction;
   }
 

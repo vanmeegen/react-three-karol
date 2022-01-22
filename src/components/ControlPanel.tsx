@@ -2,7 +2,7 @@ import { WorldModel } from "../models/WorldModel";
 import { ParserRuleContext } from "antlr4";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { ChangeEvent, useState } from "react";
-import { execute } from "../interpreter/KarolInterpreter";
+import { executeSteps } from "../interpreter/KarolInterpreterGenerator";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -13,8 +13,10 @@ function handleError(f: () => void): () => void {
     }
   };
 }
+
 export function ControlPanel(props: { world: WorldModel; defaultValue: string }) {
   const [program, setProgram] = useState(props.defaultValue);
+
   function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
     setProgram(evt.target.value);
   }
@@ -34,7 +36,14 @@ export function ControlPanel(props: { world: WorldModel; defaultValue: string })
   function run() {
     const tree: ParserRuleContext | undefined = parseKarol(program);
     if (tree) {
-      execute(tree, props.world);
+      const steps = executeSteps(tree, props.world);
+      const doStep = () => {
+        let result = steps.next();
+        if (!result.done) {
+          setTimeout(doStep, 200);
+        }
+      };
+      doStep();
     } else {
       alert("Program contains Syntax Errors");
     }
