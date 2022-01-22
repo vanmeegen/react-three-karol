@@ -42,11 +42,12 @@ export function keyToCoord(coordKey: string): Coord3D {
 
 export type FieldInfo = { content: FieldType, x: number, y: number, z: number };
 
+// do not change number because calculations are based on these
 export enum Direction {
-    North,
-    East,
-    South,
-    West
+    North = 0,
+    East = 1,
+    South = 2,
+    West = 3
 }
 
 const OFFSETS = {
@@ -56,9 +57,9 @@ const OFFSETS = {
     [Direction.West]: {x: -1, z: 0}
 };
 
-export class Karol {
+export class KarolModel {
     @observable public position: Coord3D = {x: 0, y: 0, z: 0};
-    @observable public direction: Direction = Direction.East;
+    @observable public direction: Direction = Direction.South;
 
     /**
      * @return the next position Karol would take when moving forward
@@ -75,7 +76,7 @@ export class WorldModel {
      * world array addressed by fields[x][y][z]
      */
     @observable private readonly fields: FieldType[][][] = [];
-    @observable private readonly karol: Karol = new Karol();
+    @observable private readonly karol: KarolModel = new KarolModel();
     /**
      * @private world size in each direction as coordinates
      */
@@ -96,7 +97,7 @@ export class WorldModel {
         this.setFieldByCoord(this.karol.position, FieldType.karol);
     }
 
-    getKarol(): Karol {
+    getKarol(): KarolModel {
         return this.karol;
     }
 
@@ -136,9 +137,7 @@ export class WorldModel {
             ;
     }
 
-    asFields()
-        :
-        FieldInfo[] {
+    @computed asFields(): FieldInfo[] {
         const result: FieldInfo[] = [];
         this.fields.forEach((row, x) => row.forEach((col, y) => col.forEach((content, z) => {
             result.push({x, y, z, content})
@@ -188,11 +187,14 @@ export class WorldModel {
         let result = undefined;
         if (this.isValid(position)) {
             const nextField = this.getFieldByCoord(position);
-            if (nextField !== FieldType.empty) {
-                result = "Da ist was im Weg";
+            if (nextField === FieldType.wall) {
+                result = "Karol ist am Quader angestoßen.";
+            } else if (nextField === FieldType.brick) {
+                // TODO implement logic for jumping
+                result = "Karol kann nicht so hoch/tief springen.";
             }
         } else {
-            result = "Da ist eine Wand";
+            result = "Karol ist an der Wand angestoßen.";
         }
         if (throwOnFailure && result !== undefined) {
             throw Error(result);
@@ -201,18 +203,14 @@ export class WorldModel {
     }
 
     @action
-    turnKarolLeft()
-        :
-        Direction {
+    turnKarolLeft(): Direction {
         this.karol.direction = (4 + this.karol.direction - 1) % 4;
         console.log("turned left");
         return this.karol.direction;
     }
 
     @action
-    turnKarolRight()
-        :
-        Direction {
+    turnKarolRight(): Direction {
         this.karol.direction = (this.karol.direction + 1) % 4;
         console.log("turned right");
         return this.karol.direction;
@@ -231,15 +229,15 @@ export class WorldModel {
                 if (fieldType === FieldType.empty) {
                     this.setFieldByCoord(nextPosition, FieldType.brick);
                 } else if (fieldType === FieldType.wall) {
-                    throw Error("Der Stapel ist schon so hoch wie die Welt")
+                    throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
                 } else if (fieldType === FieldType.brick) {
-                    throw Error("Da ist eine Wand")
+                    throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.")
                 } else {
                     throw Error("Huch? Das dürfte da aber nicht sein");
                 }
             }
         } else {
-            throw Error("Da ist eine Wand");
+            throw Error("Karol kann nicht hinlegen, er steht vor der Wand.");
         }
     }
 

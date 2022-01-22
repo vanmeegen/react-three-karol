@@ -1,4 +1,5 @@
 grammar Karol;
+options { caseInsensitive=true; }
 
 karol
    : definition* 'Programm' statement* ('endeProgramm' | '*Programm')

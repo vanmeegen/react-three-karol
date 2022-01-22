@@ -1,5 +1,5 @@
 import React, {ReactElement} from 'react'
-import {coordToKey, FieldType, WorldModel} from "../models/WorldModel";
+import {coordToKey, FieldType, KarolModel, WorldModel} from "../models/WorldModel";
 import {observer} from "mobx-react";
 import {Canvas} from "@react-three/fiber";
 // @ts-ignore
@@ -8,31 +8,30 @@ import {Brick} from "./Brick";
 import {TextureLoader} from "three";
 import dirt from "../assets/dirt.jpg";
 import grass from "../assets/grass.jpg";
-import karol from "../assets/karol.jpg";
+import {Karol} from "./Karol";
 
 const DirtTexture = new TextureLoader().load(dirt);
 const GrassTexture = new TextureLoader().load(grass);
-const KarolTexture = new TextureLoader().load(karol);
 const PI = 3.1415926;
 
-function mapField(content: FieldType, position: [number, number, number]) {
+function FieldInternal(props: {content: FieldType, karol: KarolModel, position: [number, number, number]}): ReactElement<typeof props>|null {
     let result;
-    const key = `${position[0]}_${position[1]}_${position[2]}`;
-    switch (content) {
+    const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
+    switch (props.content) {
         case FieldType.brick:
-            result = <Brick key={key} position={position} texture={DirtTexture} heightUnits={0.5}/>;
+            result = <Brick key={key} position={props.position} texture={DirtTexture} heightUnits={0.5}/>;
             break;
         case FieldType.grassBlock:
-            result = <Brick key={key} position={position} texture={GrassTexture} heightUnits={0.5}/>;
+            result = <Brick key={key} position={props.position} texture={GrassTexture} heightUnits={0.5}/>;
             break;
         case FieldType.marker:
-            result = <Brick key={key} position={position} heightUnits={0.1} color="yellow"/>;
+            result = <Brick key={key} position={props.position} heightUnits={0.1} color="yellow"/>;
             break;
         case FieldType.karol:
-            result = <Brick key={key} position={position} texture={KarolTexture} heightUnits={2}/>;
+            result = <Karol key={key} position={props.position} karol={props.karol}/>;
             break;
         case FieldType.wall:
-            result = <Brick key={key} position={position} color="gray" heightUnits={10}/>;
+            result = <Brick key={key} position={props.position} color="gray" heightUnits={10}/>;
             break;
         case FieldType.empty:
             result = null; // <Brick position={position} color="none" opacity={0}/>;
@@ -43,6 +42,8 @@ function mapField(content: FieldType, position: [number, number, number]) {
     }
     return result;
 }
+
+const Field = observer(FieldInternal);
 
 const DashedLine = (props: { from: [number, number, number], to: [number, number, number], color: string }) => <Line
     points={[props.from, props.to]}       // Array of points
@@ -55,7 +56,6 @@ const DashedLine = (props: { from: [number, number, number], to: [number, number
 />
 
 declare function Plane(props: any): any;
-
 
 function World3DInternal(props: { model: WorldModel }): ReactElement<typeof props> {
     console.log("rendering world");
@@ -81,7 +81,7 @@ function World3DInternal(props: { model: WorldModel }): ReactElement<typeof prop
                 <meshPhongMaterial attach="material" color="lightblue"/>
             </Plane>
             {
-                props.model.asFields().map(fieldInfo => mapField(fieldInfo.content, [fieldInfo.x, fieldInfo.y / 2.0, fieldInfo.z]))
+                props.model.asFields().map(fieldInfo => <Field key={coordToKey(fieldInfo)} content={fieldInfo.content} karol={props.model.getKarol()} position={[fieldInfo.x, fieldInfo.y / 2.0, fieldInfo.z]}/>)
             }
             {
                 props.model.markers().map(markerInfo => <Brick key={coordToKey(markerInfo.position)} position={[markerInfo.position.x, markerInfo.position.y / 2.0, markerInfo.position.z]} heightUnits={0.1} color={markerInfo.color}/>)
