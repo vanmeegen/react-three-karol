@@ -7,7 +7,8 @@
     "test:watch": "vitest",
     "coverage": "vitest --coverage",
     "build": "tsc && vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prettier": "prettier -w src"
   },
   "dependencies": {
     "@react-three/cannon": "^4.6.0",
