@@ -31,6 +31,7 @@ describe("The world model initializes a 3dimensional array correctly", () => {
     let world: WorldModel;
     beforeEach(() => {
       world = new WorldModel(3, 3, 3);
+      world.turnKarolLeft();
     });
 
     it("is placed in left upper corner and facing east", () => {

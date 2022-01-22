@@ -30,6 +30,7 @@ describe("The KarelInterpreter changes the World by programming", () => {
   let world: WorldModel;
   beforeEach(() => {
     world = new WorldModel();
+    world.turnKarolLeft();
   });
   describe("it understands instructions", () => {
     it("'Schritt' moves Karol in the current direction", () => {
