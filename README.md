@@ -15,7 +15,6 @@ thought it would be much more approachable if nothing has to be installed.
 
 ## TODO
 
-- Highlighting of currently executed statement
 - Syntax Highlighting in Editor
 - Menu to insert all language constructs
 - Parameters in Statements or Conditions
@@ -23,8 +22,9 @@ thought it would be much more approachable if nothing has to be installed.
 ## pull requests welcome
 
 - Karol parameters:
-    - jump height
+    - jump height (implemented, but need to expose in UI)
     - bricks Karol can pick up and lay down (currently unlimited)
+- editable world size
 - user defined functions
 - user defined conditions
 - Program always stops on errors

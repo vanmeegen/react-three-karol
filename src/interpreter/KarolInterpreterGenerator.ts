@@ -1,13 +1,38 @@
-import { Interval, ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4";
 import { assertCondition } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
 import { Direction, KarolModel } from "../models/KarolModel";
 import { Color, FieldType } from "../models/CommonTypes";
 
-type StepResult = {
+export interface SourceLineRange {
+  startLine: number;
+  startCol: number;
+  endLine: number;
+  endCol: number;
+}
+
+export type StepResult = {
   result: boolean | undefined;
-  source: Interval | undefined;
+  source: SourceLineRange | undefined;
 };
+
+/**
+ * determine source line and col range from child token indices
+ * @param ctx
+ * @param from
+ * @param to
+ */
+function getSourceRange(ctx: ParserRuleContext, from: number, to: number): SourceLineRange {
+  const startSymbol = ctx.getChild(from).symbol;
+  const endSymbol = ctx.getChild(to).symbol;
+  const length = ctx.getChild(to).getText().length;
+  return {
+    startLine: startSymbol.line,
+    startCol: startSymbol.column,
+    endLine: endSymbol.line,
+    endCol: endSymbol.column + length,
+  };
+}
 
 /**
  * executes the given program on the world model
@@ -84,7 +109,7 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     const value = Number.parseInt(iterations);
     assertCondition(!isNaN(value), "Keine Zahl: " + value);
     for (let i = 0; i < value; i++) {
-      yield { source: ctx.getSourceInterval(), isFinished: false, result: undefined };
+      yield { source: getSourceRange(ctx, 0, ctx.getChildCount() - 1), isFinished: false, result: undefined };
       result = yield* visitChildren(ctx);
     }
     return result;
@@ -222,6 +247,6 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       default:
         throw Error("Instruction " + ctx.getText() + " not implemented");
     }
-    yield { isFinished: false, source: ctx.getSourceInterval(), result: undefined };
+    yield { isFinished: false, source: getSourceRange(ctx, 0, 0), result: undefined };
   }
 }
