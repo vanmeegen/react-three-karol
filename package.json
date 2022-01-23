@@ -12,7 +12,7 @@
     "preview": "vite preview",
     "prettier": "prettier -w src",
     "predeploy": "yarn run build",
-    "deploy": "gh-pages -d build"
+    "deploy": "gh-pages -d dist"
   },
   "dependencies": {
     "@react-three/cannon": "^4.6.0",
