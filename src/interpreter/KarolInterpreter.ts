@@ -79,15 +79,12 @@ class KarolInterpreter extends KarolVisitor {
       }
     }
     const condition = this.visit(ctx.getChild(1));
-    console.log("Conditional is " + condition);
     if (condition === true) {
-      console.log("executing then statements");
       // condition true: evaluate all statements before sonstIndex or all if no sonst
       for (let i = 0; i < (sonstIndex ?? ctx.getChildCount()); i++) {
         this.visit(ctx.getChild(i));
       }
     } else {
-      console.log("executing else statements");
       if (sonstIndex !== undefined) {
         // condition false: evaluate all statements before sonstIndex or all if no sonst
         for (let i = sonstIndex + 1; i < ctx.getChildCount(); i++) {

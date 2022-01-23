@@ -21,6 +21,7 @@ function FieldInternal(props: {
 }): ReactElement<typeof props> | null {
   let result;
   const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
+  // console.log("Rendering field " + key);
   switch (props.content) {
     case FieldType.brick:
       result = <Brick key={key} position={props.position} texture={DirtTexture} heightUnits={0.5} />;
@@ -63,8 +64,57 @@ const DashedLine = (props: { from: [number, number, number]; to: [number, number
 
 declare function Plane(props: any): any;
 
+/**
+ * separate last index into own component so only 10 fields are updated instead of 1000
+ * @param props
+ * @constructor
+ */
+function WorldFieldsInternalX(props: { fields: FieldType[]; y: number; x: number; karol: KarolModel }) {
+  const { fields, x, y, karol } = props;
+  return (
+    <>
+      {fields.map((f, z) => (
+        <Field key={z} content={f} karol={karol} position={[x, y / 2.0, z]} />
+      ))}
+    </>
+  );
+}
+
+const WorldFieldsX = observer(WorldFieldsInternalX);
+
+function WorldFieldsInternal(props: { fields: FieldType[][][]; karol: KarolModel }) {
+  return (
+    <>
+      {props.fields.map((fieldInfo, x) =>
+        fieldInfo.map((fieldInfo, y) => <WorldFieldsX fields={fieldInfo} karol={props.karol} y={y} x={x} />)
+      )}
+    </>
+  );
+}
+
+const WorldFields = observer(WorldFieldsInternal);
+
+function WorldMarkersInternal(props: { model: WorldModel }) {
+  const list = props.model.markers;
+  // console.log("rendering " + list.length + " markers");
+  return (
+    <>
+      {list.map((markerInfo) => (
+        <Brick
+          key={coordToKey(markerInfo.position)}
+          position={[markerInfo.position.x, markerInfo.position.y / 2.0, markerInfo.position.z]}
+          heightUnits={0.1}
+          color={markerInfo.color}
+        />
+      ))}
+    </>
+  );
+}
+
+const WorldMarkers = observer(WorldMarkersInternal);
+
 function World3DInternal(props: { model: WorldModel }): ReactElement<typeof props> {
-  console.log("rendering world");
+  // console.log("rendering world");
   const range = [];
   for (let i = 0; i < 11; i++) {
     range.push(i);
@@ -96,22 +146,8 @@ function World3DInternal(props: { model: WorldModel }): ReactElement<typeof prop
           <Plane key="p2" args={[10, 10]} position={[5, 5, 0]} rotation={[0, 0, 0]}>
             <meshPhongMaterial attach="material" color="lightblue" />
           </Plane>
-          {props.model.asFields().map((fieldInfo) => (
-            <Field
-              key={coordToKey(fieldInfo)}
-              content={fieldInfo.content}
-              karol={props.model.getKarol()}
-              position={[fieldInfo.x, fieldInfo.y / 2.0, fieldInfo.z]}
-            />
-          ))}
-          {props.model.markers().map((markerInfo) => (
-            <Brick
-              key={coordToKey(markerInfo.position)}
-              position={[markerInfo.position.x, markerInfo.position.y / 2.0, markerInfo.position.z]}
-              heightUnits={0.1}
-              color={markerInfo.color}
-            />
-          ))}
+          <WorldFields fields={props.model.fields} karol={props.model.getKarol()} />
+          <WorldMarkers model={props.model} />
           <GizmoHelper alignment="bottom-right" margin={[50, 50]}>
             <GizmoViewcube />
           </GizmoHelper>

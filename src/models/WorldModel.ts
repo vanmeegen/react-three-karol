@@ -1,7 +1,10 @@
-import { action, computed, observable, toJS } from "mobx";
+import { computed, makeAutoObservable, makeObservable, observable, toJS } from "mobx";
 
-export type Coord2D = { x: number; z: number };
-export type Coord3D = { x: number; y: number; z: number };
+export class Coord3D {
+  @observable x: number = 0;
+  @observable y: number = 0;
+  @observable z: number = 0;
+}
 
 export enum FieldType {
   empty = 0,
@@ -66,12 +69,19 @@ const OFFSETS = {
   [Direction.North]: { x: 0, z: -1 },
   [Direction.East]: { x: 1, z: 0 },
   [Direction.South]: { x: 0, z: 1 },
-  [Direction.West]: { x: -1, z: 0 }
+  [Direction.West]: { x: -1, z: 0 },
 };
 
 export class KarolModel {
-  @observable public position: Coord3D = { x: 0, y: 0, z: 0 };
-  @observable public direction: Direction = Direction.South;
+  constructor() {
+    makeObservable(this, {
+      position: observable,
+      direction: observable,
+    });
+  }
+
+  public position: Coord3D = { x: 0, y: 0, z: 0 };
+  public direction: Direction = Direction.South;
 
   /**
    * @return the next position Karol would take when moving forward
@@ -83,12 +93,14 @@ export class KarolModel {
   }
 }
 
+export type MarkerInfo = { position: Coord3D; color: Color };
+
 export class WorldModel {
   /**
    * world array addressed by fields[x][y][z]
    */
-  @observable private fields: FieldType[][][] = [];
-  @observable private readonly karol: KarolModel = new KarolModel();
+  @observable public fields: FieldType[][][] = [];
+  @observable private karol: KarolModel = new KarolModel();
   /**
    * @private world size in each direction as coordinates
    */
@@ -99,16 +111,17 @@ export class WorldModel {
   @observable private marker: Map<string, Color> = new Map();
 
   constructor(x: number = 10, y: number = 10, z: number = 10) {
+    makeAutoObservable(this, { markers: computed });
     this.init(x, y, z);
   }
 
   init(x: number = 10, y: number = 10, z: number = 10) {
     this.dimensions = { x, y, z };
     this.fields = initEmpty3DArray(x, y, z);
+    this.karol = new KarolModel();
     this.setFieldByCoord(this.karol.position, FieldType.karol);
   }
 
-  @action
   public reset() {
     this.init(this.dimensions.x, this.dimensions.y, this.dimensions.z);
   }
@@ -145,23 +158,11 @@ export class WorldModel {
     return toJS(this.fields);
   }
 
-  @computed markers(): { position: Coord3D; color: Color }[] {
+  get markers(): MarkerInfo[] {
     return Array.from(this.marker.keys()).map((key) => ({
       position: keyToCoord(key),
-      color: this.marker.get(key)!
+      color: this.marker.get(key)!,
     }));
-  }
-
-  @computed asFields(): FieldInfo[] {
-    const result: FieldInfo[] = [];
-    this.fields.forEach((row, x) =>
-      row.forEach((col, y) =>
-        col.forEach((content, z) => {
-          result.push(observable({ x, y, z, content }));
-        })
-      )
-    );
-    return result;
   }
 
   /**
@@ -179,7 +180,7 @@ export class WorldModel {
     );
   }
 
-  @action moveKarol(): Coord3D {
+  moveKarol(): Coord3D {
     const nextPosition = this.karol.nextPosition;
     this.validateNextPosition(nextPosition, true);
     this.setFieldByCoord(this.karol.position, FieldType.empty);
@@ -215,19 +216,19 @@ export class WorldModel {
     return result;
   }
 
-  @action turnKarolLeft(): Direction {
+  turnKarolLeft(): Direction {
     this.karol.direction = (4 + this.karol.direction - 1) % 4;
     // console.log("turned left");
     return this.karol.direction;
   }
 
-  @action turnKarolRight(): Direction {
+  turnKarolRight(): Direction {
     this.karol.direction = (this.karol.direction + 1) % 4;
     // console.log("turned right");
     return this.karol.direction;
   }
 
-  @action layBrick() {
+  layBrick() {
     const nextPosition = this.karol.nextPosition;
     if (this.isValid(nextPosition)) {
       // move up if bricks are stacked
@@ -251,7 +252,7 @@ export class WorldModel {
     }
   }
 
-  @action pickupBrick() {
+  pickupBrick() {
     const nextPosition = this.karol.nextPosition;
     if (this.isValid(nextPosition)) {
       // move up if bricks are stacked
@@ -268,7 +269,7 @@ export class WorldModel {
     }
   }
 
-  @action setMarker(position: Coord3D, color: Color): void {
+  setMarker(position: Coord3D, color: Color): void {
     if (this.isValid(position)) {
       this.marker.set(coordToKey(position), color);
     } else {
@@ -280,7 +281,7 @@ export class WorldModel {
     return this.marker.get(coordToKey(position));
   }
 
-  @action deleteMarker(position: Coord3D): void {
+  deleteMarker(position: Coord3D): void {
     const coordKey = coordToKey(position);
     if (this.isValid(position)) {
       const existed = this.marker.delete(coordKey);

@@ -21,7 +21,7 @@ export function ProgramControlPanel(props: { world: WorldModel; defaultValue: st
     setProgram(evt.target.value);
   }
 
-  function reset(){
+  function reset() {
     props.world.reset();
   }
   function run(waitTime?: number) {
@@ -31,7 +31,7 @@ export function ProgramControlPanel(props: { world: WorldModel; defaultValue: st
       const doStep = () => {
         let result = steps.next();
         if (!result.done) {
-          waitTime !== undefined ? setTimeout(doStep, waitTime): doStep();
+          waitTime !== undefined ? setTimeout(doStep, waitTime) : doStep();
         }
       };
       doStep();
@@ -43,9 +43,9 @@ export function ProgramControlPanel(props: { world: WorldModel; defaultValue: st
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <button onClick={handleError(() =>run(0))}>Run</button>
-        <button onClick={handleError(()=>run(200))}>Step</button>
-        <button onClick={handleError(()=>run())}>Fast</button>
+        <button onClick={handleError(() => run(0))}>Run</button>
+        <button onClick={handleError(() => run(200))}>Step</button>
+        <button onClick={handleError(() => run())}>Fast</button>
         <button onClick={handleError(reset)}>Reset</button>
       </div>
 

@@ -22,7 +22,7 @@ endewiederhole
   return (
     <div className="App">
       <div className="App-header">
-        <h1>Karol Online</h1>
+        <h1 style={{ fontSize: "1.4em" }}>Karol Online</h1>
         <div>by Marco van Meegen 2022</div>
       </div>
       <div style={{ display: "flex", flexDirection: "row", columns: 2 }}>

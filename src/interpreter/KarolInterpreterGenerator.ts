@@ -4,27 +4,26 @@ import { assertCondition } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
 
 type StepResult = {
-  result: boolean|undefined;
-  source: Interval|undefined;
+  result: boolean | undefined;
+  source: Interval | undefined;
 };
-
 
 /**
  * executes the given program on the world model
  * @param tree
  * @param model
  */
-export function execute(tree: ParserRuleContext, model: WorldModel): boolean|undefined {
+export function execute(tree: ParserRuleContext, model: WorldModel): boolean | undefined {
   const generator = executeSteps(tree, model);
-  let result: IteratorResult<StepResult> ={done: false, value: {source: undefined, result: undefined }};
+  let result: IteratorResult<StepResult> = { done: false, value: { source: undefined, result: undefined } };
   do {
-    result= generator.next();
+    result = generator.next();
     // console.log("Result: ", result);
     const source = result.value?.source;
-    if (source){
-      console.log("STEP: " + tree.getText().substring(source.start,source.end));
+    if (source) {
+      console.log("STEP: " + tree.getText().substring(source.start, source.end));
     }
-  } while (!(result.done));
+  } while (!result.done);
   return result.value;
 }
 
@@ -35,11 +34,11 @@ export async function beep() {
   return snd.play();
 }
 
-export function *executeSteps(tree: ParserRuleContext, world: WorldModel): Generator<StepResult,boolean> {
-  return yield *visit(tree);
+export function* executeSteps(tree: ParserRuleContext, world: WorldModel): Generator<StepResult, boolean> {
+  return yield* visit(tree);
   function* visit(ctx: ParserRuleContext | ParserRuleContext[]): Generator<StepResult, any> {
     if (Array.isArray(ctx)) {
-      for (let i = 0; i < ctx.length; i++){
+      for (let i = 0; i < ctx.length; i++) {
         yield* visit(ctx[i]);
       }
     } else {
@@ -65,10 +64,10 @@ export function *executeSteps(tree: ParserRuleContext, world: WorldModel): Gener
     }
   }
 
-  function* visitChildren(ctx: ParserRuleContext, startIndex:number = 0, endIndex?:number) {
+  function* visitChildren(ctx: ParserRuleContext, startIndex: number = 0, endIndex?: number) {
     if ((ctx as any).children) {
       const children = (ctx as any).children as ParserRuleContext[];
-      for (let i = startIndex; i < (endIndex ?? children.length); i++){
+      for (let i = startIndex; i < (endIndex ?? children.length); i++) {
         yield* visit(children[i]);
       }
     } else {
@@ -110,12 +109,12 @@ export function *executeSteps(tree: ParserRuleContext, world: WorldModel): Gener
     } else if (solangeIndex !== undefined && solangeIndex > 1) {
       // wiederhole statement* endewiederhole solange condition
       do {
-        yield *visitChildren(ctx);
+        yield* visitChildren(ctx);
       } while (visitConditionexpression(ctx.getChild(solangeIndex + 1)));
     } else if (bisIndex !== undefined) {
       // wiederhole statement* endewiederhole bis condition
       do {
-        yield *visitChildren(ctx);
+        yield* visitChildren(ctx);
       } while (!visitConditionexpression(ctx.getChild(bisIndex + 1)));
     } else {
       throw Error("Interner Fehler: Dieses Schleifenkonstrukt sollte vom Parser nicht erlaubt sein");
@@ -135,15 +134,15 @@ export function *executeSteps(tree: ParserRuleContext, world: WorldModel): Gener
     if (condition) {
       // console.log("executing then statements");
       // condition true: evaluate all statements before sonstIndex or all if no sonst
-      for (let i = 3; i < (sonstIndex ?? ctx.getChildCount()-1); i++) {
-        yield *visit(ctx.getChild(i));
+      for (let i = 3; i < (sonstIndex ?? ctx.getChildCount() - 1); i++) {
+        yield* visit(ctx.getChild(i));
       }
     } else {
       // console.log("executing else statements");
       if (sonstIndex !== undefined) {
         // condition false: evaluate all statements before sonstIndex or all if no sonst
-        for (let i = sonstIndex + 1; i < ctx.getChildCount()-1; i++) {
-         yield *visit(ctx.getChild(i));
+        for (let i = sonstIndex + 1; i < ctx.getChildCount() - 1; i++) {
+          yield* visit(ctx.getChild(i));
         }
       }
     }

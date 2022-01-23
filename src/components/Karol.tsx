@@ -30,7 +30,7 @@ function KarolInternal<T>(props: {
   color?: string;
   opacity?: number;
 }) {
-  console.log("Rendering Karol");
+  // console.log("Rendering Karol");
   const meshRef = useRef<THREE.Mesh>(null);
   return (
     <mesh ref={meshRef} {...props} position={[props.position[0] + 0.5, props.position[1] + 1, props.position[2] + 0.5]}>
