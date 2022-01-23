@@ -3,6 +3,7 @@ import { ParserRuleContext } from "antlr4";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { ChangeEvent, useState } from "react";
 import { executeSteps } from "../interpreter/KarolInterpreterGenerator";
+import { KarolModel } from "../models/KarolModel";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -14,7 +15,7 @@ function handleError(f: () => void): () => void {
   };
 }
 
-export function ProgramControlPanel(props: { world: WorldModel; defaultValue: string }) {
+export function ProgramControlPanel(props: { model: KarolModel; world: WorldModel; defaultValue: string }) {
   const [program, setProgram] = useState(props.defaultValue);
 
   function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
@@ -23,11 +24,12 @@ export function ProgramControlPanel(props: { world: WorldModel; defaultValue: st
 
   function reset() {
     props.world.reset();
+    props.model.reset();
   }
   function run(waitTime?: number) {
     const tree: ParserRuleContext | undefined = parseKarol(program);
     if (tree) {
-      const steps = executeSteps(tree, props.world);
+      const steps = executeSteps(tree, props.model);
       const doStep = () => {
         let result = steps.next();
         if (!result.done) {

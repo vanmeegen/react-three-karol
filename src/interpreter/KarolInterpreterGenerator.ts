@@ -1,7 +1,8 @@
-import { Color, Direction, FieldType, WorldModel } from "../models/WorldModel";
+import { Color, FieldType } from "../models/WorldModel";
 import { Interval, ParserRuleContext } from "antlr4";
 import { assertCondition } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
+import { Direction, KarolModel } from "../models/KarolModel";
 
 type StepResult = {
   result: boolean | undefined;
@@ -13,7 +14,7 @@ type StepResult = {
  * @param tree
  * @param model
  */
-export function execute(tree: ParserRuleContext, model: WorldModel): boolean | undefined {
+export function execute(tree: ParserRuleContext, model: KarolModel): boolean | undefined {
   const generator = executeSteps(tree, model);
   let result: IteratorResult<StepResult> = { done: false, value: { source: undefined, result: undefined } };
   do {
@@ -34,7 +35,7 @@ export async function beep() {
   return snd.play();
 }
 
-export function* executeSteps(tree: ParserRuleContext, world: WorldModel): Generator<StepResult, boolean> {
+export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Generator<StepResult, boolean> {
   return yield* visit(tree);
   function* visit(ctx: ParserRuleContext | ParserRuleContext[]): Generator<StepResult, any> {
     if (Array.isArray(ctx)) {
@@ -157,10 +158,9 @@ export function* executeSteps(tree: ParserRuleContext, world: WorldModel): Gener
   }
 
   function visitCondition(ctx: ParserRuleContext): boolean {
-    const position = world.getKarol().position;
-    const direction = world.getKarol().direction;
-    const nextPosition = world.getKarol().nextPosition;
-    const nextFieldType = world.isValid(nextPosition) ? world.getFieldByCoord(nextPosition) : FieldType.wall;
+    const position = karol.position;
+    const direction = karol.direction;
+    const nextFieldType = karol.getNextFieldType();
     switch (ctx.getText().toLowerCase()) {
       case "istwand":
         return nextFieldType === FieldType.wall;
@@ -171,9 +171,9 @@ export function* executeSteps(tree: ParserRuleContext, world: WorldModel): Gener
       case "nichtistziegel":
         return nextFieldType !== FieldType.brick;
       case "istmarke":
-        return world.getMarker(position) !== undefined;
+        return karol.getMarker(position) !== undefined;
       case "nichtistmarke":
-        return world.getMarker(position) === undefined;
+        return karol.getMarker(position) === undefined;
       case "istsüden":
         return direction === Direction.South;
       case "istnorden":
@@ -195,25 +195,25 @@ export function* executeSteps(tree: ParserRuleContext, world: WorldModel): Gener
   function* visitInstruction(ctx: ParserRuleContext) {
     switch (ctx.getText().toLowerCase()) {
       case "schritt":
-        world.moveKarol();
+        karol.moveKarol();
         break;
       case "linksdrehen":
-        world.turnKarolLeft();
+        karol.turnKarolLeft();
         break;
       case "rechtsdrehen":
-        world.turnKarolRight();
+        karol.turnKarolRight();
         break;
       case "hinlegen":
-        world.layBrick();
+        karol.layBrick();
         break;
       case "aufheben":
-        world.pickupBrick();
+        karol.pickupBrick();
         break;
       case "markesetzen":
-        world.setMarker(world.getKarol().position, Color.yellow);
+        karol.setMarker(karol.position, Color.yellow);
         break;
       case "markelöschen":
-        world.deleteMarker(world.getKarol().position);
+        karol.deleteMarker(karol.position);
         break;
       case "ton":
         // attention: will not wait until beep finished, so new beeps will be ignored

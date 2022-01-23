@@ -6,7 +6,7 @@ import karolFront from "../assets/karolFront.jpg";
 import karolLeft from "../assets/karolLeft.jpg";
 import karolRight from "../assets/karolRight.jpg";
 import grass from "../assets/grass.jpg";
-import { KarolModel } from "../models/WorldModel";
+import { KarolModel } from "../models/KarolModel";
 
 const tFront = new TextureLoader().load(karolFront);
 const tLeft = new TextureLoader().load(karolLeft);

@@ -1,14 +1,15 @@
-import { Color, Direction, FieldType, WorldModel } from "../models/WorldModel";
+import { Color, FieldType } from "../models/WorldModel";
 import { ParserRuleContext } from "antlr4";
 import KarolVisitor from "../parser/generated/Karol/KarolVisitor";
 import { assertCondition } from "../util/AssertCondition";
+import { Direction, KarolModel } from "../models/KarolModel";
 
 /**
  * executes the given program on the world model
  * @param tree
  * @param model
  */
-export function execute(tree: ParserRuleContext, model: WorldModel): boolean {
+export function execute(tree: ParserRuleContext, model: KarolModel): boolean {
   return new KarolInterpreter(model).visit(tree);
 }
 
@@ -20,7 +21,7 @@ export async function beep() {
 }
 
 class KarolInterpreter extends KarolVisitor {
-  constructor(private world: WorldModel) {
+  constructor(private karol: KarolModel) {
     super();
   }
 
@@ -103,10 +104,9 @@ class KarolInterpreter extends KarolVisitor {
   }
 
   visitCondition(ctx: ParserRuleContext): boolean {
-    const position = this.world.getKarol().position;
-    const direction = this.world.getKarol().direction;
-    const nextPosition = this.world.getKarol().nextPosition;
-    const nextFieldType = this.world.isValid(nextPosition) ? this.world.getFieldByCoord(nextPosition) : FieldType.wall;
+    const position = this.karol.position;
+    const direction = this.karol.direction;
+    const nextFieldType = this.karol.getNextFieldType();
     switch (ctx.getText().toLowerCase()) {
       case "istwand":
         return nextFieldType === FieldType.wall;
@@ -117,9 +117,9 @@ class KarolInterpreter extends KarolVisitor {
       case "nichtistziegel":
         return nextFieldType !== FieldType.brick;
       case "istmarke":
-        return this.world.getMarker(position) !== undefined;
+        return this.karol.getMarker(position) !== undefined;
       case "nichtistmarke":
-        return this.world.getMarker(position) === undefined;
+        return this.karol.getMarker(position) === undefined;
       case "istsüden":
         return direction === Direction.South;
       case "istnorden":
@@ -141,25 +141,25 @@ class KarolInterpreter extends KarolVisitor {
   visitInstruction(ctx: ParserRuleContext) {
     switch (ctx.getText().toLowerCase()) {
       case "schritt":
-        this.world.moveKarol();
+        this.karol.moveKarol();
         break;
       case "linksdrehen":
-        this.world.turnKarolLeft();
+        this.karol.turnKarolLeft();
         break;
       case "rechtsdrehen":
-        this.world.turnKarolRight();
+        this.karol.turnKarolRight();
         break;
       case "hinlegen":
-        this.world.layBrick();
+        this.karol.layBrick();
         break;
       case "aufheben":
-        this.world.pickupBrick();
+        this.karol.pickupBrick();
         break;
       case "markesetzen":
-        this.world.setMarker(this.world.getKarol().position, Color.yellow);
+        this.karol.setMarker(this.karol.position, Color.yellow);
         break;
       case "markelöschen":
-        this.world.deleteMarker(this.world.getKarol().position);
+        this.karol.deleteMarker(this.karol.position);
         break;
       case "ton":
         // attention: this will not wait until beep finished, so new beeps will be ignored

@@ -1,4 +1,4 @@
-import { computed, makeAutoObservable, makeObservable, observable, toJS } from "mobx";
+import { computed, makeAutoObservable, observable, toJS } from "mobx";
 
 export class Coord3D {
   @observable x: number = 0;
@@ -57,42 +57,6 @@ export function keyToCoord(coordKey: string): Coord3D {
 
 export type FieldInfo = { content: FieldType; x: number; y: number; z: number };
 
-// do not change number because calculations are based on these
-export enum Direction {
-  North = 0,
-  East = 1,
-  South = 2,
-  West = 3,
-}
-
-const OFFSETS = {
-  [Direction.North]: { x: 0, z: -1 },
-  [Direction.East]: { x: 1, z: 0 },
-  [Direction.South]: { x: 0, z: 1 },
-  [Direction.West]: { x: -1, z: 0 },
-};
-
-export class KarolModel {
-  constructor() {
-    makeObservable(this, {
-      position: observable,
-      direction: observable,
-    });
-  }
-
-  public position: Coord3D = { x: 0, y: 0, z: 0 };
-  public direction: Direction = Direction.South;
-
-  /**
-   * @return the next position Karol would take when moving forward
-   */
-  public get nextPosition(): Coord3D {
-    const { x, y, z } = this.position;
-    const offset = OFFSETS[this.direction];
-    return { x: x + offset.x, y, z: z + offset.z };
-  }
-}
-
 export type MarkerInfo = { position: Coord3D; color: Color };
 
 export class WorldModel {
@@ -100,7 +64,6 @@ export class WorldModel {
    * world array addressed by fields[x][y][z]
    */
   @observable public fields: FieldType[][][] = [];
-  @observable private karol: KarolModel = new KarolModel();
   /**
    * @private world size in each direction as coordinates
    */
@@ -118,16 +81,10 @@ export class WorldModel {
   init(x: number = 10, y: number = 10, z: number = 10) {
     this.dimensions = { x, y, z };
     this.fields = initEmpty3DArray(x, y, z);
-    this.karol = new KarolModel();
-    this.setFieldByCoord(this.karol.position, FieldType.karol);
   }
 
   public reset() {
     this.init(this.dimensions.x, this.dimensions.y, this.dimensions.z);
-  }
-
-  getKarol(): KarolModel {
-    return this.karol;
   }
 
   getFieldByCoord(position: Coord3D): FieldType {
@@ -180,16 +137,6 @@ export class WorldModel {
     );
   }
 
-  moveKarol(): Coord3D {
-    const nextPosition = this.karol.nextPosition;
-    this.validateNextPosition(nextPosition, true);
-    this.setFieldByCoord(this.karol.position, FieldType.empty);
-    this.karol.position = nextPosition;
-    this.setFieldByCoord(nextPosition, FieldType.karol);
-    // console.log("moved");
-    return nextPosition;
-  }
-
   /**
    * checkis if Karol can move to the given position, i.e. that it is a valid position in the world,
    * and the field is empty
@@ -214,59 +161,6 @@ export class WorldModel {
       throw Error(result);
     }
     return result;
-  }
-
-  turnKarolLeft(): Direction {
-    this.karol.direction = (4 + this.karol.direction - 1) % 4;
-    // console.log("turned left");
-    return this.karol.direction;
-  }
-
-  turnKarolRight(): Direction {
-    this.karol.direction = (this.karol.direction + 1) % 4;
-    // console.log("turned right");
-    return this.karol.direction;
-  }
-
-  layBrick() {
-    const nextPosition = this.karol.nextPosition;
-    if (this.isValid(nextPosition)) {
-      // move up if bricks are stacked
-      while (this.getFieldByCoord(nextPosition) === FieldType.brick && this.isValid(nextPosition)) {
-        nextPosition.y++;
-      }
-      if (this.isValid(nextPosition)) {
-        const fieldType = this.getFieldByCoord(nextPosition);
-        if (fieldType === FieldType.empty) {
-          this.setFieldByCoord(nextPosition, FieldType.brick);
-        } else if (fieldType === FieldType.wall) {
-          throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
-        } else if (fieldType === FieldType.brick) {
-          throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
-        } else {
-          throw Error("Huch? Das dürfte da aber nicht sein");
-        }
-      }
-    } else {
-      throw Error("Karol kann nicht hinlegen, er steht vor der Wand.");
-    }
-  }
-
-  pickupBrick() {
-    const nextPosition = this.karol.nextPosition;
-    if (this.isValid(nextPosition)) {
-      // move up if bricks are stacked
-      let lastBrickPosition = undefined;
-      while (this.getFieldByCoord(nextPosition) === FieldType.brick && this.isValid(nextPosition)) {
-        lastBrickPosition = { ...nextPosition };
-        nextPosition.y++;
-      }
-      if (lastBrickPosition) {
-        this.setFieldByCoord(lastBrickPosition, FieldType.empty);
-      } else {
-        throw Error("Da ist kein Ziegel");
-      }
-    }
   }
 
   setMarker(position: Coord3D, color: Color): void {

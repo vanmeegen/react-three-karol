@@ -1,11 +1,12 @@
 import { parseKarol, TypedKarolParser } from "../../parser/KarolParserFacade";
 import { assertCondition, assertDefined } from "../../util/AssertCondition";
 import { ParserRuleContext } from "antlr4";
-import { Color, Direction, FieldType, WorldModel } from "../../models/WorldModel";
+import { Color, FieldType, WorldModel } from "../../models/WorldModel";
 import { execute } from "../KarolInterpreterGenerator";
 import { beforeEach } from "vitest";
+import { Direction, KarolModel } from "../../models/KarolModel";
 
-function executeProgram(program: string, world: WorldModel): void {
+function executeProgram(program: string, karol: KarolModel): void {
   const tree: ParserRuleContext | undefined = parseKarol(program);
   assertDefined(tree, "There were syntax errors parsing the program '" + program + "'");
   const ruleStatement = tree.getChild(0);
@@ -13,55 +14,57 @@ function executeProgram(program: string, world: WorldModel): void {
     ruleStatement.ruleIndex === TypedKarolParser.RULE_statement,
     "Internal Error: parse did not return a program"
   );
-  execute(ruleStatement, world);
+  execute(ruleStatement, karol);
 }
 
-function executeCondition(condition: string, world: WorldModel): boolean | undefined {
+function executeCondition(condition: string, karol: KarolModel): boolean | undefined {
   const tree: ParserRuleContext | undefined = parseKarol(condition, "conditionexpression");
   assertDefined(tree, "There were syntax errors parsing the condition '" + condition + "'");
   assertCondition(
     tree.ruleIndex === TypedKarolParser.RULE_conditionexpression,
     "Internal Error: parse did not return a condition"
   );
-  return execute(tree, world);
+  return execute(tree, karol);
 }
 
 describe("The KarelInterpreter changes the World by programming", () => {
   let world: WorldModel;
+  let karol: KarolModel;
   beforeEach(() => {
     world = new WorldModel();
-    world.turnKarolLeft();
+    karol = new KarolModel(world);
+    karol.turnKarolLeft();
   });
   describe("it understands instructions", () => {
     it("'Schritt' moves Karol in the current direction", () => {
-      executeProgram("Schritt", world);
-      expect(world.getKarol().position).toEqual({ x: 1, y: 0, z: 0 });
+      executeProgram("Schritt", karol);
+      expect(karol.position).toEqual({ x: 1, y: 0, z: 0 });
     });
 
     it("'LinksDrehen' turns Karols to the left", () => {
-      executeProgram("LinksDrehen", world);
-      expect(world.getKarol().position).toEqual({ x: 0, y: 0, z: 0 });
-      expect(world.getKarol().direction).toEqual(Direction.North);
+      executeProgram("LinksDrehen", karol);
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
+      expect(karol.direction).toEqual(Direction.North);
     });
 
     it("'RechtsDrehen' turns Karol to the right", () => {
-      executeProgram("RechtsDrehen", world);
-      expect(world.getKarol().position).toEqual({ x: 0, y: 0, z: 0 });
-      expect(world.getKarol().direction).toEqual(Direction.South);
+      executeProgram("RechtsDrehen", karol);
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
+      expect(karol.direction).toEqual(Direction.South);
     });
     it("'Hinlegen' puts a brick in front of Karol", () => {
-      executeProgram("Hinlegen", world);
+      executeProgram("Hinlegen", karol);
       // Karol's position is unchanged
-      expect(world.getKarol().position).toEqual({ x: 0, y: 0, z: 0 });
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       // but a brick is in front of him
-      const nextPosition = world.getKarol().nextPosition;
+      const nextPosition = karol.nextPosition;
       expect(world.getFieldByCoord(nextPosition)).toEqual(FieldType.brick);
     });
     it("'Aufheben' picks up a brick in front of Karol", () => {
       world.setField(1, 0, 0, FieldType.brick);
-      executeProgram("Aufheben", world);
+      executeProgram("Aufheben", karol);
       // Karol's position is unchanged
-      expect(world.getKarol().position).toEqual({ x: 0, y: 0, z: 0 });
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       // and the brick has vanished
       expect(world.getField(1, 0, 0)).toEqual(FieldType.empty);
     });
@@ -69,98 +72,98 @@ describe("The KarelInterpreter changes the World by programming", () => {
 
   describe("it understands conditions", () => {
     it("'IstWand' is true if the next field is a wall", () => {
-      expect(executeCondition("IstWand", world)).toBeFalsy();
+      expect(executeCondition("IstWand", karol)).toBeFalsy();
       // should face a wall now
-      world.turnKarolLeft();
-      expect(executeCondition("IstWand", world)).toBeTruthy();
+      karol.turnKarolLeft();
+      expect(executeCondition("IstWand", karol)).toBeTruthy();
     });
     it("'NichtIstWand' is false if the next field is a wall", () => {
-      expect(executeCondition("NichtIstWand", world)).toBeTruthy();
+      expect(executeCondition("NichtIstWand", karol)).toBeTruthy();
       // should face a wall now
-      world.turnKarolLeft();
-      expect(executeCondition("NichtIstWand", world)).toBeFalsy();
+      karol.turnKarolLeft();
+      expect(executeCondition("NichtIstWand", karol)).toBeFalsy();
     });
     it("'IstZiegel' is true if the next field is a brick", () => {
-      expect(executeCondition("IstZiegel", world)).toBeFalsy();
+      expect(executeCondition("IstZiegel", karol)).toBeFalsy();
       // should face a wall now
-      world.setFieldByCoord(world.getKarol().nextPosition, FieldType.brick);
-      expect(executeCondition("IstZiegel", world)).toBeTruthy();
+      world.setFieldByCoord(karol.nextPosition, FieldType.brick);
+      expect(executeCondition("IstZiegel", karol)).toBeTruthy();
     });
     it("'NichtIstZiegel' is false if the next field is a brick", () => {
-      expect(executeCondition("NichtIstZiegel", world)).toBeTruthy();
+      expect(executeCondition("NichtIstZiegel", karol)).toBeTruthy();
       // should face a wall now
-      world.setFieldByCoord(world.getKarol().nextPosition, FieldType.brick);
-      expect(executeCondition("NichtIstZiegel", world)).toBeFalsy();
+      world.setFieldByCoord(karol.nextPosition, FieldType.brick);
+      expect(executeCondition("NichtIstZiegel", karol)).toBeFalsy();
     });
     it("'IstMarke' is true if the current field has a marker", () => {
-      expect(executeCondition("IstMarke", world)).toBeFalsy();
+      expect(executeCondition("IstMarke", karol)).toBeFalsy();
       // should face a wall now
-      world.setMarker(world.getKarol().position, Color.yellow);
-      expect(executeCondition("IstMarke", world)).toBeTruthy();
+      karol.setMarker(karol.position, Color.yellow);
+      expect(executeCondition("IstMarke", karol)).toBeTruthy();
     });
     it("'NichtIstMarke' is true if the current field has no marker", () => {
-      expect(executeCondition("NichtIstMarke", world)).toBeTruthy();
+      expect(executeCondition("NichtIstMarke", karol)).toBeTruthy();
       // should face a wall now
-      world.setMarker(world.getKarol().position, Color.yellow);
-      expect(executeCondition("NichtIstMarke", world)).toBeFalsy();
+      karol.setMarker(karol.position, Color.yellow);
+      expect(executeCondition("NichtIstMarke", karol)).toBeFalsy();
     });
     it("'IstSüden' is true if Karol is facing south", () => {
-      expect(executeCondition("IstSüden", world)).toBeFalsy();
-      world.turnKarolRight();
-      expect(executeCondition("IstSüden", world)).toBeTruthy();
+      expect(executeCondition("IstSüden", karol)).toBeFalsy();
+      karol.turnKarolRight();
+      expect(executeCondition("IstSüden", karol)).toBeTruthy();
     });
     it("'IstNorden' is true if Karol is facing north", () => {
-      expect(executeCondition("IstNorden", world)).toBeFalsy();
-      world.turnKarolLeft();
-      expect(executeCondition("IstNorden", world)).toBeTruthy();
+      expect(executeCondition("IstNorden", karol)).toBeFalsy();
+      karol.turnKarolLeft();
+      expect(executeCondition("IstNorden", karol)).toBeTruthy();
     });
     it("'IstOsten' is true if Karol is facing east", () => {
-      expect(executeCondition("IstOsten", world)).toBeTruthy();
-      world.turnKarolLeft();
-      expect(executeCondition("IstOsten", world)).toBeFalsy();
+      expect(executeCondition("IstOsten", karol)).toBeTruthy();
+      karol.turnKarolLeft();
+      expect(executeCondition("IstOsten", karol)).toBeFalsy();
     });
     it("'IstWesten' is true if Karol is facing east", () => {
-      expect(executeCondition("IstWesten", world)).toBeFalsy();
-      world.turnKarolLeft();
-      world.turnKarolLeft();
-      expect(executeCondition("IstWesten", world)).toBeTruthy();
+      expect(executeCondition("IstWesten", karol)).toBeFalsy();
+      karol.turnKarolLeft();
+      karol.turnKarolLeft();
+      expect(executeCondition("IstWesten", karol)).toBeTruthy();
     });
     it("'nicht IstOsten' is false if Karol is facing east", () => {
-      expect(executeCondition("nicht IstOsten", world)).toBeFalsy();
-      world.turnKarolLeft();
-      expect(executeCondition("nicht IstOsten", world)).toBeTruthy();
+      expect(executeCondition("nicht IstOsten", karol)).toBeFalsy();
+      karol.turnKarolLeft();
+      expect(executeCondition("nicht IstOsten", karol)).toBeTruthy();
     });
   });
 
   describe("it understands loops", () => {
     it("'wiederhole 2 mal Schritt endewiederhole' moves Karol 2 times in the current direction", () => {
-      executeProgram("wiederhole 2 mal Schritt endewiederhole", world);
-      expect(world.getKarol().position).toEqual({ x: 2, y: 0, z: 0 });
+      executeProgram("wiederhole 2 mal Schritt endewiederhole", karol);
+      expect(karol.position).toEqual({ x: 2, y: 0, z: 0 });
     });
     it("'wiederhole solange nicht IstWand Schritt endewiederhole' moves Karol to the end of the field", () => {
-      executeProgram("wiederhole solange nicht IstWand Schritt endewiederhole", world);
-      expect(world.getKarol().position).toEqual({ x: 9, y: 0, z: 0 });
+      executeProgram("wiederhole solange nicht IstWand Schritt endewiederhole", karol);
+      expect(karol.position).toEqual({ x: 9, y: 0, z: 0 });
     });
     it("'wiederhole Schritt endewiederhole bis IstWand' moves Karol to the end of the field", () => {
-      executeProgram("wiederhole Schritt endewiederhole bis IstWand", world);
-      expect(world.getKarol().position).toEqual({ x: 9, y: 0, z: 0 });
+      executeProgram("wiederhole Schritt endewiederhole bis IstWand", karol);
+      expect(karol.position).toEqual({ x: 9, y: 0, z: 0 });
     });
     it("'wiederhole Schritt endewiederhole solange nicht IstWand' moves Karol to the end of the field", () => {
-      executeProgram("wiederhole Schritt endewiederhole solange nicht IstWand", world);
-      expect(world.getKarol().position).toEqual({ x: 9, y: 0, z: 0 });
+      executeProgram("wiederhole Schritt endewiederhole solange nicht IstWand", karol);
+      expect(karol.position).toEqual({ x: 9, y: 0, z: 0 });
     });
     it("'wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn' moves Karol if free", () => {
       const program = "wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn";
-      executeProgram(program, world);
-      expect(world.getKarol().position).toEqual({ x: 1, y: 0, z: 0 });
-      expect(world.getKarol().direction).toEqual(Direction.East);
+      executeProgram(program, karol);
+      expect(karol.position).toEqual({ x: 1, y: 0, z: 0 });
+      expect(karol.direction).toEqual(Direction.East);
     });
     it("'wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn' turns right if not free", () => {
       const program = "wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn";
-      world.turnKarolLeft();
-      executeProgram(program, world);
-      expect(world.getKarol().position).toEqual({ x: 0, y: 0, z: 0 });
-      expect(world.getKarol().direction).toEqual(Direction.East);
+      karol.turnKarolLeft();
+      executeProgram(program, karol);
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
+      expect(karol.direction).toEqual(Direction.East);
     });
   });
 });

@@ -3,8 +3,10 @@ import { World3D } from "./components/World3D";
 import { WorldModel } from "./models/WorldModel";
 import { ControlPanel } from "./components/ControlPanel";
 import { ProgramControlPanel } from "./components/ProgramControlPanel";
+import { KarolModel } from "./models/KarolModel";
 
 const world = new WorldModel();
+const karol = new KarolModel(world);
 
 function App() {
   const exampleProgram = `{Karol legt links neben sich eine Reihe Ziegel}
@@ -26,10 +28,10 @@ endewiederhole
         <div>by Marco van Meegen 2022</div>
       </div>
       <div style={{ display: "flex", flexDirection: "row", columns: 2 }}>
-        <ProgramControlPanel world={world} defaultValue={exampleProgram} />
+        <ProgramControlPanel model={karol} world={world} defaultValue={exampleProgram} />
         <div>
-          <World3D model={world} />
-          <ControlPanel world={world} />
+          <World3D model={world} karol={karol} />
+          <ControlPanel karol={karol} world={world} />
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { coordToKey, FieldType, KarolModel, WorldModel } from "../models/WorldModel";
+import { coordToKey, FieldType, WorldModel } from "../models/WorldModel";
 import { observer } from "mobx-react";
 import { Canvas } from "@react-three/fiber";
 // @ts-ignore
@@ -9,6 +9,7 @@ import { TextureLoader } from "three";
 import dirt from "../assets/dirt.jpg";
 import grass from "../assets/grass.jpg";
 import { Karol } from "./Karol";
+import { KarolModel } from "../models/KarolModel";
 
 const DirtTexture = new TextureLoader().load(dirt);
 const GrassTexture = new TextureLoader().load(grass);
@@ -113,7 +114,7 @@ function WorldMarkersInternal(props: { model: WorldModel }) {
 
 const WorldMarkers = observer(WorldMarkersInternal);
 
-function World3DInternal(props: { model: WorldModel }): ReactElement<typeof props> {
+function World3DInternal(props: { model: WorldModel; karol: KarolModel }): ReactElement<typeof props> {
   // console.log("rendering world");
   const range = [];
   for (let i = 0; i < 11; i++) {
@@ -146,7 +147,7 @@ function World3DInternal(props: { model: WorldModel }): ReactElement<typeof prop
           <Plane key="p2" args={[10, 10]} position={[5, 5, 0]} rotation={[0, 0, 0]}>
             <meshPhongMaterial attach="material" color="lightblue" />
           </Plane>
-          <WorldFields fields={props.model.fields} karol={props.model.getKarol()} />
+          <WorldFields fields={props.model.fields} karol={props.karol} />
           <WorldMarkers model={props.model} />
           <GizmoHelper alignment="bottom-right" margin={[50, 50]}>
             <GizmoViewcube />
