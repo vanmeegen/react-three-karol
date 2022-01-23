@@ -25,6 +25,10 @@ const OFFSETS = {
 export class KarolModel {
   public position: Coord3d = { x: 0, y: 0, z: 0 };
   public direction: Direction = Direction.South;
+  /**
+   * how high/low Karol can jump in a move
+   */
+  private jumpHeight: number = 1;
 
   constructor(private world: WorldModel) {
     makeObservable(this, {
@@ -43,7 +47,10 @@ export class KarolModel {
 
   move(): Coord3d {
     const nextPosition = this.nextPosition;
+    // this will check if jump is possible too
     this.validateNextPosition(nextPosition, true);
+    // jump if needed
+    nextPosition.y = this.world.getFirstFreeY(nextPosition.x, nextPosition.z);
     this.world.setFieldByCoord(this.position, FieldType.empty);
     this.position = nextPosition;
     this.world.setFieldByCoord(nextPosition, FieldType.karol);
@@ -62,6 +69,7 @@ export class KarolModel {
 
   layBrick() {
     const nextPosition = this.nextPosition;
+    nextPosition.y = 0;
     if (this.world.isValid(nextPosition)) {
       // move up if bricks are stacked
       while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
@@ -145,9 +153,14 @@ export class KarolModel {
       const nextField = this.getNextFieldType();
       if (nextField === FieldType.wall) {
         result = "Karol ist am Quader angestoßen.";
-      } else if (nextField === FieldType.brick) {
-        // TODO implement logic for jumping
-        result = "Karol kann nicht so hoch/tief springen.";
+      } else if (nextField === FieldType.brick || position.y > 0) {
+        // check if Karol can jump
+        const y = this.world.getFirstFreeY(position.x, position.z);
+        if (Math.abs(position.y - y) <= this.jumpHeight) {
+          result = undefined;
+        } else {
+          result = "Karol kann nicht so hoch/tief springen.";
+        }
       }
     } else {
       result = "Karol ist an der Wand angestoßen.";
