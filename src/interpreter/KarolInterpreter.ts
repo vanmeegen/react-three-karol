@@ -1,8 +1,8 @@
-import { Color, FieldType } from "../models/WorldModel";
 import { ParserRuleContext } from "antlr4";
 import KarolVisitor from "../parser/generated/Karol/KarolVisitor";
 import { assertCondition } from "../util/AssertCondition";
 import { Direction, KarolModel } from "../models/KarolModel";
+import { Color, FieldType } from "../models/CommonTypes";
 
 /**
  * executes the given program on the world model
@@ -104,7 +104,6 @@ class KarolInterpreter extends KarolVisitor {
   }
 
   visitCondition(ctx: ParserRuleContext): boolean {
-    const position = this.karol.position;
     const direction = this.karol.direction;
     const nextFieldType = this.karol.getNextFieldType();
     switch (ctx.getText().toLowerCase()) {
@@ -117,9 +116,9 @@ class KarolInterpreter extends KarolVisitor {
       case "nichtistziegel":
         return nextFieldType !== FieldType.brick;
       case "istmarke":
-        return this.karol.getMarker(position) !== undefined;
+        return this.karol.getMarker() !== undefined;
       case "nichtistmarke":
-        return this.karol.getMarker(position) === undefined;
+        return this.karol.getMarker() === undefined;
       case "istsüden":
         return direction === Direction.South;
       case "istnorden":
@@ -141,13 +140,13 @@ class KarolInterpreter extends KarolVisitor {
   visitInstruction(ctx: ParserRuleContext) {
     switch (ctx.getText().toLowerCase()) {
       case "schritt":
-        this.karol.moveKarol();
+        this.karol.move();
         break;
       case "linksdrehen":
-        this.karol.turnKarolLeft();
+        this.karol.turnLeft();
         break;
       case "rechtsdrehen":
-        this.karol.turnKarolRight();
+        this.karol.turnRight();
         break;
       case "hinlegen":
         this.karol.layBrick();
@@ -156,10 +155,10 @@ class KarolInterpreter extends KarolVisitor {
         this.karol.pickupBrick();
         break;
       case "markesetzen":
-        this.karol.setMarker(this.karol.position, Color.yellow);
+        this.karol.setMarker(Color.yellow);
         break;
       case "markelöschen":
-        this.karol.deleteMarker(this.karol.position);
+        this.karol.deleteMarker();
         break;
       case "ton":
         // attention: this will not wait until beep finished, so new beeps will be ignored

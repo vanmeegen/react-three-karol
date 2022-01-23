@@ -1,6 +1,7 @@
-import { Color, FieldType, WorldModel } from "../models/WorldModel";
+import { WorldModel } from "../models/WorldModel";
 import { action } from "mobx";
 import { KarolModel } from "../models/KarolModel";
+import { Color, FieldType } from "../models/CommonTypes";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -24,7 +25,7 @@ export function ControlPanel(props: { world: WorldModel; karol: KarolModel }) {
 
   function setQuader() {
     const position = props.karol.nextPosition;
-    if (props.world.isValid(position) && props.world.getFieldByCoord(position) === FieldType.empty) {
+    if (props.world.getFieldByCoord(position) === FieldType.empty) {
       props.world.setFieldByCoord(position, FieldType.wall);
     }
   }
@@ -39,9 +40,9 @@ export function ControlPanel(props: { world: WorldModel; karol: KarolModel }) {
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <button onClick={handleError(() => props.karol.turnKarolLeft())}>&larr;</button>
-        <button onClick={handleError(() => props.karol.moveKarol())}>&uarr;</button>
-        <button onClick={handleError(() => props.karol.turnKarolRight())}>&rarr;</button>
+        <button onClick={handleError(() => props.karol.turnLeft())}>&larr;</button>
+        <button onClick={handleError(() => props.karol.move())}>&uarr;</button>
+        <button onClick={handleError(() => props.karol.turnRight())}>&rarr;</button>
         <button onClick={handleError(() => props.karol.layBrick())}>H</button>
         <button onClick={handleError(() => props.karol.pickupBrick())}>A</button>
         <button onClick={handleError(action(toggleMarker))}>M</button>

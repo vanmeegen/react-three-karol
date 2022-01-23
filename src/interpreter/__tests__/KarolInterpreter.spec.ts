@@ -1,10 +1,11 @@
 import { parseKarol, TypedKarolParser } from "../../parser/KarolParserFacade";
 import { assertCondition, assertDefined } from "../../util/AssertCondition";
 import { ParserRuleContext } from "antlr4";
-import { Color, FieldType, WorldModel } from "../../models/WorldModel";
+import { WorldModel } from "../../models/WorldModel";
 import { execute } from "../KarolInterpreterGenerator";
 import { beforeEach } from "vitest";
 import { Direction, KarolModel } from "../../models/KarolModel";
+import { Color, FieldType } from "../../models/CommonTypes";
 
 function executeProgram(program: string, karol: KarolModel): void {
   const tree: ParserRuleContext | undefined = parseKarol(program);
@@ -33,7 +34,7 @@ describe("The KarelInterpreter changes the World by programming", () => {
   beforeEach(() => {
     world = new WorldModel();
     karol = new KarolModel(world);
-    karol.turnKarolLeft();
+    karol.turnLeft();
   });
   describe("it understands instructions", () => {
     it("'Schritt' moves Karol in the current direction", () => {
@@ -74,13 +75,13 @@ describe("The KarelInterpreter changes the World by programming", () => {
     it("'IstWand' is true if the next field is a wall", () => {
       expect(executeCondition("IstWand", karol)).toBeFalsy();
       // should face a wall now
-      karol.turnKarolLeft();
+      karol.turnLeft();
       expect(executeCondition("IstWand", karol)).toBeTruthy();
     });
     it("'NichtIstWand' is false if the next field is a wall", () => {
       expect(executeCondition("NichtIstWand", karol)).toBeTruthy();
       // should face a wall now
-      karol.turnKarolLeft();
+      karol.turnLeft();
       expect(executeCondition("NichtIstWand", karol)).toBeFalsy();
     });
     it("'IstZiegel' is true if the next field is a brick", () => {
@@ -98,39 +99,39 @@ describe("The KarelInterpreter changes the World by programming", () => {
     it("'IstMarke' is true if the current field has a marker", () => {
       expect(executeCondition("IstMarke", karol)).toBeFalsy();
       // should face a wall now
-      karol.setMarker(karol.position, Color.yellow);
+      karol.setMarker(Color.yellow);
       expect(executeCondition("IstMarke", karol)).toBeTruthy();
     });
     it("'NichtIstMarke' is true if the current field has no marker", () => {
       expect(executeCondition("NichtIstMarke", karol)).toBeTruthy();
       // should face a wall now
-      karol.setMarker(karol.position, Color.yellow);
+      karol.setMarker(Color.yellow);
       expect(executeCondition("NichtIstMarke", karol)).toBeFalsy();
     });
     it("'IstSüden' is true if Karol is facing south", () => {
       expect(executeCondition("IstSüden", karol)).toBeFalsy();
-      karol.turnKarolRight();
+      karol.turnRight();
       expect(executeCondition("IstSüden", karol)).toBeTruthy();
     });
     it("'IstNorden' is true if Karol is facing north", () => {
       expect(executeCondition("IstNorden", karol)).toBeFalsy();
-      karol.turnKarolLeft();
+      karol.turnLeft();
       expect(executeCondition("IstNorden", karol)).toBeTruthy();
     });
     it("'IstOsten' is true if Karol is facing east", () => {
       expect(executeCondition("IstOsten", karol)).toBeTruthy();
-      karol.turnKarolLeft();
+      karol.turnLeft();
       expect(executeCondition("IstOsten", karol)).toBeFalsy();
     });
     it("'IstWesten' is true if Karol is facing east", () => {
       expect(executeCondition("IstWesten", karol)).toBeFalsy();
-      karol.turnKarolLeft();
-      karol.turnKarolLeft();
+      karol.turnLeft();
+      karol.turnLeft();
       expect(executeCondition("IstWesten", karol)).toBeTruthy();
     });
     it("'nicht IstOsten' is false if Karol is facing east", () => {
       expect(executeCondition("nicht IstOsten", karol)).toBeFalsy();
-      karol.turnKarolLeft();
+      karol.turnLeft();
       expect(executeCondition("nicht IstOsten", karol)).toBeTruthy();
     });
   });
@@ -160,7 +161,7 @@ describe("The KarelInterpreter changes the World by programming", () => {
     });
     it("'wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn' turns right if not free", () => {
       const program = "wenn nicht IstWand dann Schritt sonst RechtsDrehen endewenn";
-      karol.turnKarolLeft();
+      karol.turnLeft();
       executeProgram(program, karol);
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       expect(karol.direction).toEqual(Direction.East);

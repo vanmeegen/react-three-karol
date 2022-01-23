@@ -1,5 +1,5 @@
 import React, { ReactElement } from "react";
-import { coordToKey, FieldType, WorldModel } from "../models/WorldModel";
+import { WorldModel } from "../models/WorldModel";
 import { observer } from "mobx-react";
 import { Canvas } from "@react-three/fiber";
 // @ts-ignore
@@ -10,6 +10,7 @@ import dirt from "../assets/dirt.jpg";
 import grass from "../assets/grass.jpg";
 import { Karol } from "./Karol";
 import { KarolModel } from "../models/KarolModel";
+import { coordToKey, FieldType } from "../models/CommonTypes";
 
 const DirtTexture = new TextureLoader().load(dirt);
 const GrassTexture = new TextureLoader().load(grass);

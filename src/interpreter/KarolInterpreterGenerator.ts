@@ -1,8 +1,8 @@
-import { Color, FieldType } from "../models/WorldModel";
 import { Interval, ParserRuleContext } from "antlr4";
 import { assertCondition } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
 import { Direction, KarolModel } from "../models/KarolModel";
+import { Color, FieldType } from "../models/CommonTypes";
 
 type StepResult = {
   result: boolean | undefined;
@@ -37,6 +37,7 @@ export async function beep() {
 
 export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Generator<StepResult, boolean> {
   return yield* visit(tree);
+
   function* visit(ctx: ParserRuleContext | ParserRuleContext[]): Generator<StepResult, any> {
     if (Array.isArray(ctx)) {
       for (let i = 0; i < ctx.length; i++) {
@@ -158,7 +159,6 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   }
 
   function visitCondition(ctx: ParserRuleContext): boolean {
-    const position = karol.position;
     const direction = karol.direction;
     const nextFieldType = karol.getNextFieldType();
     switch (ctx.getText().toLowerCase()) {
@@ -171,9 +171,9 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       case "nichtistziegel":
         return nextFieldType !== FieldType.brick;
       case "istmarke":
-        return karol.getMarker(position) !== undefined;
+        return karol.getMarker() !== undefined;
       case "nichtistmarke":
-        return karol.getMarker(position) === undefined;
+        return karol.getMarker() === undefined;
       case "istsüden":
         return direction === Direction.South;
       case "istnorden":
@@ -195,13 +195,13 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   function* visitInstruction(ctx: ParserRuleContext) {
     switch (ctx.getText().toLowerCase()) {
       case "schritt":
-        karol.moveKarol();
+        karol.move();
         break;
       case "linksdrehen":
-        karol.turnKarolLeft();
+        karol.turnLeft();
         break;
       case "rechtsdrehen":
-        karol.turnKarolRight();
+        karol.turnRight();
         break;
       case "hinlegen":
         karol.layBrick();
@@ -210,10 +210,10 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
         karol.pickupBrick();
         break;
       case "markesetzen":
-        karol.setMarker(karol.position, Color.yellow);
+        karol.setMarker(Color.yellow);
         break;
       case "markelöschen":
-        karol.deleteMarker(karol.position);
+        karol.deleteMarker();
         break;
       case "ton":
         // attention: will not wait until beep finished, so new beeps will be ignored

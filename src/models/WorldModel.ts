@@ -1,27 +1,5 @@
 import { computed, makeAutoObservable, observable, toJS } from "mobx";
-
-export class Coord3D {
-  @observable x: number = 0;
-  @observable y: number = 0;
-  @observable z: number = 0;
-}
-
-export enum FieldType {
-  empty = 0,
-  karol = 1,
-  brick = 2,
-  marker = 3,
-  wall = 4,
-  grassBlock = 5,
-}
-
-export enum Color {
-  yellow = "yellow",
-  red = "red",
-  blue = "blue",
-  green = "green",
-  black = "black",
-}
+import { Color, Coord2d, coord2dToKey, Coord3d, FieldType, keyToCoord2d } from "./CommonTypes";
 
 export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): FieldType[][][] {
   // must fill array, otherwise map does not work
@@ -36,28 +14,9 @@ export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): Fiel
   );
 }
 
-/**
- *
- * @param position
- * @return string which can be used to map a position to a value
- */
-export function coordToKey(position: Coord3D): string {
-  return `${position.x}_${position.y}_${position.z}`;
-}
-
-/**
- *
- * @param coordKey
- * @return position parsed from x,y,z value in coordKey
- */
-export function keyToCoord(coordKey: string): Coord3D {
-  const [x, y, z] = coordKey.split("_").map((n) => parseInt(n));
-  return { x, y, z };
-}
-
 export type FieldInfo = { content: FieldType; x: number; y: number; z: number };
 
-export type MarkerInfo = { position: Coord3D; color: Color };
+export type MarkerInfo = { position: Coord3d; color: Color };
 
 export class WorldModel {
   /**
@@ -67,7 +26,7 @@ export class WorldModel {
   /**
    * @private world size in each direction as coordinates
    */
-  @observable private dimensions: Coord3D = { x: 10, y: 10, z: 10 };
+  @observable private dimensions: Coord3d = { x: 10, y: 10, z: 10 };
   /**
    *  @private has a color entry for the key (field coordinates concatenated to string) if this field has a marker
    */
@@ -87,19 +46,31 @@ export class WorldModel {
     this.init(this.dimensions.x, this.dimensions.y, this.dimensions.z);
   }
 
-  getFieldByCoord(position: Coord3D): FieldType {
+  /*
+   * @return content of the field with the given coordinates or FieldType.wall if coordinates are invalid
+   */
+  getFieldByCoord(position: Coord3d): FieldType {
     const { x, y, z } = position;
     return this.getField(x, y, z);
   }
 
+  /**
+   *
+   * @param x
+   * @param y
+   * @param z
+   * @return content of the field with the given coordinates or FieldType.wall if coordinates are invalid
+   */
   getField(x: number, y: number, z: number): FieldType {
-    if (!this.isValid({ x, y, z })) {
-      throw Error(`The position x: $x y: $y z: $z is not valid`);
+    if (this.isValid({ x, y, z })) {
+      return this.fields[x][y][z];
+    } else {
+      // invalid position is wall
+      return FieldType.wall;
     }
-    return this.fields[x][y][z];
   }
 
-  setFieldByCoord(position: Coord3D, type: FieldType): void {
+  setFieldByCoord(position: Coord3d, type: FieldType): void {
     const { x, y, z } = position;
     this.setField(x, y, z, type);
   }
@@ -115,18 +86,39 @@ export class WorldModel {
     return toJS(this.fields);
   }
 
-  get markers(): MarkerInfo[] {
-    return Array.from(this.marker.keys()).map((key) => ({
-      position: keyToCoord(key),
-      color: this.marker.get(key)!,
-    }));
+  @computed.struct get markers(): MarkerInfo[] {
+    // since marker have no y coordinate we have to calculate it here
+    return Array.from(this.marker.keys()).map((key) => {
+      const { x, z } = keyToCoord2d(key);
+      const y = this.getFirstFreeY(x, z);
+      return {
+        position: { x, y, z },
+        color: this.marker.get(key)!,
+      };
+    });
+  }
+
+  getFirstFreeY(x: number, z: number): number {
+    let y = 0;
+    while (
+      this.isValid({
+        x,
+        y,
+        z,
+      }) &&
+      this.getField(x, y, z) !== FieldType.empty &&
+      this.getField(x, y, z) !== FieldType.karol
+    ) {
+      y++;
+    }
+    return y;
   }
 
   /**
    * @return true if the position is part of the world, false if not
    * @param position coordinates of position
    */
-  isValid(position: Coord3D): boolean {
+  isValid(position: Coord3d): boolean {
     return (
       position.x >= 0 &&
       position.y >= 0 &&
@@ -138,47 +130,31 @@ export class WorldModel {
   }
 
   /**
-   * checkis if Karol can move to the given position, i.e. that it is a valid position in the world,
-   * and the field is empty
-   * @param position
-   * @param throwOnFailure if true, in error case an error is thrown, otherwise a result is returned
-   * @return undefined if next position is valid. If invalid an error string is returned or an Error thrown with the string
+   * set a marker on Karol's current position. On any x,z coordinate there can only be one marker,
+   * it will always be drawn on the topmost filled y coordinate, i.e. if a marker is placed, then a brick is layn on the same x,z coordinate,
+   * the marker will automatically be drawn on top of the brick.
+   * @param color color of marker
+   * @param position position of marker in 2D
    */
-  validateNextPosition(position: Coord3D, throwOnFailure: boolean): string | undefined {
-    let result = undefined;
-    if (this.isValid(position)) {
-      const nextField = this.getFieldByCoord(position);
-      if (nextField === FieldType.wall) {
-        result = "Karol ist am Quader angestoßen.";
-      } else if (nextField === FieldType.brick) {
-        // TODO implement logic for jumping
-        result = "Karol kann nicht so hoch/tief springen.";
-      }
-    } else {
-      result = "Karol ist an der Wand angestoßen.";
-    }
-    if (throwOnFailure && result !== undefined) {
-      throw Error(result);
-    }
-    return result;
-  }
-
-  setMarker(position: Coord3D, color: Color): void {
-    if (this.isValid(position)) {
-      this.marker.set(coordToKey(position), color);
+  setMarker(position: Coord2d, color: Color): void {
+    if (this.isValid({ ...position, y: 0 })) {
+      this.marker.set(coord2dToKey(position), color);
     } else {
       throw Error("Die Marker Position ist ungültig");
     }
   }
 
-  getMarker(position: Coord3D): Color | undefined {
-    return this.marker.get(coordToKey(position));
+  /**
+   *  @param position
+   *  @return color of marker or undefined if none
+   */
+  getMarker(position: Coord2d): Color | undefined {
+    return this.marker.get(coord2dToKey(position));
   }
 
-  deleteMarker(position: Coord3D): void {
-    const coordKey = coordToKey(position);
-    if (this.isValid(position)) {
-      const existed = this.marker.delete(coordKey);
+  deleteMarker(position: Coord2d): void {
+    if (this.isValid({ ...position, y: 0 })) {
+      const existed = this.marker.delete(coord2dToKey(position));
       if (!existed) {
         throw Error("Da ist keine Marke zum Entfernen");
       }
