@@ -1,6 +1,8 @@
 {
   "name": "react-three-karol",
   "version": "0.8.0",
+  "author": "Marco van Meegen",
+  "homepage": "https://vanmeegen.github.io/react-three-karol/",
   "scripts": {
     "dev": "vite",
     "test": "vitest --run",
@@ -8,7 +10,9 @@
     "coverage": "vitest --coverage",
     "build": "tsc && vite build",
     "preview": "vite preview",
-    "prettier": "prettier -w src"
+    "prettier": "prettier -w src",
+    "predeploy": "yarn run build",
+    "deploy": "gh-pages -d build"
   },
   "dependencies": {
     "@react-three/cannon": "^4.6.0",
@@ -28,6 +32,7 @@
     "@types/react-dom": "^17.0.11",
     "@types/three": "^0.136.1",
     "@vitejs/plugin-react": "^1.1.4",
+    "gh-pages": "^3.2.3",
     "prettier": "^2.5.1",
     "typescript": "^4.5.4",
     "vite": "^2.7.13",
