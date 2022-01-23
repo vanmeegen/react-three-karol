@@ -11,8 +11,7 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "prettier": "prettier -w src",
-    "predeploy": "yarn run build",
-    "deploy": "gh-pages -d dist"
+    "deploy": "yarn build && gh-pages -d dist"
   },
   "dependencies": {
     "@react-three/cannon": "^4.6.0",
