@@ -16,7 +16,7 @@ export const DIRECTION_PARAMS = [
 
 export default function Model(props: Object3DNode<any, any>) {
   const group = useRef();
-  const { nodes, materials } = useGLTF("/Robot3D.glb") as any;
+  const { nodes, materials } = useGLTF("/react-three-karol/Robot3D.glb") as any;
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh geometry={nodes.node_id52.geometry} material={materials["79"]} position={[0, -0.26, 0.24]} scale={0.05} />
