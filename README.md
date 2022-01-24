@@ -16,7 +16,6 @@ thought it would be much more approachable if nothing has to be installed.
 ## TODO
 
 - Syntax Highlighting in Editor
-- Menu to insert all language constructs
 - Parameters in Statements or Conditions
 
 ## pull requests welcome

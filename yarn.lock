@@ -887,6 +887,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"classnames@npm:^2.2.5":
+  version: 2.3.1
+  resolution: "classnames@npm:2.3.1"
+  checksum: 14db8889d56c267a591f08b0834989fe542d47fac659af5a539e110cc4266694e8de86e4e3bbd271157dbd831361310a8293e0167141e80b0f03a0f175c80960
+  languageName: node
+  linkType: hard
+
 "clean-stack@npm:^2.0.0":
   version: 2.2.0
   resolution: "clean-stack@npm:2.2.0"
@@ -1971,7 +1978,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object-assign@npm:^4.0.1, object-assign@npm:^4.1.1":
+"object-assign@npm:^4.0.1, object-assign@npm:^4.1.0, object-assign@npm:^4.1.1":
   version: 4.1.1
   resolution: "object-assign@npm:4.1.1"
   checksum: fcc6e4ea8c7fe48abfbb552578b1c53e0d194086e2e6bbbf59e0a536381a292f39943c6e9628af05b5528aa5e3318bb30d6b2e53cadaf5b8fe9e12c4b69af23f
@@ -2173,6 +2180,20 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-contextmenu@npm:^2.14.0":
+  version: 2.14.0
+  resolution: "react-contextmenu@npm:2.14.0"
+  dependencies:
+    classnames: ^2.2.5
+    object-assign: ^4.1.0
+  peerDependencies:
+    prop-types: ^15.0.0
+    react: ^0.14.0 || ^15.0.0 || ^16.0.1
+    react-dom: ^0.14.0 || ^15.0.0 || ^16.0.1
+  checksum: a250ed92535b339fb5dd8ec11b6a75e28b46fe46b43771ea4fefad6ca88afc44a157620c1596ced90c9fc9fe5270502f4cd1d0b29d71e698ec93a87b3c43b13e
+  languageName: node
+  linkType: hard
+
 "react-dom@npm:^18.0.0-rc.0":
   version: 18.0.0-rc.0-next-fe905f152-20220107
   resolution: "react-dom@npm:18.0.0-rc.0-next-fe905f152-20220107"
@@ -2246,6 +2267,7 @@ __metadata:
     mobx-react: ^7.2.1
     prettier: ^2.5.1
     react: ^18.0.0-rc.0
+    react-contextmenu: ^2.14.0
     react-dom: ^18.0.0-rc.0
     three: ^0.136.0
     typescript: ^4.5.4

@@ -4,6 +4,48 @@ import { parseKarol } from "../parser/KarolParserFacade";
 import { ChangeEvent, RefObject, useRef, useState } from "react";
 import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
 import { KarolModel } from "../models/KarolModel";
+import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from "react-contextmenu";
+import "./ProgramControlPanel.css";
+
+const STATEMENTS = [
+  "Schritt",
+  "LinksDrehen",
+  "RechtsDrehen",
+  undefined,
+  "Hinlegen",
+  "Aufheben",
+  undefined,
+  "MarkeSetzen",
+  "MarkeLöschen",
+  undefined,
+  "Ton"
+];
+
+const CONDITIONS = [
+  "IstWand",
+  "NichtIstWand",
+  undefined,
+  "IstZiegel",
+  "NichtIstZiegel",
+  undefined,
+  "IstMarke",
+  "NichtIstMarke",
+  undefined,
+  "IstNorden",
+  "IstOsten",
+  "IstSüden",
+  "IstWesten"
+];
+
+const CONTROLSTRUCTURES = [
+  "wiederhole n mal ANW endewiederhole",
+  "wiederhole solange BED endewiederhole",
+  "wiederhole ANW endewiederhole bis BED",
+  "wiederhole ANW endewiederhole solange BED",
+  undefined,
+  "wenn BED dann ANW endewenn",
+  "wenn BED dann ANW sonst ANW endewenn"
+];
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -72,6 +114,29 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     }
   }
 
+  function handleClick(evt: any, data: any) {
+    const textArea = textAreaRef.current;
+    if (textArea) {
+      if (textArea.selectionStart || textArea.selectionStart == 0) {
+        var startPos = textArea.selectionStart;
+        var endPos = textArea.selectionEnd;
+        textArea.value =
+          textArea.value.substring(0, startPos) +
+          data.text +
+          " " +
+          textArea.value.substring(endPos, textArea.value.length);
+      } else {
+        textArea.value += data.text + " ";
+      }
+    }
+  }
+
+  function MenuEntry(props: { title?: string }) {
+    return props.title ? <MenuItem data={{ text: props.title }} onClick={handleClick}>
+      {props.title}
+    </MenuItem> : <MenuItem divider />;
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
@@ -81,12 +146,27 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
         <button onClick={handleError(reset)}>Reset</button>
       </div>
 
-      <textarea
-        ref={textAreaRef}
-        style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}
-        value={program}
-        onChange={onTextChanged}
-      />
+      <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>
+        <ContextMenuTrigger id="menu_statements">
+          <textarea
+            ref={textAreaRef}
+            value={program}
+            onChange={onTextChanged}
+            style={{ width: "100%", height: "100%" }}
+          />
+        </ContextMenuTrigger>
+        <ContextMenu id="menu_statements">
+          <SubMenu title="Anweisungen">
+            {STATEMENTS.map(s => <MenuEntry title={s} />)}
+          </SubMenu>
+          <SubMenu title="Kontrollstrukturen">
+            {CONTROLSTRUCTURES.map(s => <MenuEntry title={s} />)}
+          </SubMenu>
+          <SubMenu title="Bedingungen">
+            {CONDITIONS.map(s => <MenuEntry title={s} />)}
+          </SubMenu>
+        </ContextMenu>
+      </div>
     </div>
   );
 }
