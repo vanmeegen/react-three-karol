@@ -29,4 +29,4 @@ export default function Puppet3D(props: Object3DNode<any, any>) {
   );
 }
 
-useGLTF.preload("/Puppet3D.glb");
+useGLTF.preload("Puppet3D.glb");

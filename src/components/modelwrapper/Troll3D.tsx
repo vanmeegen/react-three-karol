@@ -23,4 +23,4 @@ export default function Model(props: Object3DNode<any, any>) {
   );
 }
 
-useGLTF.preload("/Troll3D.glb");
+useGLTF.preload("Troll3D.glb");
