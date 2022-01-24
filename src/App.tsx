@@ -9,15 +9,15 @@ const world = new WorldModel();
 const karol = new KarolModel(world);
 
 function App() {
-  const exampleProgram = `{Karol legt links neben sich eine Reihe Ziegel}
-wiederhole 18 mal
+  const exampleProgram = `{Karol baut 'ne Burg}
+wiederhole 72 mal
     Schritt
     LinksDrehen
     Hinlegen
     RechtsDrehen
     wenn IstWand dann
         LinksDrehen
-        LinksDrehen
+        Aufheben
     endewenn
 endewiederhole
 `;
