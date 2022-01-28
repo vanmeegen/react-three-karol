@@ -5,7 +5,7 @@ import { ControlPanel } from "./components/ControlPanel";
 import { ProgramControlPanel } from "./components/ProgramControlPanel";
 import { KarolModel } from "./models/KarolModel";
 
-const world = new WorldModel(10,10,10);
+const world = new WorldModel(10, 10, 10);
 const karol = new KarolModel(world);
 
 function App() {

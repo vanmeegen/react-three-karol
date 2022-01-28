@@ -1,9 +1,18 @@
-import React from "react";
+import React, { RefObject, useEffect, useRef } from "react";
 import { WorldModel } from "../models/WorldModel";
 import { observer } from "mobx-react";
 import { Canvas } from "@react-three/fiber";
 // @ts-ignore
-import { Box, Circle, GizmoHelper, GizmoViewcube, Line, Plane } from "@react-three/drei";
+import {
+  Box,
+  Circle,
+  GizmoHelper,
+  GizmoViewcube,
+  Line,
+  OrbitControls,
+  OrthographicCamera,
+  Plane
+} from "@react-three/drei";
 import { Brick } from "./Brick";
 import { TextureLoader } from "three";
 import dirt from "../assets/dirt.jpg";
@@ -16,11 +25,7 @@ const DirtTexture = new TextureLoader().load(dirt);
 const GrassTexture = new TextureLoader().load(grass);
 const PI = Math.PI;
 
-const Field = observer((props: {
-  content: FieldType;
-  karol: KarolModel;
-  position: [number, number, number];
-}) => {
+const Field = observer((props: { content: FieldType; karol: KarolModel; position: [number, number, number] }) => {
   let result;
   const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
   // console.log("Rendering field " + key);
@@ -50,19 +55,21 @@ const Field = observer((props: {
   return result;
 });
 
-const DashedLine = observer((props: { from: [number, number, number]; to: [number, number, number]; color: string }) => (
-  <Line
-    points={[props.from, props.to]} // Array of points
-    color={props.color} // Default
-    lineWidth={1} // In pixels (default)
-    dashed={true}
-    dashSize={1}
-    dashScale={10}
-    dashOffset={1}
-  />
-));
+const DashedLine = observer(
+  (props: { from: [number, number, number]; to: [number, number, number]; color: string }) => (
+    <Line
+      points={[props.from, props.to]} // Array of points
+      color={props.color} // Default
+      lineWidth={1} // In pixels (default)
+      dashed={true}
+      dashSize={1}
+      dashScale={10}
+      dashOffset={1}
+    />
+  )
+);
 
-declare function Plane(props: any): any;
+// declare function Plane(props: any): any;
 
 /**
  * separate last index into own component so only 10 fields are updated instead of 1000
@@ -108,7 +115,7 @@ export const WorldMarkers = observer((props: { model: WorldModel }) => {
 });
 
 export const World3D = observer((props: { world: WorldModel; karol: KarolModel }) => {
-  // console.log("rendering world");
+  const cameraRef: RefObject<{ updateProjectionMatrix: () => void }> = useRef(null);
   const rangeX = [];
   const max = props.world.dimensions;
   for (let i = 0; i < max.x + 1; i++) {
@@ -118,18 +125,16 @@ export const World3D = observer((props: { world: WorldModel; karol: KarolModel }
   for (let i = 0; i < max.z + 1; i++) {
     rangeZ.push(i);
   }
+  // three.js needs explicit update to camera
+  useEffect(() => {
+    cameraRef.current?.updateProjectionMatrix();
+  },[props.world.dimensions.x,props.world.dimensions.y,props.world.dimensions.z]);
+  // noinspection RequiredAttributes
   return (
     <div style={{ width: 800, height: 800, border: "solid black 1px" }}>
-      <Canvas
-        shadows={true}
-        camera={{
-          position: [max.x, max.y, max.z],
-          zoom: 480/max.x
-        }}
-        orthographic
-      >
-        {/*<OrthographicCamera makeDefault zoom={20} position={[0,10,0]} rotation={[0,0,0]}/>*/}
-        <group position={[-5, -5, -5]}>
+      <Canvas shadows={true}>
+        <OrthographicCamera zoom={480 / max.x} position={[max.x, max.y, max.z]} makeDefault={true} ref={cameraRef} />
+        <group key="all" position={[-5, -5, -5]}>
           <ambientLight key="l1" intensity={0.3} />
           <pointLight key="l2" castShadow intensity={0.8} position={[100, 100, 100]} />
           {rangeZ.map((z) => (
@@ -147,6 +152,7 @@ export const World3D = observer((props: { world: WorldModel; karol: KarolModel }
           </Plane>
           <WorldFields fields={props.world.fields} karol={props.karol} />
           <WorldMarkers model={props.world} />
+          <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
           <GizmoHelper alignment="bottom-right" margin={[50, 50]}>
             <GizmoViewcube />
           </GizmoHelper>

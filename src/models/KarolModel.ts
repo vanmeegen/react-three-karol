@@ -1,5 +1,5 @@
 // do not change number because calculations are based on these
-import { makeObservable, observable } from "mobx";
+import { action, makeObservable, observable } from "mobx";
 import { WorldModel } from "./WorldModel";
 import { Color, Coord3d, FieldType } from "./CommonTypes";
 
@@ -23,29 +23,26 @@ const OFFSETS = {
  * Actions which are world-specific and not carol-specific, e.g. setting markers, are delegated to the world.
  */
 export class KarolModel {
-  public position: Coord3d = { x: 0, y: 0, z: 0 };
-  public direction: Direction = Direction.South;
+  @observable position: Coord3d = { x: 0, y: 0, z: 0 };
+  @observable direction: Direction = Direction.South;
   /**
    * how high/low Karol can jump in a move
    */
-  private jumpHeight: number = 1;
+  @observable jumpHeight: number = 1;
 
   constructor(private world: WorldModel) {
-    makeObservable(this, {
-      position: observable,
-      direction: observable,
-    });
+    makeObservable(this);
     this.reset();
   }
 
-  public reset(): void {
+  @action reset(): void {
     this.world.setFieldByCoord(this.position, FieldType.empty);
     this.position = { x: 0, y: 0, z: 0 };
     this.direction = Direction.South;
     this.world.setFieldByCoord(this.position, FieldType.karol);
   }
 
-  move(): Coord3d {
+  @action move(): Coord3d {
     const nextPosition = this.nextPosition;
     // this will check if jump is possible too
     this.validateNextPosition(nextPosition, true);
@@ -57,17 +54,17 @@ export class KarolModel {
     return nextPosition;
   }
 
-  turnLeft(): Direction {
+  @action turnLeft(): Direction {
     this.direction = (4 + this.direction - 1) % 4;
     return this.direction;
   }
 
-  turnRight(): Direction {
+  @action turnRight(): Direction {
     this.direction = (this.direction + 1) % 4;
     return this.direction;
   }
 
-  layBrick() {
+  @action layBrick() {
     const nextPosition = this.nextPosition;
     nextPosition.y = 0;
     if (this.world.isValid(nextPosition)) {
@@ -90,7 +87,7 @@ export class KarolModel {
     }
   }
 
-  pickupBrick() {
+  @action pickupBrick() {
     const nextPosition = this.nextPosition;
     // move up if bricks are stacked
     let lastBrickPosition = undefined;
@@ -109,7 +106,7 @@ export class KarolModel {
    * set marker on Karols current x,z position
    * @param color color
    */
-  setMarker(color: Color): void {
+  @action setMarker(color: Color): void {
     this.world.setMarker(this.position, color);
   }
 
@@ -123,7 +120,7 @@ export class KarolModel {
   /**
    * @return delete the marker on Karols x,z position
    */
-  deleteMarker(): void {
+  @action deleteMarker(): void {
     this.world.deleteMarker(this.position);
   }
 

@@ -15,10 +15,10 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client","vitest/globals"],
+    "types": ["vite/client","vitest/globals","react/next", "react-dom/next"],
     "experimentalDecorators": true,
     "incremental": true,
-    "sourceMap": true
+    "sourceMap": true,
   },
   "include": [
     "src",

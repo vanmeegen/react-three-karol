@@ -1,14 +1,25 @@
-import { observable } from "mobx";
+import { makeObservable, observable } from "mobx";
 
 export class Coord2d {
+  constructor() {
+    makeObservable(this);
+  }
+
   @observable x: number = 0;
   @observable z: number = 0;
 }
 
 export class Coord3d {
-  @observable x: number = 0;
-  @observable y: number = 0;
-  @observable z: number = 0;
+  @observable x: number;
+  @observable y: number;
+  @observable z: number;
+
+  constructor(x: number = 0, y: number = 0, z: number = 0) {
+    makeObservable(this);
+    this.x = x;
+    this.y = y;
+    this.z = z;
+  }
 }
 
 export enum FieldType {

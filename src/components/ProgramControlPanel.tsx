@@ -132,9 +132,13 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   }
 
   function MenuEntry(props: { title?: string }) {
-    return props.title ? <MenuItem data={{ text: props.title }} onClick={handleClick}>
-      {props.title}
-    </MenuItem> : <MenuItem divider />;
+    return props.title ? (
+      <MenuItem data={{ text: props.title }} onClick={handleClick}>
+        {props.title}
+      </MenuItem>
+    ) : (
+      <MenuItem divider />
+    );
   }
 
   return (
@@ -157,13 +161,19 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
         </ContextMenuTrigger>
         <ContextMenu id="menu_statements">
           <SubMenu title="Anweisungen">
-            {STATEMENTS.map(s => <MenuEntry title={s} />)}
+            {STATEMENTS.map((s, index) => (
+              <MenuEntry title={s} key={index} />
+            ))}
           </SubMenu>
           <SubMenu title="Kontrollstrukturen">
-            {CONTROLSTRUCTURES.map(s => <MenuEntry title={s} />)}
+            {CONTROLSTRUCTURES.map((s, index) => (
+              <MenuEntry title={s} key={index} />
+            ))}
           </SubMenu>
           <SubMenu title="Bedingungen">
-            {CONDITIONS.map(s => <MenuEntry title={s} />)}
+            {CONDITIONS.map((s, index) => (
+              <MenuEntry title={s} key={index} />
+            ))}
           </SubMenu>
         </ContextMenu>
       </div>

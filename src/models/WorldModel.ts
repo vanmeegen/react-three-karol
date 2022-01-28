@@ -1,4 +1,4 @@
-import { computed, makeAutoObservable, observable, toJS } from "mobx";
+import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { Color, Coord2d, coord2dToKey, Coord3d, FieldType, keyToCoord2d } from "./CommonTypes";
 
 export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): FieldType[][][] {
@@ -26,23 +26,23 @@ export class WorldModel {
   /**
    * @private world size in each direction as coordinates
    */
-  @observable public dimensions: Coord3d = { x: 10, y: 10, z: 10 };
+  @observable public dimensions: Coord3d = new Coord3d(10, 10, 10);
   /**
    *  @private has a color entry for the key (field coordinates concatenated to string) if this field has a marker
    */
   @observable private marker: Map<string, Color> = new Map();
 
   constructor(x: number = 10, y: number = 10, z: number = 10) {
-    makeAutoObservable(this, { markers: computed });
+    makeObservable(this);
     this.init(x, y, z);
   }
 
-  init(x: number = 10, y: number = 10, z: number = 10) {
-    this.dimensions = { x, y, z };
+  @action init(x: number = 10, y: number = 10, z: number = 10) {
+    this.dimensions = new Coord3d(x, y, z);
     this.fields = initEmpty3DArray(x, y, z);
   }
 
-  public reset() {
+  @action reset() {
     this.init(this.dimensions.x, this.dimensions.y, this.dimensions.z);
   }
 
@@ -70,12 +70,12 @@ export class WorldModel {
     }
   }
 
-  setFieldByCoord(position: Coord3d, type: FieldType): void {
+  @action setFieldByCoord(position: Coord3d, type: FieldType): void {
     const { x, y, z } = position;
     this.setField(x, y, z, type);
   }
 
-  setField(x: number, y: number, z: number, type: FieldType): void {
+  @action setField(x: number, y: number, z: number, type: FieldType): void {
     if (!this.isValid({ x, y, z })) {
       throw Error(`The position x: $x y: $y z: $z is not valid`);
     }
@@ -136,7 +136,7 @@ export class WorldModel {
    * @param color color of marker
    * @param position position of marker in 2D
    */
-  setMarker(position: Coord2d, color: Color): void {
+  @action setMarker(position: Coord2d, color: Color): void {
     if (this.isValid({ ...position, y: 0 })) {
       this.marker.set(coord2dToKey(position), color);
     } else {
@@ -152,7 +152,7 @@ export class WorldModel {
     return this.marker.get(coord2dToKey(position));
   }
 
-  deleteMarker(position: Coord2d): void {
+  @action deleteMarker(position: Coord2d): void {
     if (this.isValid({ ...position, y: 0 })) {
       const existed = this.marker.delete(coord2dToKey(position));
       if (!existed) {
