@@ -1,4 +1,4 @@
-import React, { ReactElement } from "react";
+import React from "react";
 import { WorldModel } from "../models/WorldModel";
 import { observer } from "mobx-react";
 import { Canvas } from "@react-three/fiber";
@@ -14,13 +14,13 @@ import { coordToKey, FieldType } from "../models/CommonTypes";
 
 const DirtTexture = new TextureLoader().load(dirt);
 const GrassTexture = new TextureLoader().load(grass);
-const PI = 3.1415926;
+const PI = Math.PI;
 
-function FieldInternal(props: {
+const Field = observer((props: {
   content: FieldType;
   karol: KarolModel;
   position: [number, number, number];
-}): ReactElement<typeof props> | null {
+}) => {
   let result;
   const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
   // console.log("Rendering field " + key);
@@ -41,18 +41,16 @@ function FieldInternal(props: {
       result = <Brick key={key} position={props.position} color="gray" heightUnits={1} />;
       break;
     case FieldType.empty:
-      result = null; // <Brick position={position} color="none" opacity={0}/>;
+      result = null;
       break;
     default:
       result = null;
       break;
   }
   return result;
-}
+});
 
-const Field = observer(FieldInternal);
-
-const DashedLine = (props: { from: [number, number, number]; to: [number, number, number]; color: string }) => (
+const DashedLine = observer((props: { from: [number, number, number]; to: [number, number, number]; color: string }) => (
   <Line
     points={[props.from, props.to]} // Array of points
     color={props.color} // Default
@@ -62,7 +60,7 @@ const DashedLine = (props: { from: [number, number, number]; to: [number, number
     dashScale={10}
     dashOffset={1}
   />
-);
+));
 
 declare function Plane(props: any): any;
 
@@ -71,7 +69,7 @@ declare function Plane(props: any): any;
  * @param props
  * @constructor
  */
-function WorldFieldsInternalX(props: { fields: FieldType[]; y: number; x: number; karol: KarolModel }) {
+const WorldFieldsX = observer((props: { fields: FieldType[]; y: number; x: number; karol: KarolModel }) => {
   const { fields, x, y, karol } = props;
   return (
     <>
@@ -80,11 +78,9 @@ function WorldFieldsInternalX(props: { fields: FieldType[]; y: number; x: number
       ))}
     </>
   );
-}
+});
 
-const WorldFieldsX = observer(WorldFieldsInternalX);
-
-function WorldFieldsInternal(props: { fields: FieldType[][][]; karol: KarolModel }) {
+const WorldFields = observer((props: { fields: FieldType[][][]; karol: KarolModel }) => {
   return (
     <>
       {props.fields.map((fieldInfo, x) =>
@@ -92,11 +88,9 @@ function WorldFieldsInternal(props: { fields: FieldType[][][]; karol: KarolModel
       )}
     </>
   );
-}
+});
 
-const WorldFields = observer(WorldFieldsInternal);
-
-function WorldMarkersInternal(props: { model: WorldModel }) {
+export const WorldMarkers = observer((props: { model: WorldModel }) => {
   const list = props.model.markers;
   // console.log("rendering " + list.length + " markers");
   return (
@@ -111,23 +105,26 @@ function WorldMarkersInternal(props: { model: WorldModel }) {
       ))}
     </>
   );
-}
+});
 
-const WorldMarkers = observer(WorldMarkersInternal);
-
-function World3DInternal(props: { model: WorldModel; karol: KarolModel }): ReactElement<typeof props> {
+export const World3D = observer((props: { world: WorldModel; karol: KarolModel }) => {
   // console.log("rendering world");
-  const range = [];
-  for (let i = 0; i < 11; i++) {
-    range.push(i);
+  const rangeX = [];
+  const max = props.world.dimensions;
+  for (let i = 0; i < max.x + 1; i++) {
+    rangeX.push(i);
+  }
+  const rangeZ = [];
+  for (let i = 0; i < max.z + 1; i++) {
+    rangeZ.push(i);
   }
   return (
     <div style={{ width: 800, height: 800, border: "solid black 1px" }}>
       <Canvas
         shadows={true}
         camera={{
-          position: [5, 5, 5],
-          zoom: 48,
+          position: [max.x, max.y, max.z],
+          zoom: 480/max.x
         }}
         orthographic
       >
@@ -135,21 +132,21 @@ function World3DInternal(props: { model: WorldModel; karol: KarolModel }): React
         <group position={[-5, -5, -5]}>
           <ambientLight key="l1" intensity={0.3} />
           <pointLight key="l2" castShadow intensity={0.8} position={[100, 100, 100]} />
-          {range.map((z) => (
-            <DashedLine key={"gridz" + z} from={[0, 0, z]} to={[10, 0, z]} color="green" />
+          {rangeZ.map((z) => (
+            <DashedLine key={"gridz" + z} from={[0, 0, z]} to={[max.x, 0, z]} color="green" />
           ))}
-          {range.map((x) => (
-            <DashedLine key={"gridx" + x} from={[x, 0, 0]} to={[x, 0, 10]} color="green" />
+          {rangeX.map((x) => (
+            <DashedLine key={"gridx" + x} from={[x, 0, 0]} to={[x, 0, max.z]} color="green" />
           ))}
-          <DashedLine key="gridy" from={[0, 0, 0]} to={[0, 10, 0]} color="blue" />
-          <Plane key="p1" args={[10, 10]} position={[-10, -5, -5]} rotation={[0, PI / 2, 0]}>
+          <DashedLine key="gridy" from={[0, 0, 0]} to={[0, max.y, 0]} color="blue" />
+          <Plane key="p1" args={[max.z, max.y]} position={[0, max.y / 2, max.z / 2]} rotation={[0, PI / 2, 0]}>
             <meshPhongMaterial attach="material" color="lightblue" />
           </Plane>
-          <Plane key="p2" args={[10, 10]} position={[5, 5, 0]} rotation={[0, 0, 0]}>
+          <Plane key="p2" args={[max.x, max.y]} position={[max.x / 2, max.y / 2, 0]} rotation={[0, 0, 0]}>
             <meshPhongMaterial attach="material" color="lightblue" />
           </Plane>
-          <WorldFields fields={props.model.fields} karol={props.karol} />
-          <WorldMarkers model={props.model} />
+          <WorldFields fields={props.world.fields} karol={props.karol} />
+          <WorldMarkers model={props.world} />
           <GizmoHelper alignment="bottom-right" margin={[50, 50]}>
             <GizmoViewcube />
           </GizmoHelper>
@@ -157,9 +154,4 @@ function World3DInternal(props: { model: WorldModel; karol: KarolModel }): React
       </Canvas>
     </div>
   );
-}
-
-/**
- * export the mobx reactified component
- */
-export const World3D = observer(World3DInternal);
+});

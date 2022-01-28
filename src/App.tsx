@@ -5,7 +5,7 @@ import { ControlPanel } from "./components/ControlPanel";
 import { ProgramControlPanel } from "./components/ProgramControlPanel";
 import { KarolModel } from "./models/KarolModel";
 
-const world = new WorldModel();
+const world = new WorldModel(10,10,10);
 const karol = new KarolModel(world);
 
 function App() {
@@ -30,7 +30,7 @@ endewiederhole
       <div style={{ display: "flex", flexDirection: "row", columns: 2 }}>
         <ProgramControlPanel model={karol} world={world} defaultValue={exampleProgram} />
         <div>
-          <World3D model={world} karol={karol} />
+          <World3D world={world} karol={karol} />
           <ControlPanel karol={karol} world={world} />
         </div>
       </div>

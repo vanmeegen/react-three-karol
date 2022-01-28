@@ -26,7 +26,7 @@ export class WorldModel {
   /**
    * @private world size in each direction as coordinates
    */
-  @observable private dimensions: Coord3d = { x: 10, y: 10, z: 10 };
+  @observable public dimensions: Coord3d = { x: 10, y: 10, z: 10 };
   /**
    *  @private has a color entry for the key (field coordinates concatenated to string) if this field has a marker
    */
