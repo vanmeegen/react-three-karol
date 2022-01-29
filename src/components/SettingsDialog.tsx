@@ -23,7 +23,7 @@ export function SettingsDialog(props: {
   const [jumpHeight, setJumpHeight] = useState("" + props.karol.jumpHeight);
   const [karolFigureIndex, setKarolFigureIndex] = useState("" + props.karol.figureIndex);
   return (
-    <Dialog onClose={props.onClose} open={props.open}>
+    <Dialog open={props.open}>
       <DialogTitle>Karol Settings</DialogTitle>
       <DialogContent>
         <FormControl fullWidth sx={{ m: 1, minWidth: 120 }}>
@@ -50,6 +50,7 @@ export function SettingsDialog(props: {
               <MenuItem value={1}>Dracula</MenuItem>
               <MenuItem value={2}>Weltraumwesen</MenuItem>
               <MenuItem value={3}>Saxophonist</MenuItem>
+              <MenuItem value={4}>Crash Test Dummy</MenuItem>
             </Select>
           </FormControl>
         </div>

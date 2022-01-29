@@ -16,7 +16,7 @@ export const DIRECTION_PARAMS = [
 
 export default function Model(props: Object3DNode<any, any>) {
   const group = useRef();
-  const { nodes, materials } = useGLTF("/react-three-karol/Robot3D.glb") as any;
+  const { nodes, materials } = useGLTF("Robot3D.glb") as any;
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh
@@ -29,4 +29,4 @@ export default function Model(props: Object3DNode<any, any>) {
   );
 }
 
-useGLTF.preload("/react-three-karol/Robot3D.glb");
+useGLTF.preload("Robot3D.glb");

@@ -36,7 +36,7 @@ export function WorldSettingsDialog(props: {
   const [y, setY] = useState(props.dimensions.y);
   const [z, setZ] = useState(props.dimensions.z);
   return (
-    <Dialog onClose={props.onClose} open={props.open}>
+    <Dialog open={props.open}>
       <DialogTitle>World Settings</DialogTitle>
       <DialogContent>
         <Grid container>

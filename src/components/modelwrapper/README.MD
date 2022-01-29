@@ -9,7 +9,9 @@ For more details see this article: https://blog.logrocket.com/configure-3d-model
    yarn generate:glb
     ```
 6. A file <myfilename>.tsx was created in components/modelwrapper
-7. add a block with correction parameters for the different directions the object can take
+7. IMPORTANT: ensure that the file path of the .glb file in the generated .tsx is empty, there are 2 places to fix, 
+   you have to remove the leading "/" 
+8. add a block with correction parameters for the different directions the object can take
 ```javascript 
    // N, E, S, W
    export const DIRECTION_PARAMS = [

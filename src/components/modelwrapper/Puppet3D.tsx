@@ -16,7 +16,7 @@ export const DIRECTION_PARAMS = [
 
 export default function Puppet3D(props: Object3DNode<any, any>) {
   const group = useRef();
-  const { nodes, materials } = useGLTF("/Puppet3D.glb") as any;
+  const { nodes, materials } = useGLTF("Puppet3D.glb") as any;
   return (
     <group ref={group} {...props} dispose={null} scale={10}>
       <mesh
