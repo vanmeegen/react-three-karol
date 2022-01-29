@@ -39,21 +39,33 @@ function DimensionSlider(props: { label: string; value: number; onChange: (newVa
   );
 }
 
-function WorldSettingsDialog(props: { onClose: () => void, open: boolean, X: number, onChangeX: (value: (((prevState: number) => number) | number)) => void, valueY: number, onChangeY: (value: (((prevState: number) => number) | number)) => void, valueZ: number, onChangeZ: (value: (((prevState: number) => number) | number)) => void, onCancel: () => void }) {
-  return <Dialog onClose={props.onClose} open={props.open}>
-    <DialogTitle>World Settings</DialogTitle>
-    <DialogContent>
-      <Grid container>
-        <DimensionSlider key="x" label="Größe x:" value={props.X} onChange={props.onChangeX} />
-        <DimensionSlider key="y" label="Größe y:" value={props.valueY} onChange={props.onChangeY} />
-        <DimensionSlider key="z" label="Größe z:" value={props.valueZ} onChange={props.onChangeZ} />
-      </Grid>
-    </DialogContent>
-    <DialogActions>
-      <Button onClick={props.onClose}>Ok</Button>
-      <Button onClick={props.onCancel}>Cancel</Button>
-    </DialogActions>
-  </Dialog>;
+function WorldSettingsDialog(props: {
+  onClose: () => void;
+  open: boolean;
+  X: number;
+  onChangeX: (value: ((prevState: number) => number) | number) => void;
+  valueY: number;
+  onChangeY: (value: ((prevState: number) => number) | number) => void;
+  valueZ: number;
+  onChangeZ: (value: ((prevState: number) => number) | number) => void;
+  onCancel: () => void;
+}) {
+  return (
+    <Dialog onClose={props.onClose} open={props.open}>
+      <DialogTitle>World Settings</DialogTitle>
+      <DialogContent>
+        <Grid container>
+          <DimensionSlider key="x" label="Größe x:" value={props.X} onChange={props.onChangeX} />
+          <DimensionSlider key="y" label="Größe y:" value={props.valueY} onChange={props.onChangeY} />
+          <DimensionSlider key="z" label="Größe z:" value={props.valueZ} onChange={props.onChangeZ} />
+        </Grid>
+      </DialogContent>
+      <DialogActions>
+        <Button onClick={props.onClose}>Ok</Button>
+        <Button onClick={props.onCancel}>Cancel</Button>
+      </DialogActions>
+    </Dialog>
+  );
 }
 
 export function ControlPanel(props: { world: WorldModel; karol: KarolModel }) {
@@ -96,8 +108,17 @@ export function ControlPanel(props: { world: WorldModel; karol: KarolModel }) {
 
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <WorldSettingsDialog onClose={handleClose} open={isOpen} X={xmax} onChangeX={setXmax} valueY={ymax}
-                           onChangeY={setYmax} valueZ={zmax} onChangeZ={setZmax} onCancel={() => setOpen(false)} />
+      <WorldSettingsDialog
+        onClose={handleClose}
+        open={isOpen}
+        X={xmax}
+        onChangeX={setXmax}
+        valueY={ymax}
+        onChangeY={setYmax}
+        valueZ={zmax}
+        onChangeZ={setZmax}
+        onCancel={() => setOpen(false)}
+      />
       <div style={{ display: "flex", flexDirection: "row" }}>
         <button onClick={handleError(() => props.karol.turnLeft())}>&larr;</button>
         <button onClick={handleError(() => props.karol.move())}>&uarr;</button>

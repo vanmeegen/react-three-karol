@@ -4,48 +4,9 @@ import { parseKarol } from "../parser/KarolParserFacade";
 import { ChangeEvent, RefObject, useRef, useState } from "react";
 import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
 import { KarolModel } from "../models/KarolModel";
-import { ContextMenu, MenuItem, ContextMenuTrigger, SubMenu } from "react-contextmenu";
+import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contextmenu";
 import "./ProgramControlPanel.css";
-
-const STATEMENTS = [
-  "Schritt",
-  "LinksDrehen",
-  "RechtsDrehen",
-  undefined,
-  "Hinlegen",
-  "Aufheben",
-  undefined,
-  "MarkeSetzen",
-  "MarkeLöschen",
-  undefined,
-  "Ton"
-];
-
-const CONDITIONS = [
-  "IstWand",
-  "NichtIstWand",
-  undefined,
-  "IstZiegel",
-  "NichtIstZiegel",
-  undefined,
-  "IstMarke",
-  "NichtIstMarke",
-  undefined,
-  "IstNorden",
-  "IstOsten",
-  "IstSüden",
-  "IstWesten"
-];
-
-const CONTROLSTRUCTURES = [
-  "wiederhole n mal ANW endewiederhole",
-  "wiederhole solange BED endewiederhole",
-  "wiederhole ANW endewiederhole bis BED",
-  "wiederhole ANW endewiederhole solange BED",
-  undefined,
-  "wenn BED dann ANW endewenn",
-  "wenn BED dann ANW sonst ANW endewenn"
-];
+import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -160,17 +121,17 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
           />
         </ContextMenuTrigger>
         <ContextMenu id="menu_statements">
-          <SubMenu title="Anweisungen">
+          <SubMenu key="aw" title="Anweisungen">
             {STATEMENTS.map((s, index) => (
               <MenuEntry title={s} key={index} />
             ))}
           </SubMenu>
-          <SubMenu title="Kontrollstrukturen">
+          <SubMenu key="ks" title="Kontrollstrukturen">
             {CONTROLSTRUCTURES.map((s, index) => (
               <MenuEntry title={s} key={index} />
             ))}
           </SubMenu>
-          <SubMenu title="Bedingungen">
+          <SubMenu key="bd" title="Bedingungen">
             {CONDITIONS.map((s, index) => (
               <MenuEntry title={s} key={index} />
             ))}
