@@ -1,7 +1,7 @@
 import "./App.css";
 import { World3D } from "./components/World3D";
 import { WorldModel } from "./models/WorldModel";
-import { ControlPanel } from "./components/ControlPanel";
+import { WorldControlPanel } from "./components/WorldControlPanel";
 import { ProgramControlPanel } from "./components/ProgramControlPanel";
 import { KarolModel } from "./models/KarolModel";
 
@@ -31,7 +31,7 @@ endewiederhole
         <ProgramControlPanel model={karol} world={world} defaultValue={exampleProgram} />
         <div>
           <World3D world={world} karol={karol} />
-          <ControlPanel karol={karol} world={world} />
+          <WorldControlPanel karol={karol} world={world} />
         </div>
       </div>
     </div>

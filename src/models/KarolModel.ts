@@ -28,18 +28,28 @@ export class KarolModel {
   /**
    * how high/low Karol can jump in a move
    */
-  @observable jumpHeight: number = 1;
+  @observable jumpHeight: number;
+  @observable figureIndex: number;
 
   constructor(private world: WorldModel) {
     makeObservable(this);
+    this.jumpHeight = 1;
+    this.figureIndex = 0;
     this.reset();
   }
 
   @action reset(): void {
-    this.world.setFieldByCoord(this.position, FieldType.empty);
+    if (this.world.isValid(this.position)) {
+      this.world.setFieldByCoord(this.position, FieldType.empty);
+    }
     this.position = { x: 0, y: 0, z: 0 };
     this.direction = Direction.South;
     this.world.setFieldByCoord(this.position, FieldType.karol);
+  }
+
+  @action updateSettings(newValues: { jumpHeight: number; figureIndex: number }) {
+    this.jumpHeight = newValues.jumpHeight;
+    this.figureIndex = newValues.figureIndex;
   }
 
   @action move(): Coord3d {

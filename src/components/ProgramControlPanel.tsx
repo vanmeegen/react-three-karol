@@ -7,6 +7,7 @@ import { KarolModel } from "../models/KarolModel";
 import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contextmenu";
 import "./ProgramControlPanel.css";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
+import { SettingsDialog } from "./SettingsDialog";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -36,16 +37,21 @@ function getColOfLineIndex(text: string, line: number, column: number): number {
 }
 
 export function ProgramControlPanel(props: { model: KarolModel; world: WorldModel; defaultValue: string }) {
+  const [isOpen, setOpen] = useState(false);
   const [program, setProgram] = useState(props.defaultValue);
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
 
-  function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
-    setProgram(evt.target.value);
+  function handleSettings() {
+    setOpen(true);
   }
 
-  function reset() {
-    props.world.reset();
-    props.model.reset();
+  function handleClose(newValues: { figureIndex: number; jumpHeight: number }) {
+    setOpen(false);
+    props.model.updateSettings(newValues);
+  }
+
+  function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
+    setProgram(evt.target.value);
   }
 
   function run(waitTime?: number) {
@@ -108,9 +114,9 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
         <button onClick={handleError(() => run(0))}>Run</button>
         <button onClick={handleError(() => run(200))}>Step</button>
         <button onClick={handleError(() => run())}>Fast</button>
-        <button onClick={handleError(reset)}>Reset</button>
+        <button onClick={handleSettings}>Settings</button>
       </div>
-
+      <SettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>
         <ContextMenuTrigger id="menu_statements">
           <textarea

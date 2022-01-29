@@ -52,7 +52,12 @@ export const World3D = observer((props: { world: WorldModel; karol: KarolModel }
   return (
     <div style={{ width: 800, height: 800, border: "solid black 1px" }}>
       <Canvas shadows={true}>
-        <OrthographicCamera zoom={960 / (max.x + max.z)} position={[max.x, max.y, max.z]} makeDefault={true} ref={cameraRef} />
+        <OrthographicCamera
+          zoom={960 / (max.x + max.z)}
+          position={[max.x, max.y, max.z]}
+          makeDefault={true}
+          ref={cameraRef}
+        />
         <group key="all" position={[-5, -5, -5]}>
           <ambientLight key="l1" intensity={0.3} />
           <pointLight key="l2" castShadow intensity={0.8} position={[100, 100, 100]} />
