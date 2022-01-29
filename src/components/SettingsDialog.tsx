@@ -9,7 +9,7 @@ import {
   MenuItem,
   Select,
   SelectChangeEvent,
-  TextField
+  TextField,
 } from "@mui/material";
 import { ChangeEvent, useState } from "react";
 import { KarolModel } from "../models/KarolModel";
@@ -46,9 +46,10 @@ export function SettingsDialog(props: {
               label="Karol Figure"
               onChange={(evt: SelectChangeEvent<string>) => setKarolFigureIndex(evt.target.value)}
             >
-              <MenuItem value={0}>Robot</MenuItem>
-              <MenuItem value={1}>Troll</MenuItem>
-              <MenuItem value={2}>Puppet</MenuItem>
+              <MenuItem value={0}>Roboter</MenuItem>
+              <MenuItem value={1}>Dracula</MenuItem>
+              <MenuItem value={2}>Weltraumwesen</MenuItem>
+              <MenuItem value={3}>Saxophonist</MenuItem>
             </Select>
           </FormControl>
         </div>
