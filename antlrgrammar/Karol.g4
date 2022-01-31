@@ -25,6 +25,10 @@ statement
    | loop
    | conditional
    | instruction (';')?
+   // object syntax
+   | 'Karol' '.' instruction '(' ')'(';')?
+   | parameterizedinstruction (';')?
+   | 'Karol' '.' parameterizedinstruction (';')?
    ;
 
 iteration
@@ -56,18 +60,26 @@ instruction
    | 'langsam'
    ;
 
+parameterizedinstruction
+   : 'Schritt' '(' number ')'
+   | 'Hinlegen' '(' (color | number) ')'
+   | 'Aufheben' '(' number ')'
+   | 'MarkeSetzen' '(' color ')'
+   | 'Warten' '(' number ')'
+   ;
+
 conditionexpression
    : 'nicht' conditionexpression
    | condition
+   // object syntax
+   | 'Karol' '.' condition '(' ')'
+   | parameterizedcondition
+   | 'Karol' '.' parameterizedcondition
    ;
 
 condition:
     'IstWand'
    | 'NichtIstWand'
-   | 'IstZiegel'
-   | 'NichtIstZiegel'
-   | 'IstMarke'
-   | 'NichtIstMarke'
    | 'IstSüden'
    | 'IstNorden'
    | 'IstWesten'
@@ -76,7 +88,19 @@ condition:
    | 'NichtIstVoll'
    | 'IstLeer'
    | 'NichtIstLeer'
+   | 'IstZiegel'
+   | 'NichtIstZiegel'
+   | 'IstMarke'
+   | 'NichtIstMarke'
    | 'HatZiegel'
+   ;
+
+parameterizedcondition:
+   | 'IstZiegel' '(' (color | number) ')'
+   | 'NichtIstZiegel' '(' (color | number) ')'
+   | 'IstMarke' '(' color ')'
+   | 'NichtIstMarke' '(' color ')'
+   | 'HatZiegel' '(' number ')'
    ;
 
 color
