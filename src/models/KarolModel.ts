@@ -52,15 +52,18 @@ export class KarolModel {
     this.figureIndex = newValues.figureIndex;
   }
 
-  @action move(): Coord3d {
-    const nextPosition = this.nextPosition;
-    // this will check if jump is possible too
-    this.validateNextPosition(nextPosition, true);
-    // jump if needed
-    nextPosition.y = this.world.getFirstFreeY(nextPosition.x, nextPosition.z);
-    this.world.setFieldByCoord(this.position, FieldType.empty);
-    this.position = nextPosition;
-    this.world.setFieldByCoord(nextPosition, FieldType.karol);
+  @action move(count: number = 1): Coord3d {
+    let nextPosition = this.nextPosition;
+    for (let i = 0; i < count; i++) {
+      nextPosition = this.nextPosition;
+      // this will check if jump is possible too
+      this.validateNextPosition(nextPosition, true);
+      // jump if needed
+      nextPosition.y = this.world.getFirstFreeY(nextPosition.x, nextPosition.z);
+      this.world.setFieldByCoord(this.position, FieldType.empty);
+      this.position = nextPosition;
+      this.world.setFieldByCoord(nextPosition, FieldType.karol);
+    }
     return nextPosition;
   }
 
@@ -74,41 +77,46 @@ export class KarolModel {
     return this.direction;
   }
 
-  @action layBrick() {
-    const nextPosition = this.nextPosition;
-    nextPosition.y = 0;
-    if (this.world.isValid(nextPosition)) {
-      // move up if bricks are stacked
-      while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
-        nextPosition.y++;
-      }
-      const fieldType = this.world.getFieldByCoord(nextPosition);
-      if (fieldType === FieldType.empty) {
-        this.world.setFieldByCoord(nextPosition, FieldType.brick);
-      } else if (fieldType === FieldType.wall) {
-        throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
-      } else if (fieldType === FieldType.brick) {
-        throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
+  // TODO implement brick color, this would mean to refactor the fields array to objects or we need a map of coords for the color
+  @action layBrick(count: number = 1, color: Color = Color.green) {
+    for (let i = 0; i < count; i++) {
+      let nextPosition = this.nextPosition;
+      nextPosition.y = 0;
+      if (this.world.isValid(nextPosition)) {
+        // move up if bricks are stacked
+        while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
+          nextPosition.y++;
+        }
+        const fieldType = this.world.getFieldByCoord(nextPosition);
+        if (fieldType === FieldType.empty) {
+          this.world.setFieldByCoord(nextPosition, FieldType.brick);
+        } else if (fieldType === FieldType.wall) {
+          throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
+        } else if (fieldType === FieldType.brick) {
+          throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
+        } else {
+          throw Error("Huch? Da ist was im Weg was ich nicht kenne.");
+        }
       } else {
-        throw Error("Huch? Da ist was im Weg was ich nicht kenne.");
+        throw Error("Karol kann nicht hinlegen, er steht vor der Wand.");
       }
-    } else {
-      throw Error("Karol kann nicht hinlegen, er steht vor der Wand.");
     }
   }
 
-  @action pickupBrick() {
-    const nextPosition = this.nextPosition;
-    // move up if bricks are stacked
-    let lastBrickPosition = undefined;
-    while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
-      lastBrickPosition = { ...nextPosition };
-      nextPosition.y++;
-    }
-    if (lastBrickPosition) {
-      this.world.setFieldByCoord(lastBrickPosition, FieldType.empty);
-    } else {
-      throw Error("Da ist kein Ziegel");
+  @action pickupBrick(count: number = 1) {
+    for (let i = 0; i < count; i++) {
+      let nextPosition = this.nextPosition;
+      // move up if bricks are stacked
+      let lastBrickPosition = undefined;
+      while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
+        lastBrickPosition = { ...nextPosition };
+        nextPosition.y++;
+      }
+      if (lastBrickPosition) {
+        this.world.setFieldByCoord(lastBrickPosition, FieldType.empty);
+      } else {
+        throw Error("Da ist kein Ziegel");
+      }
     }
   }
 

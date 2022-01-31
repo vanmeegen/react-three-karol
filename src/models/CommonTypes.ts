@@ -1,8 +1,10 @@
 import { makeObservable, observable } from "mobx";
 
 export class Coord2d {
-  constructor() {
+  constructor(x: number, z: number) {
     makeObservable(this);
+    this.x = x;
+    this.z = z;
   }
 
   @observable x: number = 0;
@@ -32,11 +34,11 @@ export enum FieldType {
 }
 
 export enum Color {
-  yellow = "yellow",
-  red = "red",
-  blue = "blue",
-  green = "green",
-  black = "black",
+  yellow = "gelb",
+  red = "rot",
+  blue = "blau",
+  green = "grün",
+  black = "schwarz",
 }
 
 /**

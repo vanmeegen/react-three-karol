@@ -14,14 +14,20 @@ thought it would be much more approachable if nothing has to be installed.
 - most programming language constructs of the original are available
 - configurable world size up to 50x50x50
 - choice of several Karol Figures
+- Parameters in Statements
+- Object Syntax for Statements and Conditions (e.g. Karol.Schritt() instead of Schritt)
 
-## TODO
+## TODO (soon)
+- parameters in conditions
+- colour of bricks and markers
 
+## TODO (future)
 - Syntax Highlighting in Editor
-- Parameters in Statements or Conditions
 - Karol parameters:
     - bricks Karol can pick up and lay down (currently unlimited)
 - user defined functions
 - user defined conditions
 - Program always stops on errors
-
+- Two Karol programs compete for a task by being executed and rendered simultaneously
+- load and save programs
+- load and save the world

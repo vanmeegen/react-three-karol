@@ -5,7 +5,7 @@ import { WorldModel } from "../../models/WorldModel";
 import { execute } from "../KarolInterpreterGenerator";
 import { beforeEach } from "vitest";
 import { Direction, KarolModel } from "../../models/KarolModel";
-import { Color, FieldType } from "../../models/CommonTypes";
+import { Color, Coord2d, FieldType } from "../../models/CommonTypes";
 
 function executeProgram(program: string, karol: KarolModel): void {
   const tree: ParserRuleContext | undefined = parseKarol(program);
@@ -68,6 +68,48 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       // and the brick has vanished
       expect(world.getField(1, 0, 0)).toEqual(FieldType.empty);
+    });
+  });
+
+  describe("it understands parameterized instructions", () => {
+    it("'Schritt(3)' moves Karol 3 steps in the current direction", () => {
+      executeProgram("Schritt(3)", karol);
+      expect(karol.position).toEqual({ x: 3, y: 0, z: 0 });
+    });
+
+    it("'Hinlegen(2)' puts two bricks in front of Karol", () => {
+      executeProgram("Hinlegen(2)", karol);
+      // Karol's position is unchanged
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
+      // but a brick is in front of him
+      const nextPosition = karol.nextPosition;
+      expect(world.getFieldByCoord(nextPosition)).toEqual(FieldType.brick);
+      expect(world.getFieldByCoord({ ...nextPosition, y: 1 })).toEqual(FieldType.brick);
+    });
+
+    it("'Aufheben(2)' picks up two bricks in front of Karol", () => {
+      world.setField(1, 0, 0, FieldType.brick);
+      world.setField(1, 1, 0, FieldType.brick);
+      executeProgram("Aufheben(2)", karol);
+      // Karol's position is unchanged
+      expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
+      // and the brick has vanished
+      expect(world.getField(1, 0, 0)).toEqual(FieldType.empty);
+      expect(world.getField(1, 1, 0)).toEqual(FieldType.empty);
+    });
+    it("'Warten(2)' waits for 2 sec", () => {
+      const t = Date.now();
+      executeProgram("Warten(2)", karol);
+      // should have waited at least 2000 ms
+      expect(Date.now() - t).toBeGreaterThanOrEqual(2000);
+    });
+    it("'MarkeSetzen(rot)' sets a red marker", () => {
+      executeProgram("MarkeSetzen(rot)", karol);
+      expect(world.getMarker(new Coord2d(0, 0))).toEqual(Color.red);
+    });
+    it("'MarkeSetzen' sets a yellow marker", () => {
+      executeProgram("MarkeSetzen", karol);
+      expect(world.getMarker(new Coord2d(0, 0))).toEqual(Color.yellow);
     });
   });
 

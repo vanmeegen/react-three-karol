@@ -167,6 +167,8 @@ export type IKarolParser = Parser & {
   RULE_condition: number;
   RULE_color: number;
   RULE_number: number;
+  RULE_parameterizedinstruction: number;
+  RULE_parameterizedcondition: number;
 };
 
 export type IKarolLexer = Lexer & {
