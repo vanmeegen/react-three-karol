@@ -23,7 +23,7 @@ For more details see this article: https://blog.logrocket.com/configure-3d-model
 ```
 8. fix the scale in the generated component so it fits well into the world
 9. In Karol.tsx import the new figure and the DIRECTION_PARAMS and add it to the FIGURES array like the other ones
-10. create a new menu entry in the Karol Figure drop down in SettingsDialog.tsx
+10. create a new menu entry in the Karol Figure drop down in KarolSettingsDialog.tsx
 ```typescript jsx
     <MenuItem value={4}>MySpecialFigure</MenuItem>
 ```

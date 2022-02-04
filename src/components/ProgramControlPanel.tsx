@@ -3,11 +3,11 @@ import { ParserRuleContext } from "antlr4";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { ChangeEvent, RefObject, useRef, useState } from "react";
 import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
-import { KarolModel } from "../models/KarolModel";
+import { KarolModel, KarolSettings } from "../models/KarolModel";
 import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contextmenu";
 import "./ProgramControlPanel.css";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
-import { SettingsDialog } from "./SettingsDialog";
+import { KarolSettingsDialog } from "./KarolSettingsDialog";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -45,7 +45,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     setOpen(true);
   }
 
-  function handleClose(newValues: { figureIndex: number; jumpHeight: number }) {
+  function handleClose(newValues: KarolSettings) {
     setOpen(false);
     props.model.updateSettings(newValues);
   }
@@ -116,7 +116,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
         <button onClick={handleError(() => run())}>Fast</button>
         <button onClick={handleSettings}>Settings</button>
       </div>
-      <SettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
+      <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>
         <ContextMenuTrigger id="menu_statements">
           <textarea

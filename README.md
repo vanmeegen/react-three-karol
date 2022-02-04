@@ -16,18 +16,15 @@ thought it would be much more approachable if nothing has to be installed.
 - choice of several Karol Figures
 - Parameters in Statements
 - Object Syntax for Statements and Conditions (e.g. Karol.Schritt() instead of Schritt)
-
-## TODO (soon)
 - parameters in conditions
-- colour of bricks and markers
+- color of bricks and markers
+- configurable count of bricks Karol can pick up and lay down (currently unlimited)
 
 ## TODO (future)
+- load and save programs
+- load and save the world
 - Syntax Highlighting in Editor
-- Karol parameters:
-    - bricks Karol can pick up and lay down (currently unlimited)
 - user defined functions
 - user defined conditions
 - Program always stops on errors
 - Two Karol programs compete for a task by being executed and rendered simultaneously
-- load and save programs
-- load and save the world

@@ -55,7 +55,7 @@ export function execute(tree: ParserRuleContext, model: KarolModel): boolean | u
     // console.log("Result: ", result);
     const source = result.value?.source;
     if (source) {
-      console.log("STEP: " + tree.getText().substring(source.start, source.end));
+      // console.log("STEP: " + tree.getText().substring(source.start, source.end));
     }
   } while (!result.done);
   return result.value;

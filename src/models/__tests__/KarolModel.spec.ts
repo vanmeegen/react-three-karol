@@ -137,7 +137,7 @@ describe("Karol can interact with the world", () => {
       expect(karol.brickCount).toEqual(6);
     });
 
-    it.only("can not carry more bricks than its maximum capacity", () => {
+    it("can not carry more bricks than its maximum capacity", () => {
       karol.maxBrickCount = 4;
       karol.reset();
       for (let i = 0; i < 3; i++) {

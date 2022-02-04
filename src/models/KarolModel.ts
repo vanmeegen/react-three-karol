@@ -16,6 +16,12 @@ const OFFSETS = {
   [Direction.South]: { x: 0, z: 1 },
   [Direction.West]: { x: -1, z: 0 },
 };
+export type KarolSettings = {
+  figureIndex: number;
+  jumpHeight: number;
+  maxBrickCount: number;
+  initialBrickCount: number;
+};
 
 /**
  * class KarolModel implements all actions which Karol can do to the world.
@@ -52,9 +58,12 @@ export class KarolModel {
     this.world.setFieldByCoord(this.position, FieldType.karol);
   }
 
-  @action updateSettings(newValues: { jumpHeight: number; figureIndex: number }) {
+  @action updateSettings(newValues: KarolSettings) {
     this.jumpHeight = newValues.jumpHeight;
     this.figureIndex = newValues.figureIndex;
+    this.maxBrickCount = newValues.maxBrickCount;
+    this.initialBrickCount = newValues.initialBrickCount;
+    this.reset();
   }
 
   @action move(count: number = 1): Coord3d {
@@ -95,7 +104,7 @@ export class KarolModel {
           const fieldType = this.world.getFieldByCoord(nextPosition);
           if (fieldType === FieldType.empty) {
             this.world.setFieldByCoord(nextPosition, getBrickFieldType(color));
-            this.brickCount--;
+            this.brickCount = this.brickCount - 1;
           } else if (fieldType === FieldType.wall) {
             if (nextPosition.y >= this.world.dimensions.y) {
               throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
@@ -126,7 +135,7 @@ export class KarolModel {
         nextPosition.y++;
       }
       if (lastBrickPosition) {
-        if (this.brickCount < this.maxBrickCount) {
+        if (this.maxBrickCount === Infinity || this.brickCount < this.maxBrickCount) {
           this.world.setFieldByCoord(lastBrickPosition, FieldType.empty);
           this.brickCount += 1;
         } else {
