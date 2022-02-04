@@ -178,6 +178,26 @@ describe("The KarelInterpreter changes the World by programming", () => {
     });
   });
 
+  describe("it understands parameterized conditions", () => {
+    it("'IstZiegel(2)' is true if the next field has exactly 2 bricks", () => {
+      expect(executeCondition("IstZiegel(2)", karol)).toBeFalsy();
+      world.setFieldByCoord({ x: 1, y: 0, z: 0 }, FieldType.brick);
+      world.setFieldByCoord({ x: 1, y: 1, z: 0 }, FieldType.brick);
+      expect(executeCondition("IstZiegel(2)", karol)).toBeTruthy();
+    });
+    it("'NichtIstZiegel(2)' is true  if the next field has no bricks", () => {
+      expect(executeCondition("NichtIstZiegel(2)", karol)).toBeTruthy();
+    });
+    it("'NichtIstZiegel(2)' is true  if the next field has 1 brick", () => {
+      expect(executeCondition("NichtIstZiegel(2)", karol)).toBeTruthy();
+    });
+    it("'NichtIstZiegel(2)' is false  if the next field has 2 brick", () => {
+      world.setFieldByCoord({ x: 0, y: 0, z: 1 }, FieldType.brick);
+      world.setFieldByCoord({ x: 0, y: 1, z: 1 }, FieldType.brick);
+      expect(executeCondition("NichtIstZiegel(2)", karol)).toBeTruthy();
+    });
+  });
+
   describe("it understands loops", () => {
     it("'wiederhole 2 mal Schritt endewiederhole' moves Karol 2 times in the current direction", () => {
       executeProgram("wiederhole 2 mal Schritt endewiederhole", karol);

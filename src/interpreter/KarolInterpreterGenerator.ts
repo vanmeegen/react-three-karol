@@ -211,10 +211,19 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   }
 
   function visitConditionexpression(ctx: ParserRuleContext): boolean {
-    if (ctx.getChildCount() === 1) {
-      return visitCondition(ctx.getChild(0));
+    if (ctx.getChild(0).getText().toLowerCase() === "nicht") {
+      assertCondition(ctx.getChildCount() === 2, "Internal Error: Negated condition expression has not length 2");
+      return !visitConditionexpression(ctx.getChild(1));
     } else {
-      return !visitCondition(ctx.getChild(1));
+      for (let i = 0; i < ctx.getChildCount(); i++) {
+        const child = ctx.getChild(i);
+        if (child.ruleIndex === TypedKarolParser.RULE_condition) {
+          return visitCondition(child);
+        } else if (child.ruleIndex === TypedKarolParser.RULE_parameterizedcondition) {
+          return visitParameterizedCondition(child);
+        }
+      }
+      throw Error("Internal Error: conditionexpression without condition or parameterized condition");
     }
   }
 
@@ -288,22 +297,25 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     yield { isFinished: false, source: getSourceRange(ctx, 0, 0), result: undefined };
   }
 
-  // TODO: implement parameter
   function visitParameterizedCondition(ctx: ParserRuleContext): boolean {
-    const direction = karol.direction;
-    const nextFieldType = karol.getNextFieldType();
-    switch (ctx.getText().toLowerCase()) {
+    const instruction = ctx.getChild(0);
+    let { numberParam, colorParam } = getNumberOrColor(ctx.getChild(2));
+    if (colorParam) {
+      // TODO implement colors
+      throw new Error("Farben sind noch nicht implementiert!");
+    }
+    switch (instruction.getText().toLowerCase()) {
       case "istziegel":
-        return nextFieldType === FieldType.brick;
+        return karol.getBrickHeight() === numberParam;
       case "nichtistziegel":
-        return nextFieldType !== FieldType.brick;
+        return karol.getBrickHeight() !== numberParam;
       case "istmarke":
-        return karol.getMarker() !== undefined;
+        throw new Error("Farben sind noch nicht implementiert!");
       case "nichtistmarke":
-        return karol.getMarker() === undefined;
+        throw new Error("Farben sind noch nicht implementiert!");
       case "hatziegel":
       default:
-        throw new Error(ctx.getText() + " nicht implementiert");
+        throw new Error(ctx.getText() + " noch nicht implementiert");
     }
   }
 

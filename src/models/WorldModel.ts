@@ -101,14 +101,23 @@ export class WorldModel {
   getFirstFreeY(x: number, z: number): number {
     let y = 0;
     while (
-      this.isValid({
-        x,
-        y,
-        z,
-      }) &&
+      this.isValid({ x, y, z }) &&
       this.getField(x, y, z) !== FieldType.empty &&
       this.getField(x, y, z) !== FieldType.karol
     ) {
+      y++;
+    }
+    return y;
+  }
+
+  /**
+   * @return number of bricks on the given field; 0 if no bricks found
+   * @param x
+   * @param z
+   */
+  getBrickHeight(x: number, z: number): number {
+    let y = 0;
+    while (this.isValid({ x, y, z }) && this.getField(x, y, z) === FieldType.brick) {
       y++;
     }
     return y;

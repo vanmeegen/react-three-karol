@@ -91,7 +91,11 @@ export class KarolModel {
         if (fieldType === FieldType.empty) {
           this.world.setFieldByCoord(nextPosition, FieldType.brick);
         } else if (fieldType === FieldType.wall) {
-          throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
+          if (nextPosition.y >= this.world.dimensions.y) {
+            throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
+          } else {
+            throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
+          }
         } else if (fieldType === FieldType.brick) {
           throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
         } else {
@@ -118,6 +122,13 @@ export class KarolModel {
         throw Error("Da ist kein Ziegel");
       }
     }
+  }
+
+  /**
+   * @return brick pile height of next position, 0 if no brick
+   */
+  getBrickHeight(): number {
+    return this.world.getBrickHeight(this.nextPosition.x, this.nextPosition.z);
   }
 
   /**
