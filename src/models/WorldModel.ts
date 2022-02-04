@@ -14,8 +14,6 @@ export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): Fiel
   );
 }
 
-export type FieldInfo = { content: FieldType; x: number; y: number; z: number };
-
 export type MarkerInfo = { position: Coord3d; color: Color };
 
 export class WorldModel {
@@ -117,7 +115,7 @@ export class WorldModel {
    */
   getBrickHeight(x: number, z: number): number {
     let y = 0;
-    while (this.isValid({ x, y, z }) && this.getField(x, y, z) === FieldType.brick) {
+    while (this.isValid({ x, y, z }) && this.getField(x, y, z) >= FieldType.brick_red) {
       y++;
     }
     return y;

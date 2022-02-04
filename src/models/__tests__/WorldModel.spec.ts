@@ -42,8 +42,8 @@ describe("The world model initializes a 3dimensional array correctly", () => {
   it("can get markers on a stack of bricks with y is topmost bricks y coordinate", () => {
     const world = new WorldModel(2, 2, 2);
     world.setMarker({ x: 0, z: 0 }, Color.yellow);
-    world.setField(0, 0, 0, FieldType.brick);
-    world.setField(0, 1, 0, FieldType.brick);
+    world.setField(0, 0, 0, FieldType.brick_first);
+    world.setField(0, 1, 0, FieldType.brick_first);
     const markers = world.markers;
     expect(markers).toHaveLength(1);
     expect(markers[0]).toMatchObject({ position: { x: 0, y: 2, z: 0 }, color: Color.yellow });

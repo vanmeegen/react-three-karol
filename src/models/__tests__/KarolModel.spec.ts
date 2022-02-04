@@ -43,7 +43,7 @@ describe("Karol can interact with the world", () => {
     });
 
     it("can jump on and off a stack of bricks if the height difference is less or equal his jumpheight", () => {
-      world.setField(0, 0, 1, FieldType.brick);
+      world.setField(0, 0, 1, FieldType.brick_first);
       karol.move();
       expect(karol.position).toEqual({ x: 0, y: 1, z: 1 });
       karol.move();
@@ -51,42 +51,42 @@ describe("Karol can interact with the world", () => {
     });
 
     it("cannot jump on a stack of bricks if the height difference is higher than his jumpheight", () => {
-      world.setField(0, 0, 1, FieldType.brick);
-      world.setField(0, 1, 1, FieldType.brick);
+      world.setField(0, 0, 1, FieldType.brick_first);
+      world.setField(0, 1, 1, FieldType.brick_first);
       expect(() => karol.move()).toThrow();
     });
   });
   describe("It can change the world", () => {
     it("can lay a brick", () => {
       karol.layBrick();
-      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick);
+      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick_first);
       expect(world.getField(0, 1, 1)).toEqual(FieldType.empty);
     });
 
     it("lays a brick always on the ground", () => {
       karol.position = { x: 0, y: 1, z: 0 };
       karol.layBrick();
-      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick);
+      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick_first);
     });
 
     it("stack a brick on another", () => {
       karol.layBrick();
       karol.layBrick();
-      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick);
-      expect(world.getField(0, 1, 1)).toEqual(FieldType.brick);
+      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick_first);
+      expect(world.getField(0, 1, 1)).toEqual(FieldType.brick_first);
     });
 
     it("can pick up a brick", () => {
-      world.setField(0, 0, 1, FieldType.brick);
+      world.setField(0, 0, 1, FieldType.brick_first);
       karol.pickupBrick();
       expect(world.getField(0, 0, 1)).toEqual(FieldType.empty);
     });
 
     it("can pick up a brick from a tile", () => {
-      world.setField(0, 0, 1, FieldType.brick);
-      world.setField(0, 1, 1, FieldType.brick);
+      world.setField(0, 0, 1, FieldType.brick_first);
+      world.setField(0, 1, 1, FieldType.brick_first);
       karol.pickupBrick();
-      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick);
+      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick_first);
       expect(world.getField(0, 1, 1)).toEqual(FieldType.empty);
     });
 

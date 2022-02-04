@@ -1,7 +1,7 @@
 // do not change number because calculations are based on these
 import { action, makeObservable, observable } from "mobx";
 import { WorldModel } from "./WorldModel";
-import { Color, Coord3d, FieldType } from "./CommonTypes";
+import { Color, Coord3d, FieldType, getBrickFieldType } from "./CommonTypes";
 
 export enum Direction {
   North = 0,
@@ -77,26 +77,25 @@ export class KarolModel {
     return this.direction;
   }
 
-  // TODO implement brick color, this would mean to refactor the fields array to objects or we need a map of coords for the color
-  @action layBrick(count: number = 1, color: Color = Color.green) {
+  @action layBrick(count: number = 1, color: Color = Color.red) {
     for (let i = 0; i < count; i++) {
       let nextPosition = this.nextPosition;
       nextPosition.y = 0;
       if (this.world.isValid(nextPosition)) {
         // move up if bricks are stacked
-        while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
+        while (this.world.getFieldByCoord(nextPosition) >= FieldType.brick_first) {
           nextPosition.y++;
         }
         const fieldType = this.world.getFieldByCoord(nextPosition);
         if (fieldType === FieldType.empty) {
-          this.world.setFieldByCoord(nextPosition, FieldType.brick);
+          this.world.setFieldByCoord(nextPosition, getBrickFieldType(color));
         } else if (fieldType === FieldType.wall) {
           if (nextPosition.y >= this.world.dimensions.y) {
             throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
           } else {
             throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
           }
-        } else if (fieldType === FieldType.brick) {
+        } else if (fieldType >= FieldType.brick_first) {
           throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
         } else {
           throw Error("Huch? Da ist was im Weg was ich nicht kenne.");
@@ -112,7 +111,7 @@ export class KarolModel {
       let nextPosition = this.nextPosition;
       // move up if bricks are stacked
       let lastBrickPosition = undefined;
-      while (this.world.getFieldByCoord(nextPosition) === FieldType.brick) {
+      while (this.world.getFieldByCoord(nextPosition) >= FieldType.brick_first) {
         lastBrickPosition = { ...nextPosition };
         nextPosition.y++;
       }
@@ -179,7 +178,7 @@ export class KarolModel {
       const nextField = this.getNextFieldType();
       if (nextField === FieldType.wall) {
         result = "Karol ist am Quader angestoßen.";
-      } else if (nextField === FieldType.brick || position.y > 0) {
+      } else if (nextField >= FieldType.brick_first || position.y > 0) {
         // check if Karol can jump
         const y = this.world.getFirstFreeY(position.x, position.z);
         if (Math.abs(position.y - y) <= this.jumpHeight) {

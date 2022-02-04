@@ -236,9 +236,9 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       case "nichtistwand":
         return nextFieldType !== FieldType.wall;
       case "istziegel":
-        return nextFieldType === FieldType.brick;
+        return nextFieldType === FieldType.brick_red;
       case "nichtistziegel":
-        return nextFieldType !== FieldType.brick;
+        return nextFieldType !== FieldType.brick_red;
       case "istmarke":
         return karol.getMarker() !== undefined;
       case "nichtistmarke":

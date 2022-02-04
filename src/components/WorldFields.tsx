@@ -15,14 +15,20 @@ const Field = observer((props: { content: FieldType; karol: KarolModel; position
   const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
   // console.log("Rendering field " + key);
   switch (props.content) {
-    case FieldType.brick:
+    case FieldType.brick_red:
       result = <Brick key={key} position={props.position} texture={DirtTexture} heightUnits={0.5} />;
       break;
-    case FieldType.grassBlock:
+    case FieldType.brick_yellow:
+      result = <Brick key={key} position={props.position} color="yellow" heightUnits={0.5} />;
+      break;
+    case FieldType.brick_blue:
+      result = <Brick key={key} position={props.position} color="blue" heightUnits={0.5} />;
+      break;
+    case FieldType.brick_green:
       result = <Brick key={key} position={props.position} texture={GrassTexture} heightUnits={0.5} />;
       break;
-    case FieldType.marker:
-      result = <Brick key={key} position={props.position} heightUnits={0.1} color="yellow" />;
+    case FieldType.brick_black:
+      result = <Brick key={key} position={props.position} color="black" heightUnits={0.5} />;
       break;
     case FieldType.karol:
       result = <Karol key={key} position={props.position} karol={props.karol} />;

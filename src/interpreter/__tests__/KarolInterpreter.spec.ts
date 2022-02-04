@@ -59,10 +59,10 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       // but a brick is in front of him
       const nextPosition = karol.nextPosition;
-      expect(world.getFieldByCoord(nextPosition)).toEqual(FieldType.brick);
+      expect(world.getFieldByCoord(nextPosition)).toEqual(FieldType.brick_first);
     });
     it("'Aufheben' picks up a brick in front of Karol", () => {
-      world.setField(1, 0, 0, FieldType.brick);
+      world.setField(1, 0, 0, FieldType.brick_first);
       executeProgram("Aufheben", karol);
       // Karol's position is unchanged
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
@@ -83,13 +83,13 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       // but a brick is in front of him
       const nextPosition = karol.nextPosition;
-      expect(world.getFieldByCoord(nextPosition)).toEqual(FieldType.brick);
-      expect(world.getFieldByCoord({ ...nextPosition, y: 1 })).toEqual(FieldType.brick);
+      expect(world.getFieldByCoord(nextPosition)).toEqual(FieldType.brick_first);
+      expect(world.getFieldByCoord({ ...nextPosition, y: 1 })).toEqual(FieldType.brick_first);
     });
 
     it("'Aufheben(2)' picks up two bricks in front of Karol", () => {
-      world.setField(1, 0, 0, FieldType.brick);
-      world.setField(1, 1, 0, FieldType.brick);
+      world.setField(1, 0, 0, FieldType.brick_first);
+      world.setField(1, 1, 0, FieldType.brick_first);
       executeProgram("Aufheben(2)", karol);
       // Karol's position is unchanged
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
@@ -129,13 +129,13 @@ describe("The KarelInterpreter changes the World by programming", () => {
     it("'IstZiegel' is true if the next field is a brick", () => {
       expect(executeCondition("IstZiegel", karol)).toBeFalsy();
       // should face a wall now
-      world.setFieldByCoord(karol.nextPosition, FieldType.brick);
+      world.setFieldByCoord(karol.nextPosition, FieldType.brick_first);
       expect(executeCondition("IstZiegel", karol)).toBeTruthy();
     });
     it("'NichtIstZiegel' is false if the next field is a brick", () => {
       expect(executeCondition("NichtIstZiegel", karol)).toBeTruthy();
       // should face a wall now
-      world.setFieldByCoord(karol.nextPosition, FieldType.brick);
+      world.setFieldByCoord(karol.nextPosition, FieldType.brick_first);
       expect(executeCondition("NichtIstZiegel", karol)).toBeFalsy();
     });
     it("'IstMarke' is true if the current field has a marker", () => {
@@ -181,8 +181,8 @@ describe("The KarelInterpreter changes the World by programming", () => {
   describe("it understands parameterized conditions", () => {
     it("'IstZiegel(2)' is true if the next field has exactly 2 bricks", () => {
       expect(executeCondition("IstZiegel(2)", karol)).toBeFalsy();
-      world.setFieldByCoord({ x: 1, y: 0, z: 0 }, FieldType.brick);
-      world.setFieldByCoord({ x: 1, y: 1, z: 0 }, FieldType.brick);
+      world.setFieldByCoord({ x: 1, y: 0, z: 0 }, FieldType.brick_first);
+      world.setFieldByCoord({ x: 1, y: 1, z: 0 }, FieldType.brick_first);
       expect(executeCondition("IstZiegel(2)", karol)).toBeTruthy();
     });
     it("'NichtIstZiegel(2)' is true  if the next field has no bricks", () => {
@@ -192,8 +192,8 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(executeCondition("NichtIstZiegel(2)", karol)).toBeTruthy();
     });
     it("'NichtIstZiegel(2)' is false  if the next field has 2 brick", () => {
-      world.setFieldByCoord({ x: 0, y: 0, z: 1 }, FieldType.brick);
-      world.setFieldByCoord({ x: 0, y: 1, z: 1 }, FieldType.brick);
+      world.setFieldByCoord({ x: 0, y: 0, z: 1 }, FieldType.brick_first);
+      world.setFieldByCoord({ x: 0, y: 1, z: 1 }, FieldType.brick_first);
       expect(executeCondition("NichtIstZiegel(2)", karol)).toBeTruthy();
     });
   });

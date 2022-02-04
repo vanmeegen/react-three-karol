@@ -1,4 +1,5 @@
 import { makeObservable, observable } from "mobx";
+import { assertCondition } from "../util/AssertCondition";
 
 export class Coord2d {
   constructor(x: number, z: number) {
@@ -27,18 +28,37 @@ export class Coord3d {
 export enum FieldType {
   empty = 0,
   karol = 1,
-  brick = 2,
-  marker = 3,
-  wall = 4,
-  grassBlock = 5,
+  wall = 2,
+  // ATTENTION:
+  // DO NOT add enum values after this since all will be regarded as bricks, only add if colors are added
+  // colorToBrickIndex must contain colors matching the number of the colored bricks - brick_first
+  brick_first = 3,
+  brick_red = brick_first,
+  brick_yellow = brick_first + 1,
+  brick_blue = brick_first + 2,
+  brick_green = brick_first + 3,
+  brick_black = brick_first + 4,
 }
 
 export enum Color {
-  yellow = "gelb",
   red = "rot",
+  yellow = "gelb",
   blue = "blau",
   green = "grün",
   black = "schwarz",
+}
+
+const colorToBrickIndex: Color[] = [Color.red, Color.yellow, Color.blue, Color.green, Color.black];
+
+export function getColor(fieldType: FieldType) {
+  assertCondition(fieldType >= FieldType.brick_first, "Cannot get a color from a field type which is not a brick");
+  return colorToBrickIndex[fieldType - FieldType.brick_first];
+}
+
+export function getBrickFieldType(color: Color): FieldType {
+  const index = colorToBrickIndex.indexOf(color);
+  assertCondition(index >= 0, "Internal Error: Color index not found in colorToBrickIndex");
+  return (index + FieldType.brick_first) as FieldType;
 }
 
 /**

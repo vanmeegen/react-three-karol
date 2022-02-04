@@ -112,9 +112,9 @@ class KarolInterpreter extends KarolVisitor {
       case "nichtistwand":
         return nextFieldType !== FieldType.wall;
       case "istziegel":
-        return nextFieldType === FieldType.brick;
+        return nextFieldType === FieldType.brick_red;
       case "nichtistziegel":
-        return nextFieldType !== FieldType.brick;
+        return nextFieldType !== FieldType.brick_red;
       case "istmarke":
         return this.karol.getMarker() !== undefined;
       case "nichtistmarke":
