@@ -1,5 +1,5 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
-import { Color, Coord2d, coord2dToKey, Coord3d, FieldType, keyToCoord2d } from "./CommonTypes";
+import { Color, Coord2d, coord2dToKey, Coord3d, FieldType, getBrickFieldType, keyToCoord2d } from "./CommonTypes";
 
 export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): FieldType[][][] {
   // must fill array, otherwise map does not work
@@ -168,5 +168,18 @@ export class WorldModel {
     } else {
       throw Error("Die Marker Position ist ungültig");
     }
+  }
+
+  hasBrick(color: Color, x: number, z: number) {
+    let y = 0;
+    let result = false;
+    const brickFieldType = getBrickFieldType(color);
+    while (this.isValid({ x, y, z }) && this.getField(x, y, z) >= FieldType.brick_red) {
+      if (this.getField(x, y, z) === brickFieldType) {
+        result = true;
+      }
+      y++;
+    }
+    return result;
   }
 }

@@ -25,6 +25,10 @@ const OFFSETS = {
 export class KarolModel {
   @observable position: Coord3d = { x: 0, y: 0, z: 0 };
   @observable direction: Direction = Direction.South;
+  /** Infinity means unlimited bricks */
+  @observable brickCount = Infinity;
+  @observable initialBrickCount = Infinity;
+  @observable maxBrickCount = Infinity;
   /**
    * how high/low Karol can jump in a move
    */
@@ -44,6 +48,7 @@ export class KarolModel {
     }
     this.position = { x: 0, y: 0, z: 0 };
     this.direction = Direction.South;
+    this.brickCount = this.initialBrickCount;
     this.world.setFieldByCoord(this.position, FieldType.karol);
   }
 
@@ -81,27 +86,32 @@ export class KarolModel {
     for (let i = 0; i < count; i++) {
       let nextPosition = this.nextPosition;
       nextPosition.y = 0;
-      if (this.world.isValid(nextPosition)) {
-        // move up if bricks are stacked
-        while (this.world.getFieldByCoord(nextPosition) >= FieldType.brick_first) {
-          nextPosition.y++;
-        }
-        const fieldType = this.world.getFieldByCoord(nextPosition);
-        if (fieldType === FieldType.empty) {
-          this.world.setFieldByCoord(nextPosition, getBrickFieldType(color));
-        } else if (fieldType === FieldType.wall) {
-          if (nextPosition.y >= this.world.dimensions.y) {
+      if (this.brickCount >= 1) {
+        if (this.world.isValid(nextPosition)) {
+          // move up if bricks are stacked
+          while (this.world.getFieldByCoord(nextPosition) >= FieldType.brick_first) {
+            nextPosition.y++;
+          }
+          const fieldType = this.world.getFieldByCoord(nextPosition);
+          if (fieldType === FieldType.empty) {
+            this.world.setFieldByCoord(nextPosition, getBrickFieldType(color));
+            this.brickCount--;
+          } else if (fieldType === FieldType.wall) {
+            if (nextPosition.y >= this.world.dimensions.y) {
+              throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
+            } else {
+              throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
+            }
+          } else if (fieldType >= FieldType.brick_first) {
             throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
           } else {
-            throw Error("Karol kann nicht hinlegen, er steht vor einem Quader.");
+            throw Error("Huch? Da ist was im Weg was ich nicht kenne.");
           }
-        } else if (fieldType >= FieldType.brick_first) {
-          throw Error("Karol kann nicht hinlegen, die maximale Stapelhöhe ist erreicht.");
         } else {
-          throw Error("Huch? Da ist was im Weg was ich nicht kenne.");
+          throw Error("Karol kann nicht hinlegen, er steht vor der Wand.");
         }
       } else {
-        throw Error("Karol kann nicht hinlegen, er steht vor der Wand.");
+        throw Error("Karol kann nicht " + count + " hinlegen, er hat nicht mehr genug Ziegel.");
       }
     }
   }
@@ -116,7 +126,12 @@ export class KarolModel {
         nextPosition.y++;
       }
       if (lastBrickPosition) {
-        this.world.setFieldByCoord(lastBrickPosition, FieldType.empty);
+        if (this.brickCount < this.maxBrickCount) {
+          this.world.setFieldByCoord(lastBrickPosition, FieldType.empty);
+          this.brickCount += 1;
+        } else {
+          throw Error("Karol kann nicht mehr als " + this.maxBrickCount + " Ziegel tragen.");
+        }
       } else {
         throw Error("Da ist kein Ziegel");
       }
@@ -128,6 +143,15 @@ export class KarolModel {
    */
   getBrickHeight(): number {
     return this.world.getBrickHeight(this.nextPosition.x, this.nextPosition.z);
+  }
+
+  /**
+   *
+   * @param color
+   * @return true if next field pile contains at least one brick with the given color
+   */
+  hasBrick(color: Color): boolean {
+    return this.world.hasBrick(color, this.nextPosition.x, this.nextPosition.z);
   }
 
   /**
@@ -194,5 +218,13 @@ export class KarolModel {
       throw Error(result);
     }
     return result;
+  }
+
+  /**
+   * @return true if karol has picked up exactly count bricks; always returns true if no brick limit is set
+   * @param count
+   */
+  hasBricksExactly(count: number): boolean {
+    return this.brickCount === count;
   }
 }

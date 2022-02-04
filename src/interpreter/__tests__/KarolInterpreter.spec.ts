@@ -87,6 +87,11 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(world.getFieldByCoord({ ...nextPosition, y: 1 })).toEqual(FieldType.brick_first);
     });
 
+    it("'Hinlegen(grün)' sets a green brick", () => {
+      executeProgram("Hinlegen(grün)", karol);
+      expect(world.getFieldByCoord(karol.nextPosition)).toEqual(FieldType.brick_green);
+    });
+
     it("'Aufheben(2)' picks up two bricks in front of Karol", () => {
       world.setField(1, 0, 0, FieldType.brick_first);
       world.setField(1, 1, 0, FieldType.brick_first);
@@ -128,25 +133,21 @@ describe("The KarelInterpreter changes the World by programming", () => {
     });
     it("'IstZiegel' is true if the next field is a brick", () => {
       expect(executeCondition("IstZiegel", karol)).toBeFalsy();
-      // should face a wall now
       world.setFieldByCoord(karol.nextPosition, FieldType.brick_first);
       expect(executeCondition("IstZiegel", karol)).toBeTruthy();
     });
     it("'NichtIstZiegel' is false if the next field is a brick", () => {
       expect(executeCondition("NichtIstZiegel", karol)).toBeTruthy();
-      // should face a wall now
       world.setFieldByCoord(karol.nextPosition, FieldType.brick_first);
       expect(executeCondition("NichtIstZiegel", karol)).toBeFalsy();
     });
     it("'IstMarke' is true if the current field has a marker", () => {
       expect(executeCondition("IstMarke", karol)).toBeFalsy();
-      // should face a wall now
       karol.setMarker(Color.yellow);
       expect(executeCondition("IstMarke", karol)).toBeTruthy();
     });
     it("'NichtIstMarke' is true if the current field has no marker", () => {
       expect(executeCondition("NichtIstMarke", karol)).toBeTruthy();
-      // should face a wall now
       karol.setMarker(Color.yellow);
       expect(executeCondition("NichtIstMarke", karol)).toBeFalsy();
     });
@@ -196,6 +197,20 @@ describe("The KarelInterpreter changes the World by programming", () => {
       world.setFieldByCoord({ x: 0, y: 1, z: 1 }, FieldType.brick_first);
       expect(executeCondition("NichtIstZiegel(2)", karol)).toBeTruthy();
     });
+
+    it("'IstMarke(grün)' is true if the current field has a green marker", () => {
+      expect(executeCondition("IstMarke(grün)", karol)).toBeFalsy();
+      karol.setMarker(Color.green);
+      expect(executeCondition("IstMarke(grün)", karol)).toBeTruthy();
+    });
+    it("'NichtIstMarke(grün)' is true if the current field has no marker", () => {
+      expect(executeCondition("NichtIstMarke(grün)", karol)).toBeTruthy();
+    });
+    it("'NichtIstMarke(grün)' is true if the current field has a yellow marker", () => {
+      expect(executeCondition("NichtIstMarke(grün)", karol)).toBeTruthy();
+      karol.setMarker(Color.yellow);
+      expect(executeCondition("NichtIstMarke(grün)", karol)).toBeTruthy();
+    });
   });
 
   describe("it understands loops", () => {
@@ -227,6 +242,48 @@ describe("The KarelInterpreter changes the World by programming", () => {
       executeProgram(program, karol);
       expect(karol.position).toEqual({ x: 0, y: 0, z: 0 });
       expect(karol.direction).toEqual(Direction.East);
+    });
+  });
+
+  describe("it can have limited capacity for carrying stuff", () => {
+    beforeEach(() => {
+      karol.maxBrickCount = 3;
+      karol.initialBrickCount = 1;
+      karol.reset();
+    });
+    it("'IstVoll' is true if Karol cannot pickup any more bricks", () => {
+      expect(executeCondition("IstVoll", karol)).toBeFalsy();
+      karol.brickCount = 3;
+      expect(executeCondition("IstVoll", karol)).toBeTruthy();
+    });
+    it("'NichtIstVoll' is false if Karol cannot pickup any more bricks", () => {
+      expect(executeCondition("NichtIstVoll", karol)).toBeTruthy();
+      karol.brickCount = 3;
+      expect(executeCondition("NichtIstVoll", karol)).toBeFalsy();
+    });
+    it("'IstLeer' is true if Karol has no bricks", () => {
+      expect(executeCondition("IstLeer", karol)).toBeFalsy();
+      karol.brickCount = 0;
+      expect(executeCondition("IstLeer", karol)).toBeTruthy();
+    });
+    it("'NichtIstLeer' is false if Karol has no bricks", () => {
+      expect(executeCondition("NichtIstLeer", karol)).toBeTruthy();
+      karol.brickCount = 0;
+      expect(executeCondition("NichtIstLeer", karol)).toBeFalsy();
+    });
+    it("'HatZiegel' is true if Karol has at least one brick", () => {
+      expect(executeCondition("HatZiegel", karol)).toBeTruthy();
+      karol.brickCount = 2;
+      expect(executeCondition("HatZiegel", karol)).toBeTruthy();
+      karol.brickCount = 0;
+      expect(executeCondition("HatZiegel", karol)).toBeFalsy();
+    });
+    it("'HatZiegel(1)' is true if Karol has exactly one brick", () => {
+      expect(executeCondition("HatZiegel(1)", karol)).toBeTruthy();
+      karol.brickCount = 2;
+      expect(executeCondition("HatZiegel(1)", karol)).toBeFalsy();
+      karol.brickCount = 0;
+      expect(executeCondition("HatZiegel(1)", karol)).toBeFalsy();
     });
   });
 });

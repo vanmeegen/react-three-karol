@@ -76,6 +76,15 @@ describe("Karol can interact with the world", () => {
       expect(world.getField(0, 1, 1)).toEqual(FieldType.brick_first);
     });
 
+    it("can stack colored bricks on top of another", () => {
+      karol.position = { x: 0, y: 0, z: 0 };
+      karol.layBrick(1, Color.green);
+      karol.layBrick(2, Color.red);
+      expect(world.getField(0, 0, 1)).toEqual(FieldType.brick_green);
+      expect(world.getField(0, 1, 1)).toEqual(FieldType.brick_red);
+      expect(world.getField(0, 2, 1)).toEqual(FieldType.brick_red);
+    });
+
     it("can pick up a brick", () => {
       world.setField(0, 0, 1, FieldType.brick_first);
       karol.pickupBrick();
@@ -104,6 +113,43 @@ describe("Karol can interact with the world", () => {
       world.setMarker({ x: 0, z: 0 }, Color.yellow);
       karol.deleteMarker();
       expect(world.getMarker({ x: 0, z: 0 })).toEqual(undefined);
+    });
+  });
+  describe("it can be set to carry a limited number of bricks", () => {
+    beforeEach(() => {
+      karol.maxBrickCount = 10;
+      karol.initialBrickCount = 3;
+      karol.reset();
+    });
+
+    it("can lay down bricks until it has nothing left", () => {
+      karol.layBrick(3);
+      expect(karol.brickCount).toEqual(0);
+      expect(() => karol.layBrick()).toThrow();
+    });
+
+    it("can pickup bricks", () => {
+      // start is 3, pickup 3 = 6
+      for (let i = 0; i < 3; i++) {
+        world.setFieldByCoord({ x: 0, y: i, z: 1 }, FieldType.brick_green);
+      }
+      karol.pickupBrick(3);
+      expect(karol.brickCount).toEqual(6);
+    });
+
+    it.only("can not carry more bricks than its maximum capacity", () => {
+      karol.maxBrickCount = 4;
+      karol.reset();
+      for (let i = 0; i < 3; i++) {
+        world.setFieldByCoord({ x: 0, y: i, z: 1 }, FieldType.brick_green);
+      }
+      // start is 3, pickup 1 = 4
+      karol.pickupBrick(1);
+      expect(karol.brickCount).toEqual(4);
+      expect(() => karol.pickupBrick(1)).toThrow(
+        "Karol kann nicht mehr als " + karol.maxBrickCount + " Ziegel tragen."
+      );
+      expect(karol.brickCount).toEqual(4);
     });
   });
 });

@@ -1,5 +1,5 @@
 import { ParserRuleContext } from "antlr4";
-import { assertCondition } from "../util/AssertCondition";
+import { assertCondition, assertDefined } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
 import { Direction, KarolModel } from "../models/KarolModel";
 import { Color, FieldType } from "../models/CommonTypes";
@@ -252,10 +252,15 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       case "istosten":
         return direction === Direction.East;
       case "istvoll":
+        return karol.brickCount === karol.maxBrickCount;
       case "nichtistvoll":
+        return !(karol.brickCount === karol.maxBrickCount);
       case "istleer":
+        return karol.brickCount === 0;
       case "nichtistleer":
+        return karol.brickCount !== 0;
       case "hatziegel":
+        return karol.brickCount > 0;
       default:
         throw new Error(ctx.getText() + " nicht implementiert");
     }
@@ -300,20 +305,32 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   function visitParameterizedCondition(ctx: ParserRuleContext): boolean {
     const instruction = ctx.getChild(0);
     let { numberParam, colorParam } = getNumberOrColor(ctx.getChild(2));
-    if (colorParam) {
-      // TODO implement colors
-      throw new Error("Farben sind noch nicht implementiert!");
-    }
     switch (instruction.getText().toLowerCase()) {
       case "istziegel":
-        return karol.getBrickHeight() === numberParam;
+        if (colorParam !== undefined) {
+          return karol.hasBrick(colorParam);
+        } else if (numberParam !== undefined) {
+          return karol.getBrickHeight() === numberParam;
+        } else {
+          throw Error("Internal Error: Param is neither a number nor a color.");
+        }
       case "nichtistziegel":
-        return karol.getBrickHeight() !== numberParam;
+        if (colorParam !== undefined) {
+          return !karol.hasBrick(colorParam);
+        } else if (numberParam !== undefined) {
+          return !(karol.getBrickHeight() === numberParam);
+        } else {
+          throw Error("Internal Error: Param is neither a number nor a color.");
+        }
       case "istmarke":
-        throw new Error("Farben sind noch nicht implementiert!");
+        assertDefined(colorParam, "Internal Error: IstMarke(param) needs a color parameter but didnt find one.");
+        return karol.getMarker() === colorParam;
       case "nichtistmarke":
-        throw new Error("Farben sind noch nicht implementiert!");
+        assertDefined(colorParam, "Internal Error: IstMarke(param) needs a color parameter but didnt find one.");
+        return karol.getMarker() !== colorParam;
       case "hatziegel":
+        assertDefined(numberParam, "Internal Error: hatziegel(param) needs a number parameter but didnt find one.");
+        return karol.hasBricksExactly(numberParam);
       default:
         throw new Error(ctx.getText() + " noch nicht implementiert");
     }
