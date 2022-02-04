@@ -67,11 +67,11 @@ export const World3D = observer((props: { world: WorldModel; karol: KarolModel }
           {rangeX.map((x) => (
             <DashedLine key={"gridx" + x} from={[x, 0, 0]} to={[x, 0, max.z]} color="green" />
           ))}
-          <DashedLine key="gridy" from={[0, 0, 0]} to={[0, max.y, 0]} color="blue" />
-          <Plane key="p1" args={[max.z, max.y]} position={[0, max.y / 2, max.z / 2]} rotation={[0, Math.PI / 2, 0]}>
+          <DashedLine key="gridy" from={[0, 0, 0]} to={[0, max.y/2, 0]} color="blue" />
+          <Plane key="p1" args={[max.z, max.y / 2]} position={[0, max.y / 4, max.z / 2]} rotation={[0, Math.PI / 2, 0]}>
             <meshPhongMaterial attach="material" color="lightblue" />
           </Plane>
-          <Plane key="p2" args={[max.x, max.y]} position={[max.x / 2, max.y / 2, 0]} rotation={[0, 0, 0]}>
+          <Plane key="p2" args={[max.x, max.y / 2]} position={[max.x / 2, max.y / 4, 0]} rotation={[0, 0, 0]}>
             <meshPhongMaterial attach="material" color="lightblue" />
           </Plane>
           <WorldFields fields={props.world.fields} karol={props.karol} />
