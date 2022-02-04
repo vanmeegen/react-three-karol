@@ -1,22 +1,19 @@
-import { TextureLoader } from "three";
-import dirt from "../assets/dirt.jpg";
 import { observer } from "mobx-react";
 import { FieldType } from "../models/CommonTypes";
 import { KarolModel } from "../models/KarolModel";
 import React from "react";
-import grass from "../assets/grass.jpg";
 import { Brick } from "./Brick";
 import { Karol } from "./Karol";
 
-const DirtTexture = new TextureLoader().load(dirt);
-const GrassTexture = new TextureLoader().load(grass);
+// const DirtTexture = new TextureLoader().load(dirt);
+// const GrassTexture = new TextureLoader().load(grass);
 const Field = observer((props: { content: FieldType; karol: KarolModel; position: [number, number, number] }) => {
   let result;
   const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
   // console.log("Rendering field " + key);
   switch (props.content) {
     case FieldType.brick_red:
-      result = <Brick key={key} position={props.position} texture={DirtTexture} heightUnits={0.5} />;
+      result = <Brick key={key} position={props.position} color="red" heightUnits={0.5} />;
       break;
     case FieldType.brick_yellow:
       result = <Brick key={key} position={props.position} color="yellow" heightUnits={0.5} />;
@@ -25,7 +22,7 @@ const Field = observer((props: { content: FieldType; karol: KarolModel; position
       result = <Brick key={key} position={props.position} color="blue" heightUnits={0.5} />;
       break;
     case FieldType.brick_green:
-      result = <Brick key={key} position={props.position} texture={GrassTexture} heightUnits={0.5} />;
+      result = <Brick key={key} position={props.position} color="green" heightUnits={0.5} />;
       break;
     case FieldType.brick_black:
       result = <Brick key={key} position={props.position} color="black" heightUnits={0.5} />;

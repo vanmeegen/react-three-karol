@@ -55,7 +55,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   }
 
   function run(waitTime?: number) {
-    const tree: ParserRuleContext | undefined = parseKarol(program);
+    const tree: ParserRuleContext | undefined = parseKarol(textAreaRef.current!.value);
     if (tree) {
       const steps = executeSteps(tree, props.model);
       const doStep = () => {
@@ -108,13 +108,42 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     );
   }
 
+  async function load() {
+    let fileHandle;
+    [fileHandle] = await (window as any).showOpenFilePicker();
+    // noinspection JSVoidFunctionReturnValueUsed
+    const file = await fileHandle.getFile();
+    textAreaRef.current!.value = await file.text();
+    await file.close();
+  }
+
+  async function save() {
+    const text = textAreaRef.current!.value;
+    const options = {
+      types: [
+        {
+          description: "Karol Programme",
+          accept: {
+            "text/plain": [".karol"],
+          },
+        },
+      ],
+    };
+    const handle = await (window as any).showSaveFilePicker(options);
+    const writable = await handle.createWritable();
+    await writable.write(text);
+    await writable.close();
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <button onClick={handleError(() => run(0))}>Run</button>
-        <button onClick={handleError(() => run(200))}>Step</button>
-        <button onClick={handleError(() => run())}>Fast</button>
-        <button onClick={handleSettings}>Settings</button>
+        <button onClick={handleError(() => run(0))}>Start</button>
+        <button onClick={handleError(() => run(200))}>Schritt</button>
+        <button onClick={handleError(() => run())}>Schnell</button>
+        <button onClick={handleSettings}>Einstellungen</button>
+        <button onClick={save}>Speichern</button>
+        <button onClick={load}>Laden</button>
       </div>
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>

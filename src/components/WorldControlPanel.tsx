@@ -73,8 +73,8 @@ export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel 
         <button onClick={handleError(action(toggleMarker))}>M</button>
         <button onClick={handleError(action(setQuader))}>Q</button>
         <button onClick={handleError(action(deleteQuader))}>E</button>
-        <button onClick={handleWorldSettings}>World Settings</button>
-        <button onClick={handleError(reset)}>Reset</button>
+        <button onClick={handleWorldSettings}>Einstellungen</button>
+        <button onClick={handleError(reset)}>Zurücksetzen</button>
       </div>
     </div>
   );
