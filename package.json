@@ -23,6 +23,7 @@
     "@react-three/drei": "^8.8.1",
     "@react-three/fiber": "^7.0.26",
     "antlr4": "^4.9.3",
+    "browser-fs-access": "^0.24.0",
     "mobx": "^6.3.13",
     "mobx-react": "^7.2.1",
     "react": "^18.0.0-rc.0-next-fe905f152-20220107",

@@ -8,8 +8,10 @@ import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contex
 import "./ProgramControlPanel.css";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
-import { IconButton, Tooltip } from "@mui/material";
+import { IconButton, Tooltip, Typography } from "@mui/material";
 import { Delete, DirectionsBike, DirectionsRun, DirectionsWalk, Save, Settings, Upload } from "@mui/icons-material";
+
+import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -41,6 +43,7 @@ function getColOfLineIndex(text: string, line: number, column: number): number {
 export function ProgramControlPanel(props: { model: KarolModel; world: WorldModel; defaultValue: string }) {
   const [isOpen, setOpen] = useState(false);
   const [program, setProgram] = useState(props.defaultValue);
+  const [fileName, setFileName] = useState("Untitled.karol");
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
 
   function handleSettings() {
@@ -111,30 +114,25 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   }
 
   async function load() {
-    let fileHandle;
-    [fileHandle] = await (window as any).showOpenFilePicker();
-    // noinspection JSVoidFunctionReturnValueUsed
-    const file = await fileHandle.getFile();
-    textAreaRef.current!.value = await file.text();
-    await file.close();
+    const blob = await fileOpen({
+      mimeTypes: ["text/plain"],
+      extensions: [".karol", ".txt"],
+      description: "Karol Code",
+    });
+    setFileName(blob.name);
+    textAreaRef.current!.value = await blob.text();
   }
 
   async function save() {
     const text = textAreaRef.current!.value;
-    const options = {
-      types: [
-        {
-          description: "Karol Programme",
-          accept: {
-            "text/plain": [".karol"],
-          },
-        },
-      ],
-    };
-    const handle = await (window as any).showSaveFilePicker(options);
-    const writable = await handle.createWritable();
-    await writable.write(text);
-    await writable.close();
+    const blob = new Blob([text], { type: "text/plain" });
+    const handle: FileSystemHandle | null = await fileSave(blob, {
+      fileName: fileName,
+      extensions: [".karol"],
+    });
+    if (handle !== null) {
+      setFileName(handle.name);
+    }
   }
 
   function clear(): void {
@@ -179,6 +177,9 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
             <Delete />
           </IconButton>
         </Tooltip>
+        <Typography variant="caption" style={{ margin: "auto" }}>
+          {fileName}
+        </Typography>
       </div>
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>

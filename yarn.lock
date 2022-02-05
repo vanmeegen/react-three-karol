@@ -1122,6 +1122,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"browser-fs-access@npm:^0.24.0":
+  version: 0.24.0
+  resolution: "browser-fs-access@npm:0.24.0"
+  checksum: 206e8ee98c9ee9da082ffd4c20c56cac85f8b47cdb24d55c6b265e65591ba7296412f3404e988cb3e1c0454be6c3834ef315b18490d1b7e02ea7f0c37a9260d1
+  languageName: node
+  linkType: hard
+
 "browserslist@npm:^4.17.5":
   version: 4.19.1
   resolution: "browserslist@npm:4.19.1"
@@ -2765,6 +2772,7 @@ __metadata:
     "@types/three": ^0.137.0
     "@vitejs/plugin-react": ^1.1.4
     antlr4: ^4.9.3
+    browser-fs-access: ^0.24.0
     gh-pages: ^3.2.3
     mobx: ^6.3.13
     mobx-react: ^7.2.1
