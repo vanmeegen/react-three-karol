@@ -8,6 +8,8 @@ import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contex
 import "./ProgramControlPanel.css";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
+import { IconButton, Tooltip } from "@mui/material";
+import { Delete, DirectionsBike, DirectionsRun, DirectionsWalk, Save, Settings, Upload } from "@mui/icons-material";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -135,15 +137,48 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     await writable.close();
   }
 
+  function clear(): void {
+    textAreaRef.current!.value = "";
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
-      <div style={{ display: "flex", flexDirection: "row" }}>
-        <button onClick={handleError(() => run(0))}>Start</button>
-        <button onClick={handleError(() => run(200))}>Schritt</button>
-        <button onClick={handleError(() => run())}>Schnell</button>
-        <button onClick={handleSettings}>Einstellungen</button>
-        <button onClick={save}>Speichern</button>
-        <button onClick={load}>Laden</button>
+      <div style={{ display: "flex", flexDirection: "row", margin: "5px" }}>
+        <Tooltip title="Programm laden">
+          <IconButton onClick={load}>
+            <Upload />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Programm speichern">
+          <IconButton onClick={save}>
+            <Save />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Programmstart">
+          <IconButton onClick={handleError(() => run(0))}>
+            <DirectionsRun />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Schnelldurchlauf">
+          <IconButton onClick={handleError(() => run())}>
+            <DirectionsBike />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Einzelschritt">
+          <IconButton onClick={handleError(() => run(200))}>
+            <DirectionsWalk />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Einstellungen Karol">
+          <IconButton onClick={handleSettings}>
+            <Settings />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Programm löschen">
+          <IconButton onClick={clear}>
+            <Delete />
+          </IconButton>
+        </Tooltip>
       </div>
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>

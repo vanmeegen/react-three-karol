@@ -4,6 +4,17 @@ import { KarolModel } from "../models/KarolModel";
 import { Color, Coord3d, FieldType } from "../models/CommonTypes";
 import { useState } from "react";
 import { WorldSettingsDialog } from "./WorldSettingsDialog";
+import { IconButton, Tooltip } from "@mui/material";
+import {
+  ArrowUpward,
+  Bookmark,
+  IndeterminateCheckBox,
+  Rectangle,
+  RestartAlt,
+  Settings,
+  TurnLeft,
+  TurnRight,
+} from "@mui/icons-material";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -44,6 +55,7 @@ export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel 
 
   function setQuader() {
     const position = props.karol.nextPosition;
+    position.y = 0;
     if (props.world.getFieldByCoord(position) === FieldType.empty) {
       props.world.setFieldByCoord(position, FieldType.wall);
     }
@@ -51,6 +63,7 @@ export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel 
 
   function deleteQuader() {
     const position = props.karol.nextPosition;
+    position.y = 0;
     if (props.world.isValid(position) && props.world.getFieldByCoord(position) === FieldType.wall) {
       props.world.setFieldByCoord(position, FieldType.empty);
     }
@@ -65,16 +78,52 @@ export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel 
         onCancel={() => setOpen(false)}
       />
       <div style={{ display: "flex", flexDirection: "row" }}>
-        <button onClick={handleError(() => props.karol.turnLeft())}>&larr;</button>
-        <button onClick={handleError(() => props.karol.move())}>&uarr;</button>
-        <button onClick={handleError(() => props.karol.turnRight())}>&rarr;</button>
-        <button onClick={handleError(() => props.karol.layBrick())}>H</button>
-        <button onClick={handleError(() => props.karol.pickupBrick())}>A</button>
-        <button onClick={handleError(action(toggleMarker))}>M</button>
-        <button onClick={handleError(action(setQuader))}>Q</button>
-        <button onClick={handleError(action(deleteQuader))}>E</button>
-        <button onClick={handleWorldSettings}>Einstellungen</button>
-        <button onClick={handleError(reset)}>Zurücksetzen</button>
+        <Tooltip title="Links drehen">
+          <IconButton onClick={handleError(() => props.karol.turnLeft())}>
+            <TurnLeft />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Vorwärts">
+          <IconButton onClick={handleError(() => props.karol.move())}>
+            <ArrowUpward />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Rechts drehen">
+          <IconButton onClick={handleError(() => props.karol.turnRight())}>
+            <TurnRight />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Hinlegen">
+          <IconButton onClick={handleError(() => props.karol.layBrick())}>H</IconButton>
+        </Tooltip>
+        <Tooltip title="Aufnehmen">
+          <IconButton onClick={handleError(() => props.karol.pickupBrick())}>A</IconButton>
+        </Tooltip>
+        <Tooltip title="Marker setzen/entfernen">
+          <IconButton onClick={handleError(action(toggleMarker))}>
+            <Bookmark />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Quader setzen">
+          <IconButton onClick={handleError(action(setQuader))}>
+            <Rectangle />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Quader entfernen">
+          <IconButton onClick={handleError(action(deleteQuader))}>
+            <IndeterminateCheckBox />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Einstellungen Welt">
+          <IconButton onClick={handleWorldSettings}>
+            <Settings />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Welt zurücksetzen">
+          <IconButton onClick={handleError(reset)}>
+            <RestartAlt />
+          </IconButton>
+        </Tooltip>
       </div>
     </div>
   );
