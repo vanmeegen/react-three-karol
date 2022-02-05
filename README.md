@@ -20,9 +20,9 @@ thought it would be much more approachable if nothing has to be installed.
 - color of bricks and markers
 - configurable count of bricks Karol can pick up and lay down (currently unlimited)
 - load and save programs
+- load and save the world
 
 ## TODO (soon)
-- load and save the world
 - breakpoints and step by step execution
 - 
 ## TODO (future)

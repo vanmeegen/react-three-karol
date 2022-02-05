@@ -1,7 +1,12 @@
 // do not change number because calculations are based on these
-import { action, makeObservable, observable } from "mobx";
+import { action, makeObservable, observable, toJS } from "mobx";
 import { WorldModel } from "./WorldModel";
 import { Color, Coord3d, FieldType, getBrickFieldType } from "./CommonTypes";
+
+export interface SerializedKarol {
+  position: Coord3d;
+  direction: Direction;
+}
 
 export enum Direction {
   North = 0,
@@ -235,5 +240,20 @@ export class KarolModel {
    */
   hasBricksExactly(count: number): boolean {
     return this.brickCount === count;
+  }
+
+  /**
+   * deserializes world properties from the given json into this instance
+   * @param serializedKarol
+   */
+  @action deserialize(serializedKarol: SerializedKarol): void {
+    this.position = new Coord3d(serializedKarol.position.x, serializedKarol.position.y, serializedKarol.position.z);
+    this.direction = serializedKarol.direction;
+  }
+
+  serialize(): SerializedKarol {
+    const position = toJS(this.position);
+    const direction = toJS(this.direction);
+    return { position, direction };
   }
 }

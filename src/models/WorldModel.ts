@@ -1,6 +1,12 @@
 import { action, computed, makeObservable, observable, toJS } from "mobx";
 import { Color, Coord2d, coord2dToKey, Coord3d, FieldType, getBrickFieldType, keyToCoord2d } from "./CommonTypes";
 
+export interface SerializedWorld {
+  fields: FieldType[][][];
+  dimensions: Coord3d;
+  marker: [string, Color][];
+}
+
 export function initEmpty3DArray(xmax: number, ymax: number, zmax: number): FieldType[][][] {
   // must fill array, otherwise map does not work
   return observable(
@@ -38,6 +44,7 @@ export class WorldModel {
   @action init(x: number = 10, y: number = 10, z: number = 10) {
     this.dimensions = new Coord3d(x, y, z);
     this.fields = initEmpty3DArray(x, y, z);
+    this.marker.clear();
   }
 
   @action reset() {
@@ -181,5 +188,26 @@ export class WorldModel {
       y++;
     }
     return result;
+  }
+
+  /**
+   * deserializes world properties from the given json into this instance
+   * @param serializedWorld
+   */
+  @action deserialize(serializedWorld: SerializedWorld): void {
+    this.dimensions = new Coord3d(
+      serializedWorld.dimensions.x,
+      serializedWorld.dimensions.y,
+      serializedWorld.dimensions.y
+    );
+    this.fields = observable(serializedWorld.fields);
+    this.marker = observable(new Map(serializedWorld.marker));
+  }
+
+  serialize(): SerializedWorld {
+    const dimensions = toJS(this.dimensions);
+    const fields = toJS(this.fields);
+    const marker = Array.from(this.marker.entries());
+    return { fields, dimensions, marker };
   }
 }

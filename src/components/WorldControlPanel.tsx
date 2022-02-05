@@ -1,6 +1,6 @@
-import { WorldModel } from "../models/WorldModel";
+import { SerializedWorld, WorldModel } from "../models/WorldModel";
 import { action } from "mobx";
-import { KarolModel } from "../models/KarolModel";
+import { KarolModel, SerializedKarol } from "../models/KarolModel";
 import { Color, Coord3d, FieldType } from "../models/CommonTypes";
 import { useState } from "react";
 import { WorldSettingsDialog } from "./WorldSettingsDialog";
@@ -11,10 +11,13 @@ import {
   IndeterminateCheckBox,
   Rectangle,
   RestartAlt,
+  Save,
   Settings,
   TurnLeft,
   TurnRight,
+  Upload,
 } from "@mui/icons-material";
+import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -26,8 +29,14 @@ function handleError(f: () => void): () => void {
   };
 }
 
+interface SerializedWorldAndKarol {
+  karol: SerializedKarol;
+  world: SerializedWorld;
+}
+
 export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel }) {
   const [isOpen, setOpen] = useState(false);
+  const [fileName, setFileName] = useState("Untitled.kworld");
 
   function reset() {
     props.world.reset();
@@ -69,6 +78,34 @@ export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel 
     }
   }
 
+  async function load() {
+    const blob = await fileOpen({
+      mimeTypes: ["application/karol-world"],
+      extensions: [".kworld"],
+      description: "Karol World",
+    });
+    setFileName(blob.name);
+    const value = await blob.text();
+    const serializedWorldAndKarol: SerializedWorldAndKarol = JSON.parse(value) as SerializedWorldAndKarol;
+    props.world.deserialize(serializedWorldAndKarol.world);
+    props.karol.deserialize(serializedWorldAndKarol.karol);
+  }
+
+  async function save() {
+    const world = props.world.serialize();
+    const karol = props.karol.serialize();
+    const serializedWorldAndKarol: SerializedWorldAndKarol = { world, karol };
+    const json = JSON.stringify(serializedWorldAndKarol);
+    const blob = new Blob([json], { type: "application/karol-world" });
+    const handle: FileSystemHandle | null = await fileSave(blob, {
+      fileName: fileName,
+      extensions: [".kworld"],
+    });
+    if (handle !== null) {
+      setFileName(handle.name);
+    }
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: "column" }}>
       <WorldSettingsDialog
@@ -78,6 +115,16 @@ export function WorldControlPanel(props: { world: WorldModel; karol: KarolModel 
         onCancel={() => setOpen(false)}
       />
       <div style={{ display: "flex", flexDirection: "row" }}>
+        <Tooltip title="Welt laden">
+          <IconButton onClick={load}>
+            <Upload />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Welt speichern">
+          <IconButton onClick={save}>
+            <Save />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Links drehen">
           <IconButton onClick={handleError(() => props.karol.turnLeft())}>
             <TurnLeft />
