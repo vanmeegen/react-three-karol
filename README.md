@@ -19,12 +19,14 @@ thought it would be much more approachable if nothing has to be installed.
 - parameters in conditions
 - color of bricks and markers
 - configurable count of bricks Karol can pick up and lay down (currently unlimited)
-
-## TODO (future)
 - load and save programs
+
+## TODO (soon)
 - load and save the world
+- breakpoints and step by step execution
+- 
+## TODO (future)
 - Syntax Highlighting in Editor
 - user defined functions
 - user defined conditions
-- Program always stops on errors
 - Two Karol programs compete for a task by being executed and rendered simultaneously
