@@ -37,7 +37,7 @@ export function WorldSettingsDialog(props: {
   const [z, setZ] = useState(props.dimensions.z);
   return (
     <Dialog open={props.open}>
-      <DialogTitle>World Settings</DialogTitle>
+      <DialogTitle>Einstellungen für die Welt</DialogTitle>
       <DialogContent>
         <Grid container>
           <DimensionSlider key="x" label="Größe x:" value={x} onChange={setX} />
@@ -47,7 +47,7 @@ export function WorldSettingsDialog(props: {
       </DialogContent>
       <DialogActions>
         <Button onClick={() => props.onClose(new Coord3d(x, y, z))}>Ok</Button>
-        <Button onClick={props.onCancel}>Cancel</Button>
+        <Button onClick={props.onCancel}>Abbruch</Button>
       </DialogActions>
     </Dialog>
   );
