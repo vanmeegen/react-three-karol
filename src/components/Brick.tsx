@@ -1,14 +1,13 @@
-import * as THREE from "three";
-import React, { useRef } from "react";
+import React from "react";
 import { observer } from "mobx-react";
+import { RoundedBox } from "@react-three/drei";
 
 function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {
-  const meshRef = useRef<THREE.Mesh>(null);
   return (
-    <mesh
-      ref={meshRef}
-      {...props}
-      position={[props.position[0] + 0.5, props.position[1] + 0.5 * props.heightUnits, props.position[2] + 0.5]}
+    <RoundedBox
+      position={[props.position[0] + 0.5, props.position[1] + 0.25, props.position[2] + 0.5]}
+      scale={[1, 0.5, 1]}
+      radius={0.15}
     >
       {[...Array(6)].map((_, index) => (
         <meshStandardMaterial
@@ -19,8 +18,7 @@ function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {
           opacity={props.opacity ?? 1}
         />
       ))}
-      <boxBufferGeometry attach="geometry" args={[1, props.heightUnits ?? 1, 1]} />
-    </mesh>
+    </RoundedBox>
   );
 }
 
