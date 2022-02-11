@@ -61,7 +61,7 @@ describe("Karol can interact with the world", () => {
       world.setField(0, 0, 1, FieldType.brick_first);
       world.setField(0, 1, 1, FieldType.brick_first);
       karol.move();
-      expect(karol.position).toEqual({x:0, y:2, z:1});
+      expect(karol.position).toEqual({ x: 0, y: 2, z: 1 });
     });
 
     it("cannot jump on a stack of bricks if it would touch the worlds ceiling", () => {
