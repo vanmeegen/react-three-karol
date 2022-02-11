@@ -7,6 +7,10 @@ Karol the Robot IDE running in Browser rendered in 3d with react-three-fiber, pa
 This is the german variant of Karel which is used in schools. The version used in school is written in Java, but I
 thought it would be much more approachable if nothing has to be installed.
 
+It works without a server in your browser, just html and javascript.
+
+Try it: https://vanmeegen.github.io/react-three-karol/
+
 ## Features
 
 - 3D Board rendered with WebGL, configurable size
@@ -24,8 +28,9 @@ thought it would be much more approachable if nothing has to be installed.
 
 ## TODO (soon)
 - breakpoints and step by step execution
-- 
+
 ## TODO (future)
+- Blockly based visual language
 - Syntax Highlighting in Editor
 - user defined functions
 - user defined conditions
