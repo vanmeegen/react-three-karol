@@ -19,7 +19,7 @@ const OFFSETS = {
   [Direction.North]: { x: 0, z: -1 },
   [Direction.East]: { x: 1, z: 0 },
   [Direction.South]: { x: 0, z: 1 },
-  [Direction.West]: { x: -1, z: 0 },
+  [Direction.West]: { x: -1, z: 0 }
 };
 export type KarolSettings = {
   figureIndex: number;
@@ -219,10 +219,14 @@ export class KarolModel {
       } else if (nextField >= FieldType.brick_first || position.y > 0) {
         // check if Karol can jump
         const y = this.world.getFirstFreeY(position.x, position.z);
-        if (Math.abs(position.y - y) <= this.jumpHeight) {
-          result = undefined;
+        if (!this.world.isValid(new Coord3d(position.x, y, position.z))) {
+          result = "Karol kann nicht springen, da keine freie Position mehr.";
         } else {
-          result = "Karol kann nicht so hoch/tief springen.";
+          if (Math.abs(position.y - y) <= this.jumpHeight) {
+            result = undefined;
+          } else {
+            result = "Karol kann nicht so hoch/tief springen.";
+          }
         }
       }
     } else {

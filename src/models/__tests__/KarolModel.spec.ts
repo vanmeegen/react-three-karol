@@ -55,6 +55,21 @@ describe("Karol can interact with the world", () => {
       world.setField(0, 1, 1, FieldType.brick_first);
       expect(() => karol.move()).toThrow();
     });
+
+    it("can jump on a stack of bricks if the height difference is 2 and his jumpheight too", () => {
+      karol.jumpHeight = 10;
+      world.setField(0, 0, 1, FieldType.brick_first);
+      world.setField(0, 1, 1, FieldType.brick_first);
+      karol.move();
+      expect(karol.position).toEqual({x:0, y:2, z:1});
+    });
+
+    it("cannot jump on a stack of bricks if it would touch the worlds ceiling", () => {
+      world.setField(0, 0, 1, FieldType.brick_first);
+      world.setField(0, 1, 1, FieldType.brick_first);
+      world.setField(0, 2, 1, FieldType.brick_first);
+      expect(() => karol.move()).toThrow();
+    });
   });
   describe("It can change the world", () => {
     it("can lay a brick", () => {
