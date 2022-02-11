@@ -6,12 +6,18 @@ import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerat
 import { KarolModel, KarolSettings } from "../models/KarolModel";
 import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contextmenu";
 import "./ProgramControlPanel.css";
-import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
+import { CONDITIONS, CONTROLSTRUCTURES, KAROL_TOOLBOX, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
-import { IconButton, Tooltip, Typography } from "@mui/material";
+import { IconButton, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { Delete, DirectionsBike, DirectionsRun, DirectionsWalk, Save, Settings, Upload } from "@mui/icons-material";
+// @ts-ignore
+import { BlocklyWorkspace } from "react-blockly";
+import "./blockly.css";
 
 import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
+import { initCustomBlocks } from "./CustomBlocks";
+
+initCustomBlocks();
 
 function handleError(f: () => void): () => void {
   return () => {
@@ -44,7 +50,9 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   const [isOpen, setOpen] = useState(false);
   const [program, setProgram] = useState(props.defaultValue);
   const [fileName, setFileName] = useState("Untitled.karol");
+  const [activeTab, setActiveTab] = useState(1);
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
+  const [xml, setXml] = useState();
 
   function handleSettings() {
     setOpen(true);
@@ -140,7 +148,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column" }}>
+    <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
       <div style={{ display: "flex", flexDirection: "row", margin: "5px" }}>
         <Tooltip title="Programm laden">
           <IconButton onClick={load}>
@@ -182,33 +190,57 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
         </Typography>
       </div>
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
-      <div style={{ border: "solid black 1px", minWidth: "40em", flexGrow: 1 }}>
-        <ContextMenuTrigger id="menu_statements">
-          <textarea
-            ref={textAreaRef}
-            value={program}
-            onChange={onTextChanged}
-            style={{ width: "100%", height: "100%" }}
+      <Tabs value={activeTab} onChange={(e, index) => setActiveTab(index)}>
+        <Tab label="Code" />
+        <Tab label="Blöcke" />
+      </Tabs>
+      {activeTab === 0 ? (
+        <div key="code" style={{ minWidth: "40em", flexGrow: 1 }}>
+          <ContextMenuTrigger id="menu_statements">
+            <textarea
+              ref={textAreaRef}
+              value={program}
+              onChange={onTextChanged}
+              style={{ flexGrow: 1, width: "100%", height: "100%" }}
+            />
+          </ContextMenuTrigger>
+          <ContextMenu id="menu_statements">
+            <SubMenu key="aw" title="Anweisungen">
+              {STATEMENTS.map((s, index) => (
+                <MenuEntry title={s} key={index} />
+              ))}
+            </SubMenu>
+            <SubMenu key="ks" title="Kontrollstrukturen">
+              {CONTROLSTRUCTURES.map((s, index) => (
+                <MenuEntry title={s} key={index} />
+              ))}
+            </SubMenu>
+            <SubMenu key="bd" title="Bedingungen">
+              {CONDITIONS.map((s, index) => (
+                <MenuEntry title={s} key={index} />
+              ))}
+            </SubMenu>
+          </ContextMenu>
+        </div>
+      ) : null}
+      {activeTab === 1 ? (
+        <div style={{ flexGrow: 1, display: "flex", flexDirection: "column" }}>
+          <BlocklyWorkspace
+            className="blockly-editor"
+            toolboxConfiguration={KAROL_TOOLBOX}
+            workspaceConfiguration={{
+              grid: {
+                spacing: 20,
+                length: 3,
+                colour: "#ccc",
+                snap: true,
+              },
+            }}
+            initialXml={xml}
+            onXmlChange={setXml}
           />
-        </ContextMenuTrigger>
-        <ContextMenu id="menu_statements">
-          <SubMenu key="aw" title="Anweisungen">
-            {STATEMENTS.map((s, index) => (
-              <MenuEntry title={s} key={index} />
-            ))}
-          </SubMenu>
-          <SubMenu key="ks" title="Kontrollstrukturen">
-            {CONTROLSTRUCTURES.map((s, index) => (
-              <MenuEntry title={s} key={index} />
-            ))}
-          </SubMenu>
-          <SubMenu key="bd" title="Bedingungen">
-            {CONDITIONS.map((s, index) => (
-              <MenuEntry title={s} key={index} />
-            ))}
-          </SubMenu>
-        </ContextMenu>
-      </div>
+        </div>
+      ) : null}
     </div>
   );
 }

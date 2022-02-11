@@ -1,0 +1,46 @@
+[
+  {
+    "type": "schritt",
+    "message0": "Schritt %1",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 1,
+        "min": 0
+      }
+    ],
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "wiederhole",
+    "message0": "Wiederhole %1 mal %2 %3",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 10,
+        "min": 0
+      },
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      }
+    ],
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  },
+  {
+    "type": "linksdrehen",
+    "message0": "LinksDrehen",
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": ""
+  }
+]

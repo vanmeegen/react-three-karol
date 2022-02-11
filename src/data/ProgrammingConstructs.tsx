@@ -35,3 +35,34 @@ export const CONTROLSTRUCTURES = [
   "wenn BED dann ANW endewenn",
   "wenn BED dann ANW sonst ANW endewenn",
 ];
+
+export const KAROL_TOOLBOX = {
+  kind: "categoryToolbox",
+  contents: [
+    {
+      kind: "category",
+      name: "Anweisungen",
+      contents: [
+        {
+          kind: "block",
+          type: "karol_schritt",
+        },
+      ],
+    },
+    {
+      kind: "category",
+      name: "Kontrollstrukturen",
+      contents: [
+        {
+          kind: "block",
+          type: "karol_wiederhole",
+        },
+      ],
+    },
+    {
+      kind: "category",
+      name: "Bedingungen",
+      contents: [],
+    },
+  ],
+};
