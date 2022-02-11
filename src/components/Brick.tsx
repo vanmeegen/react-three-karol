@@ -15,7 +15,8 @@ function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {
           map={props.texture}
           key={index}
           color={props.color ?? "white"}
-          opacity={props.opacity ?? 1}
+          opacity={props.opacity ??1}
+          roughness={0.1} metalness={0.5}
         />
       ))}
     </RoundedBox>

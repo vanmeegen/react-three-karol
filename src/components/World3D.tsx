@@ -60,7 +60,7 @@ export const World3D = observer((props: { world: WorldModel; karol: KarolModel }
         />
         <group key="all" position={[-5, -5, -5]}>
           <ambientLight key="l1" intensity={0.2} />
-          <pointLight key="l2" castShadow intensity={0.9} position={[70, 5, 15]} />
+          <pointLight key="l2" castShadow intensity={0.9} position={[60, 15, 25]} />
           {rangeZ.map((z) => (
             <DashedLine key={"gridz" + z} from={[0, 0, z]} to={[max.x, 0, z]} color="green" />
           ))}
