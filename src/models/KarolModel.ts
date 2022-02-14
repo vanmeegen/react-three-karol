@@ -19,7 +19,7 @@ const OFFSETS = {
   [Direction.North]: { x: 0, z: -1 },
   [Direction.East]: { x: 1, z: 0 },
   [Direction.South]: { x: 0, z: 1 },
-  [Direction.West]: { x: -1, z: 0 }
+  [Direction.West]: { x: -1, z: 0 },
 };
 export type KarolSettings = {
   figureIndex: number;

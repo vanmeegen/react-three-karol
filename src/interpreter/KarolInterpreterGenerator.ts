@@ -91,6 +91,9 @@ function getNumberOrColor(paramToken: ParserRuleContext): {
 }
 
 export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Generator<StepResult, boolean> {
+  // symbol table for user defined conditions and statements
+  const conditionMap: Map<string, ParserRuleContext> = new Map();
+  const methodMap: Map<string, ParserRuleContext> = new Map();
   return yield* visit(tree);
 
   function* visit(ctx: ParserRuleContext | ParserRuleContext[]): Generator<StepResult, any> {
@@ -101,6 +104,17 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     } else {
       // console.log("Visiting node: " + ctx.getText() + ", ruleIndex: " + ctx.ruleIndex);
       switch (ctx.ruleIndex) {
+        case TypedKarolParser.RULE_definition:
+          // define a custom method or condition, store subtree in map
+          const type = ctx.getChild(0).ruleIndex;
+          if (type === TypedKarolParser.RULE_conditiondefinition) {
+            visitConditionDefinition(ctx.getChild(0));
+          } else if (type === TypedKarolParser.RULE_methoddefinition) {
+            visitMethodDefinition(ctx.getChild(0));
+          } else {
+            throw new Error("Internal Error: Definition type unknown");
+          }
+          break;
         case TypedKarolParser.RULE_iteration:
           yield* visitIteration(ctx);
           break;
@@ -120,6 +134,9 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
           break;
         case TypedKarolParser.RULE_parameterizedcondition:
           return visitParameterizedCondition(ctx);
+        case TypedKarolParser.RULE_customMethodCall:
+          yield* visitMethodCall(ctx);
+          break;
         default:
           return yield* visitChildren(ctx);
       }
@@ -134,6 +151,34 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       }
     } else {
       return null;
+    }
+  }
+
+  /**
+   * a method which returns a boolean value
+   * @param ctx
+   */
+  function visitConditionDefinition(ctx: ParserRuleContext) {
+    const value = ctx.getChild(1).getText();
+    conditionMap.set(value, ctx);
+  }
+
+  /**
+   * a method which returns a boolean value
+   * @param ctx
+   */
+  function visitMethodDefinition(ctx: ParserRuleContext) {
+    const value = ctx.getChild(1).getText();
+    methodMap.set(value, ctx);
+  }
+
+  function* visitMethodCall(ctx: ParserRuleContext) {
+    const methodName = ctx.getChild(0).getText();
+    const tree = methodMap.get(methodName);
+    if (tree) {
+      yield* visitChildren(tree, 2, tree.getChildCount() - 1);
+    } else {
+      throw new Error("Es wurde keine Methode '" + methodName + " definiert.");
     }
   }
 

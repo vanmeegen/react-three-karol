@@ -4,7 +4,7 @@ import fs from "fs";
 describe("The Karol Parser", () => {
   it("recognizes example with syntax error", () => {
     // misssing BEGINNING-OF-EXECUTION End pair
-    const input = "END-OF-PROGRAM";
+    const input = "wenn END-OF-PROGRAM dann";
     // invalid program should return undefined
     expect(parseKarol(input)).toBeUndefined();
   });

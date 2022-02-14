@@ -30,6 +30,11 @@ export default class KarolVisitor extends antlr4.tree.ParseTreeVisitor {
     return this.visitChildren(ctx);
   }
 
+  // Visit a parse tree produced by KarolParser#customMethodCall.
+  visitCustomMethodCall(ctx) {
+    return this.visitChildren(ctx);
+  }
+
   // Visit a parse tree produced by KarolParser#iteration.
   visitIteration(ctx) {
     return this.visitChildren(ctx);
@@ -57,6 +62,11 @@ export default class KarolVisitor extends antlr4.tree.ParseTreeVisitor {
 
   // Visit a parse tree produced by KarolParser#conditionexpression.
   visitConditionexpression(ctx) {
+    return this.visitChildren(ctx);
+  }
+
+  // Visit a parse tree produced by KarolParser#customConditionCall.
+  visitCustomConditionCall(ctx) {
     return this.visitChildren(ctx);
   }
 

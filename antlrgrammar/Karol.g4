@@ -3,7 +3,7 @@ options { caseInsensitive=true; }
 
 karol
    : definition* 'Programm' statement* ('endeProgramm' | '*Programm')
-   | definition* statement+
+   | definition* statement*
    ;
 
 definition
@@ -29,6 +29,11 @@ statement
    | 'Karol' '.' instruction '(' ')'(';')?
    | parameterizedinstruction (';')?
    | 'Karol' '.' parameterizedinstruction (';')?
+   | customMethodCall
+   ;
+
+customMethodCall
+   : IDENTIFIER
    ;
 
 iteration
@@ -75,6 +80,11 @@ conditionexpression
    | 'Karol' '.' condition '(' ')'
    | parameterizedcondition
    | 'Karol' '.' parameterizedcondition
+   | customConditionCall
+   ;
+
+customConditionCall
+   : IDENTIFIER
    ;
 
 condition:

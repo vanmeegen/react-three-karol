@@ -12,10 +12,11 @@ function executeProgram(program: string, karol: KarolModel): void {
   assertDefined(tree, "There were syntax errors parsing the program '" + program + "'");
   const ruleStatement = tree.getChild(0);
   assertCondition(
-    ruleStatement.ruleIndex === TypedKarolParser.RULE_statement,
+    ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ||
+      ruleStatement.ruleIndex === TypedKarolParser.RULE_definition,
     "Internal Error: parse did not return a program"
   );
-  execute(ruleStatement, karol);
+  execute(ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ? ruleStatement : tree, karol);
 }
 
 function executeCondition(condition: string, karol: KarolModel): boolean | undefined {
@@ -286,4 +287,24 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(executeCondition("HatZiegel(1)", karol)).toBeFalsy();
     });
   });
+
+  describe("It can define custom procedures and conditions", () => {
+    it("can define a custom procedure and call it 2 times", () => {
+      const program = "Anweisung Gehe2Schritte Schritt Schritt endeAnweisung Gehe2Schritte Gehe2Schritte";
+      executeProgram(program, karol);
+      expect(karol.position).toEqual({ x: 4, y: 0, z: 0 });
+      expect(karol.direction).toEqual(Direction.East);
+    });
+    it.todo("can define a custom condition and call it", () => {
+      const program = "Bedingung Ist2Ziegel IstZiegel(2) endeBedingung wenn Ist2Ziegel dann Schritt endeWenn";
+      executeProgram(program, karol);
+      expect(karol.position).toEqual({ x: 1, y: 0, z: 0 });
+    });
+  });
 });
+
+// Bedingung bla wenn IstZiegel dann Schritt endewenn endeBedingung
+// Anweisung blub Schritt Schritt endeAnweisung
+// blub
+// blub
+// wenn bla dann Schritt endeWenn

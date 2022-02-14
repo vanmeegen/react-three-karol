@@ -125,7 +125,7 @@ export function parseKarol(
   parser.addErrorListener(myErrorListener);
   const tree = (parser as any)[startRule]();
   // console.log("Parse Tree: " + printParseTree(parser, tree));
-  return myErrorListener.errorCount === 0 || tree === null ? tree : undefined;
+  return myErrorListener.errorCount === 0 && tree !== null ? tree : undefined;
 }
 
 // usage:
@@ -159,16 +159,18 @@ export type IKarolParser = Parser & {
   RULE_methoddefinition: number;
   RULE_conditiondefinition: number;
   RULE_statement: number;
+  RULE_customMethodCall: number;
   RULE_iteration: number;
   RULE_loop: number;
   RULE_conditional: number;
   RULE_instruction: number;
+  RULE_parameterizedinstruction: number;
   RULE_conditionexpression: number;
+  RULE_customConditionCall: number;
   RULE_condition: number;
+  RULE_parameterizedcondition: number;
   RULE_color: number;
   RULE_number: number;
-  RULE_parameterizedinstruction: number;
-  RULE_parameterizedcondition: number;
 };
 
 export type IKarolLexer = Lexer & {
