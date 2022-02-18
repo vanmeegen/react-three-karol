@@ -1,0 +1,3 @@
+<component name="DependencyValidationManager">
+  <scope name="non-generated sources" pattern="file[react-three-karol]:src//*&amp;&amp;!file[react-three-karol]:src/parser/generated//*" />
+</component>

@@ -1,5 +1,7 @@
+// noinspection RequiredAttributes
 import React from "react";
 import { observer } from "mobx-react";
+// @ts-ignore
 import { RoundedBox } from "@react-three/drei";
 
 function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {

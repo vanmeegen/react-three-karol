@@ -178,6 +178,12 @@ describe("The KarelInterpreter changes the World by programming", () => {
       karol.turnLeft();
       expect(executeCondition("nicht IstOsten", karol)).toBeTruthy();
     });
+    it("'wahr' is always true", () => {
+      expect(executeCondition("wahr", karol)).toBeTruthy();
+    });
+    it("'falsch' is always false", () => {
+      expect(executeCondition("falsch", karol)).toBeFalsy();
+    });
   });
 
   describe("it understands parameterized conditions", () => {
@@ -295,10 +301,16 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(karol.position).toEqual({ x: 4, y: 0, z: 0 });
       expect(karol.direction).toEqual(Direction.East);
     });
-    it.todo("can define a custom condition and call it", () => {
-      const program = "Bedingung Ist2Ziegel IstZiegel(2) endeBedingung wenn Ist2Ziegel dann Schritt endeWenn";
+    it("can define a custom condition and call it and skip then part of condition if custom is false", () => {
+      const program = "Bedingung Ist2Ziegel IstZiegel(2) endeBedingung wenn Ist2Ziegel dann RechtsDrehen endewenn";
       executeProgram(program, karol);
-      expect(karol.position).toEqual({ x: 1, y: 0, z: 0 });
+      expect(karol.direction).toEqual(Direction.East);
+    });
+    it("can define a custom condition and call it and execute then part of condition if custom is true", () => {
+      const program = "Bedingung Ist2Ziegel IstZiegel(2) endeBedingung wenn Ist2Ziegel dann RechtsDrehen endewenn";
+      karol.layBrick(2);
+      executeProgram(program, karol);
+      expect(karol.direction).toEqual(Direction.South);
     });
   });
 });

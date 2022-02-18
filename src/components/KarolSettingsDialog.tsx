@@ -108,7 +108,7 @@ export function KarolSettingsDialog(props: {
               labelId="karolFigureLabel"
               value={karolFigureIndex}
               label="Karol Figur"
-              onChange={(evt: SelectChangeEvent<string>) => setKarolFigureIndex(evt.target.value)}
+              onChange={(evt: SelectChangeEvent) => setKarolFigureIndex(evt.target.value)}
             >
               <MenuItem value={0}>Roboter</MenuItem>
               <MenuItem value={1}>Dracula</MenuItem>

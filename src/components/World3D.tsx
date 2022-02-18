@@ -1,18 +1,10 @@
+// noinspection RequiredAttributes
+
 import React, { RefObject, useEffect, useRef } from "react";
 import { WorldModel } from "../models/WorldModel";
 import { observer } from "mobx-react";
 import { Canvas } from "@react-three/fiber";
-// @ts-ignore
-import {
-  Box,
-  Circle,
-  GizmoHelper,
-  GizmoViewcube,
-  Line,
-  OrbitControls,
-  OrthographicCamera,
-  Plane,
-} from "@react-three/drei";
+import { GizmoHelper, GizmoViewcube, Line, OrbitControls, OrthographicCamera, Plane } from "@react-three/drei";
 import { KarolModel } from "../models/KarolModel";
 import { WorldMarkers } from "./WorldMarkers";
 import { WorldFields } from "./WorldFields";

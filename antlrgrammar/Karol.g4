@@ -17,7 +17,7 @@ methoddefinition
    ;
 
 conditiondefinition
-   : 'Bedingung' IDENTIFIER statement* ('endeBedingung' | '*Bedingung')
+   : 'Bedingung' IDENTIFIER (statement | conditionexpression)+ ('endeBedingung' | '*Bedingung')
    ;
 
 statement
@@ -103,10 +103,12 @@ condition:
    | 'IstMarke'
    | 'NichtIstMarke'
    | 'HatZiegel'
+   | 'wahr'
+   | 'falsch'
    ;
 
-parameterizedcondition:
-   | 'IstZiegel' '(' (color | number) ')'
+parameterizedcondition
+   : 'IstZiegel' '(' (color | number) ')'
    | 'NichtIstZiegel' '(' (color | number) ')'
    | 'IstMarke' '(' color ')'
    | 'NichtIstMarke' '(' color ')'

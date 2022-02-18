@@ -50,7 +50,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   const [isOpen, setOpen] = useState(false);
   const [program, setProgram] = useState(props.defaultValue);
   const [fileName, setFileName] = useState("Untitled.karol");
-  const [activeTab, setActiveTab] = useState(1);
+  const [activeTab, setActiveTab] = useState(0);
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
   const [xml, setXml] = useState();
 
@@ -98,8 +98,8 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     const textArea = textAreaRef.current;
     if (textArea) {
       if (textArea.selectionStart || textArea.selectionStart == 0) {
-        var startPos = textArea.selectionStart;
-        var endPos = textArea.selectionEnd;
+        const startPos = textArea.selectionStart;
+        const endPos = textArea.selectionEnd;
         textArea.value =
           textArea.value.substring(0, startPos) +
           data.text +
@@ -192,7 +192,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <Tabs value={activeTab} onChange={(e, index) => setActiveTab(index)}>
         <Tab label="Code" />
-        <Tab label="Blöcke" />
+        {/*<Tab label="Blöcke" />*/}
       </Tabs>
       {activeTab === 0 ? (
         <div key="code" style={{ minWidth: "40em", flexGrow: 1 }}>
