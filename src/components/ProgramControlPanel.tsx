@@ -192,7 +192,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
       <Tabs value={activeTab} onChange={(e, index) => setActiveTab(index)}>
         <Tab label="Code" />
-        {/*<Tab label="Blöcke" />*/}
+        <Tab label="Blöcke" />
       </Tabs>
       {activeTab === 0 ? (
         <div key="code" style={{ minWidth: "40em", flexGrow: 1 }}>

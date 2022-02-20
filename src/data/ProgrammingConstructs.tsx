@@ -45,7 +45,47 @@ export const KAROL_TOOLBOX = {
       contents: [
         {
           kind: "block",
-          type: "karol_schritt",
+          type: "step",
+        },
+        {
+          kind: "block",
+          type: "turnleft",
+        },
+        {
+          kind: "block",
+          type: "turnright",
+        },
+        {
+          kind: "block",
+          type: "laydown",
+        },
+        {
+          kind: "block",
+          type: "laydown_color",
+        },
+        {
+          kind: "block",
+          type: "pickup",
+        },
+        {
+          kind: "block",
+          type: "setmarker_color",
+        },
+        {
+          kind: "block",
+          type: "deletemarker",
+        },
+        {
+          kind: "block",
+          type: "wait",
+        },
+        {
+          kind: "block",
+          type: "beep",
+        },
+        {
+          kind: "block",
+          type: "stop",
         },
       ],
     },
@@ -55,7 +95,7 @@ export const KAROL_TOOLBOX = {
       contents: [
         {
           kind: "block",
-          type: "karol_wiederhole",
+          type: "repeat_times",
         },
       ],
     },

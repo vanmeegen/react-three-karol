@@ -1,0 +1,196 @@
+[
+  {
+    "type": "step",
+    "message0": "Schritt %1",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 1,
+        "min": 0
+      }
+    ],
+    "colour": 230,
+    "tooltip": "Gehe Anzahl Schritte geradeaus",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "turnleft",
+    "message0": "LinksDrehen",
+    "colour": 230,
+    "tooltip": "Drehe dich 90 Grad nach links",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "turnright",
+    "message0": "RechtsDrehen",
+    "colour": 230,
+    "tooltip": "Drehe dich 90 Grad nach rechts",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "laydown",
+    "message0": "Hinlegen %1",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 1,
+        "min": 0
+      }
+    ],
+    "colour": 230,
+    "tooltip": "Lege Anzahl Ziegel vor dich hin",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "laydown_color",
+    "lastDummyAlign0": "RIGHT",
+    "message0": "Hinlegen %1",
+    "args0": [
+      {
+        "type": "field_dropdown",
+        "name": "color",
+        "options": [
+          ["rot", "red"],
+          ["gelb", "yellow"],
+          ["blau", "blue"],
+          ["grün", "green"],
+          ["schwarz", "black"]
+        ]
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "Lege einen farbigen Ziegel vor dich hin",
+    "helpUrl": ""
+  },
+  {
+    "type": "pickup",
+    "message0": "Aufheben %1",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 1,
+        "min": 0
+      }
+    ],
+    "colour": 230,
+    "tooltip": "Hebe Anzahl Ziegel vor dir auf",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "setmarker_color",
+    "lastDummyAlign0": "RIGHT",
+    "message0": "MarkeSetzen %1",
+    "args0": [
+      {
+        "type": "field_dropdown",
+        "name": "color",
+        "default": "yellow",
+        "options": [
+          ["rot", "red"],
+          ["gelb", "yellow"],
+          ["blau", "blue"],
+          ["grün", "green"],
+          ["schwarz", "black"]
+        ]
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 230,
+    "tooltip": "Setze eine farbige Marke unter dir",
+    "helpUrl": ""
+  },
+  {
+    "type": "deletemarker",
+    "message0": "MarkeLöschen %1",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 1,
+        "min": 0
+      }
+    ],
+    "colour": 230,
+    "tooltip": "Lösche die Marke unter dir",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "wait",
+    "message0": "Warten %1",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 1000,
+        "min": 0
+      }
+    ],
+    "colour": 230,
+    "tooltip": "Warte Anzahl Millisekunden",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "beep",
+    "message0": "Ton",
+    "colour": 230,
+    "tooltip": "Mach einen Ton",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "stop",
+    "message0": "Beenden",
+    "colour": 230,
+    "tooltip": "Beende das Programm",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  },
+  {
+    "type": "repeat_times",
+    "message0": "Wiederhole %1 mal %2 %3",
+    "args0": [
+      {
+        "type": "field_number",
+        "name": "COUNT",
+        "value": 10,
+        "min": 0
+      },
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      }
+    ],
+    "colour": 230,
+    "tooltip": "",
+    "helpUrl": "",
+    "previousStatement": null,
+    "nextStatement": null
+  }
+]
