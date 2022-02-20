@@ -347,7 +347,7 @@
     "args0": [
       {
         "type": "field_input",
-        "name": "NUMBER",
+        "name": "COUNT",
         "text": "1"
       }
     ],
@@ -362,7 +362,7 @@
     "args0": [
       {
         "type": "field_dropdown",
-        "name": "color",
+        "name": "COLOR",
         "options": [
           ["rot", "rot"],
           ["gelb", "gelb"],
@@ -391,7 +391,7 @@
     "args0": [
       {
         "type": "field_input",
-        "name": "NUMBER",
+        "name": "COUNT",
         "text": "1"
       }
     ],
@@ -406,7 +406,7 @@
     "args0": [
       {
         "type": "field_dropdown",
-        "name": "color",
+        "name": "COLOR",
         "options": [
           ["rot", "rot"],
           ["gelb", "gelb"],
@@ -435,7 +435,7 @@
     "args0": [
       {
         "type": "field_dropdown",
-        "name": "color",
+        "name": "COLOR",
         "options": [
           ["rot", "rot"],
           ["gelb", "gelb"],
@@ -464,7 +464,7 @@
     "args0": [
       {
         "type": "field_dropdown",
-        "name": "color",
+        "name": "COLOR",
         "options": [
           ["rot", "rot"],
           ["gelb", "gelb"],
@@ -504,7 +504,7 @@
     "helpUrl": ""
   },
   {
-    "type": "is_ost",
+    "type": "is_east",
     "message0": "IstOsten",
     "output": null,
     "colour": 210,
@@ -544,7 +544,7 @@
     "helpUrl": ""
   },
   {
-    "type": "have_bricks",
+    "type": "has_bricks",
     "message0": "HatZiegel",
     "output": null,
     "colour": 210,
@@ -552,12 +552,12 @@
     "helpUrl": ""
   },
   {
-    "type": "have_bricks_count",
+    "type": "has_bricks_count",
     "message0": "HatZiegel(Anzahl) %1",
     "args0": [
       {
         "type": "field_input",
-        "name": "NAME",
+        "name": "COUNT",
         "text": "1"
       }
     ],

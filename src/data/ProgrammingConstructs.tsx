@@ -189,7 +189,7 @@ export const KAROL_TOOLBOX = {
         },
         {
           kind: "block",
-          type: "is_ost",
+          type: "is_east",
         },
       ],
     },
@@ -215,11 +215,11 @@ export const KAROL_TOOLBOX = {
         },
         {
           kind: "block",
-          type: "have_bricks",
+          type: "has_bricks",
         },
         {
           kind: "block",
-          type: "have_bricks_count",
+          type: "has_bricks_count",
         },
       ],
     },

@@ -1,12 +1,11 @@
+// noinspection JSUnusedLocalSymbols
+
 import blocks from "../data/KarolBlocks.json";
 import Blockly, { Block } from "blockly";
 
-
-// TODO handle code generation for values
-// TODO handle code generation for if statements
 let karolGenerator: any;
 
-const blockToCode: [string, (x: Block) => string][] = [
+const blockToCode: [string, (x: Block) => string | [string, number]][] = [
   ["step", (block: Block) => "Schritt(" + block.getFieldValue("COUNT") + ")"],
   ["turnleft", (block: Block) => "LinksDrehen"],
   ["turnright", (block: Block) => "RechtsDrehen"],
@@ -18,23 +17,96 @@ const blockToCode: [string, (x: Block) => string][] = [
   ["wait", (block: Block) => "Warten(" + block.getFieldValue("COUNT") + ")"],
   ["beep", (block: Block) => "Ton"],
   ["stop", (block: Block) => "Beenden"],
-  ["repeat_times", (block: Block) => "wiederhole " + block.getFieldValue("COUNT") + " mal\n"
-    + karolGenerator.statementToCode(block, "STATEMENTS") + "\nendewiederhole"],
-  ["while_do", (block: Block) => "wiederhole solange " + karolGenerator.valueToCode(block, "CONDITION") + "\n"
-    + karolGenerator.statementToCode(block, "STATEMENTS") + "\nendewiederhole"],
-  ["repeat_until", (block: Block) => "wiederhole \n" + karolGenerator.statementToCode(block, "STATEMENTS") +
-    +"\nbis " + karolGenerator.valueToCode(block, "CONDITION") + "\nendewiederhole"],
-  ["repeat_while", (block: Block) => "wiederhole \n" + karolGenerator.statementToCode(block, "STATEMENTS") +
-    +"\nsolange " + karolGenerator.valueToCode(block, "CONDITION") + "\nendewiederhole"],
-  ["repeat_forever", (block: Block) => "wiederhole immer\n" + karolGenerator.statementToCode(block, "STATEMENTS") + "\nendewiederhole"]
+  [
+    "repeat_times",
+    (block: Block) =>
+      "wiederhole " +
+      block.getFieldValue("COUNT") +
+      " mal\n" +
+      karolGenerator.statementToCode(block, "STATEMENTS") +
+      "\nendewiederhole",
+  ],
+  [
+    "while_do",
+    (block: Block) =>
+      "wiederhole solange " +
+      karolGenerator.valueToCode(block, "CONDITION", 0) +
+      "\n" +
+      karolGenerator.statementToCode(block, "STATEMENTS") +
+      "\nendewiederhole",
+  ],
+  [
+    "repeat_until",
+    (block: Block) =>
+      "wiederhole \n" +
+      karolGenerator.statementToCode(block, "STATEMENTS") +
+      +"\nbis " +
+      karolGenerator.valueToCode(block, "CONDITION", 0) +
+      "\nendewiederhole",
+  ],
+  [
+    "repeat_while",
+    (block: Block) =>
+      "wiederhole \n" +
+      karolGenerator.statementToCode(block, "STATEMENTS") +
+      +"\nsolange " +
+      karolGenerator.valueToCode(block, "CONDITION", 0) +
+      "\nendewiederhole",
+  ],
+  [
+    "repeat_forever",
+    (block: Block) => "wiederhole immer\n" + karolGenerator.statementToCode(block, "STATEMENTS") + "\nendewiederhole",
+  ],
+  [
+    "if_then",
+    (block: Block) =>
+      "wenn " +
+      karolGenerator.valueToCode(block, "CONDITION", 0) +
+      " dann\n" +
+      karolGenerator.statementToCode(block, "STATEMENTS") +
+      "\nendewenn",
+  ],
+  [
+    "if_then_else",
+    (block: Block) =>
+      "wenn  " +
+      karolGenerator.valueToCode(block, "CONDITION", 0) +
+      " dann\n" +
+      karolGenerator.statementToCode(block, "STATEMENTS") +
+      "\nsonst" +
+      karolGenerator.statementToCode(block, "STATEMENTS_2") +
+      "\nendewenn",
+  ],
+  ["is_wall", (block: Block) => ["IstWand", 0]],
+  ["isn't_wall", (block: Block) => ["NichtIstWand", 0]],
+  ["is_brick", (block: Block) => ["IstZiegel", 0]],
+  ["is_brick_count", (block: Block) => ["IstZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
+  ["is_brick_color", (block: Block) => ["IstZiegel(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["isn't_brick", (block: Block) => ["NichtIstZiegel", 0]],
+  ["isn't_brick_count", (block: Block) => ["NichtIstZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
+  ["isn't_brick_color", (block: Block) => ["NichtIstZiegel(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["is_marker", (block: Block) => ["IstMarke", 0]],
+  ["is_marker_color", (block: Block) => ["IstMarke(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["isn't_marker", (block: Block) => ["NichtIstMarke", 0]],
+  ["isn't_marker_color", (block: Block) => ["NichtIstMarke(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["is_south", (block: Block) => ["IstSüden", 0]],
+  ["is_north", (block: Block) => ["IstNorden", 0]],
+  ["is_west", (block: Block) => ["IstWesten", 0]],
+  ["is_east", (block: Block) => ["IstOsten", 0]],
+  ["is_full", (block: Block) => ["IstVoll", 0]],
+  ["isn't_full", (block: Block) => ["NichtIstVoll", 0]],
+  ["is_empty", (block: Block) => ["IstLeer", 0]],
+  ["isn't_empty", (block: Block) => ["NichtIstLeer", 0]],
+  ["has_bricks", (block: Block) => ["HatZiegel", 0]],
+  ["has_bricks_count", (block: Block) => ["HatZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
 ];
 
 export function initCustomBlocks() {
   blocks.forEach((block) => {
     Blockly.Blocks[block.type] = {
-      init: function() {
+      init: function () {
         this.jsonInit(block);
-      }
+      },
     };
   });
   karolGenerator = new Blockly.Generator("karol");
@@ -42,12 +114,11 @@ export function initCustomBlocks() {
   blockToCode.forEach(([blockName, codeGenFct]) => {
     karolGenerator[blockName] = codeGenFct;
   });
-  karolGenerator.scrub_ = function(block: Block, code: string) {
+  karolGenerator.scrub_ = function (block: Block, code: string) {
     const nextBlock = block.nextConnection && block.nextConnection.targetBlock();
     let nextCode = "";
     if (nextBlock) {
-      nextCode =
-        "\n" + karolGenerator.blockToCode(nextBlock);
+      nextCode = "\n" + karolGenerator.blockToCode(nextBlock);
     }
     return code + nextCode;
   };
