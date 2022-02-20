@@ -58,13 +58,13 @@
     "args0": [
       {
         "type": "field_dropdown",
-        "name": "color",
+        "name": "COLOR",
         "options": [
-          ["rot", "red"],
-          ["gelb", "yellow"],
-          ["blau", "blue"],
-          ["grün", "green"],
-          ["schwarz", "black"]
+          ["rot", "rot"],
+          ["gelb", "gelb"],
+          ["blau", "blau"],
+          ["grün", "grün"],
+          ["schwarz", "schwarz"]
         ]
       }
     ],
@@ -99,14 +99,14 @@
     "args0": [
       {
         "type": "field_dropdown",
-        "name": "color",
+        "name": "COLOR",
         "default": "yellow",
         "options": [
-          ["rot", "red"],
-          ["gelb", "yellow"],
-          ["blau", "blue"],
-          ["grün", "green"],
-          ["schwarz", "black"]
+          ["rot", "rot"],
+          ["gelb", "gelb"],
+          ["blau", "blau"],
+          ["grün", "grün"],
+          ["schwarz", "schwarz"]
         ]
       }
     ],
@@ -119,15 +119,7 @@
   },
   {
     "type": "deletemarker",
-    "message0": "MarkeLöschen %1",
-    "args0": [
-      {
-        "type": "field_number",
-        "name": "COUNT",
-        "value": 1,
-        "min": 0
-      }
-    ],
+    "message0": "MarkeLöschen",
     "colour": 260,
     "tooltip": "Lösche die Marke unter dir",
     "helpUrl": "",
@@ -171,7 +163,7 @@
   },
   {
     "type": "repeat_times",
-    "message0": "Wiederhole %1 mal %2 %3",
+    "message0": "wiederhole %1 mal %2 %3",
     "args0": [
       {
         "type": "field_number",
@@ -188,7 +180,7 @@
       }
     ],
     "colour": 120,
-    "tooltip": "Wiederhole n mal Anweisung",
+    "tooltip": "wiederhole n mal Anweisung",
     "helpUrl": "",
     "previousStatement": null,
     "nextStatement": null
@@ -210,7 +202,7 @@
     "previousStatement": null,
     "nextStatement": null,
     "colour": 120,
-    "tooltip": "Wiederhole die Anweisungen solange die Bedingung wahr ist",
+    "tooltip": "wiederhole die Anweisungen solange die Bedingung wahr ist",
     "helpUrl": ""
   },
   {
@@ -233,7 +225,7 @@
     "previousStatement": null,
     "nextStatement": null,
     "colour": 120,
-    "tooltip": "Wiederhole Anweisung bis Bedingung erfüllt",
+    "tooltip": "wiederhole Anweisung bis Bedingung erfüllt",
     "helpUrl": ""
   },
   {
@@ -256,7 +248,7 @@
     "previousStatement": null,
     "nextStatement": null,
     "colour": 120,
-    "tooltip": "Wiederhole Anweisung solange Bedingung erfüllt",
+    "tooltip": "wiederhole Anweisung solange Bedingung erfüllt",
     "helpUrl": ""
   },
   {
@@ -275,7 +267,7 @@
     "previousStatement": null,
     "nextStatement": null,
     "colour": 120,
-    "tooltip": "Wiederhole bis programmabruch",
+    "tooltip": "wiederhole bis programmabruch",
     "helpUrl": ""
   },
   {
@@ -372,11 +364,11 @@
         "type": "field_dropdown",
         "name": "color",
         "options": [
-          ["rot", "red"],
-          ["gelb", "yellow"],
-          ["blau", "blue"],
-          ["grün", "green"],
-          ["schwarz", "black"]
+          ["rot", "rot"],
+          ["gelb", "gelb"],
+          ["blau", "blau"],
+          ["grün", "grün"],
+          ["schwarz", "schwarz"]
         ]
       }
     ],
@@ -416,11 +408,11 @@
         "type": "field_dropdown",
         "name": "color",
         "options": [
-          ["rot", "red"],
-          ["gelb", "yellow"],
-          ["blau", "blue"],
-          ["grün", "green"],
-          ["schwarz", "black"]
+          ["rot", "rot"],
+          ["gelb", "gelb"],
+          ["blau", "blau"],
+          ["grün", "grün"],
+          ["schwarz", "schwarz"]
         ]
       }
     ],
@@ -445,11 +437,11 @@
         "type": "field_dropdown",
         "name": "color",
         "options": [
-          ["rot", "red"],
-          ["gelb", "yellow"],
-          ["blau", "blue"],
-          ["grün", "green"],
-          ["schwarz", "black"]
+          ["rot", "rot"],
+          ["gelb", "gelb"],
+          ["blau", "blau"],
+          ["grün", "grün"],
+          ["schwarz", "schwarz"]
         ]
       }
     ],
@@ -474,11 +466,11 @@
         "type": "field_dropdown",
         "name": "color",
         "options": [
-          ["rot", "red"],
-          ["gelb", "yellow"],
-          ["blau", "blue"],
-          ["grün", "green"],
-          ["schwarz", "black"]
+          ["rot", "rot"],
+          ["gelb", "gelb"],
+          ["blau", "blau"],
+          ["grün", "grün"],
+          ["schwarz", "schwarz"]
         ]
       }
     ],

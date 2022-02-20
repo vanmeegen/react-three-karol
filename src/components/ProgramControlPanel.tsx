@@ -10,12 +10,14 @@ import { CONDITIONS, CONTROLSTRUCTURES, KAROL_TOOLBOX, STATEMENTS } from "../dat
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
 import { IconButton, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { Delete, DirectionsBike, DirectionsRun, DirectionsWalk, Save, Settings, Upload } from "@mui/icons-material";
-// @ts-ignore
-import { BlocklyWorkspace } from "react-blockly";
+import { initCustomBlocks } from "./CustomBlocks";
 import "./blockly.css";
 
 import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
-import { initCustomBlocks } from "./CustomBlocks";
+// @ts-ignore
+import { BlocklyWorkspace } from "react-blockly";
+import Blockly from "blockly";
+import { Workspace } from "workspace";
 
 initCustomBlocks();
 
@@ -52,7 +54,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   const [fileName, setFileName] = useState("Untitled.karol");
   const [activeTab, setActiveTab] = useState(0);
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
-  const [xml, setXml] = useState();
+  const [xml, setXml] = useState("");
 
   function handleSettings() {
     setOpen(true);
@@ -67,8 +69,15 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     setProgram(evt.target.value);
   }
 
+  function setBlocklyXml(workspace: Workspace): void {
+    console.log("workspace: ", workspace);
+    const generated = (Blockly as any)["karol"].workspaceToCode(workspace);
+    console.log("Generated: ", generated);
+    setProgram(generated);
+  }
+
   function run(waitTime?: number) {
-    const tree: ParserRuleContext | undefined = parseKarol(textAreaRef.current!.value);
+    const tree: ParserRuleContext | undefined = parseKarol(program);
     if (tree) {
       const steps = executeSteps(tree, props.model);
       const doStep = () => {
@@ -238,6 +247,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
             }}
             initialXml={xml}
             onXmlChange={setXml}
+            onWorkspaceChange={setBlocklyXml}
           />
         </div>
       ) : null}
