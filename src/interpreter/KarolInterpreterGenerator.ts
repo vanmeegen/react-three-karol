@@ -417,7 +417,7 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
         karol.setMarker(colorParam ?? Color.yellow);
         break;
       case "warten":
-        waitSync(1000 * (numberParam ?? 1));
+        waitSync(numberParam ?? 1000);
         break;
       default:
         throw Error("Instruction " + ctx.getText() + " not implemented");
