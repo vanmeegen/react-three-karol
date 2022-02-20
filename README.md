@@ -25,13 +25,13 @@ Try it: https://vanmeegen.github.io/react-three-karol/
 - configurable count of bricks Karol can pick up and lay down (currently unlimited)
 - load and save programs
 - load and save the world
+- user defined functions
+- user defined conditions
+- Blockly based visual language
 
 ## TODO (soon)
 - breakpoints and step by step execution
 
 ## TODO (future)
-- Blockly based visual language
 - Syntax Highlighting in Editor
-- user defined functions
-- user defined conditions
 - Two Karol programs compete for a task by being executed and rendered simultaneously
