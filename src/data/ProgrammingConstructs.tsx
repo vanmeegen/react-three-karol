@@ -126,7 +126,102 @@ export const KAROL_TOOLBOX = {
     {
       kind: "category",
       name: "Bedingungen",
-      contents: [],
+      contents: [
+        {
+          kind: "block",
+          type: "is_wall",
+        },
+        {
+          kind: "block",
+          type: "isn't_wall",
+        },
+        {
+          kind: "block",
+          type: "is_brick",
+        },
+        {
+          kind: "block",
+          type: "is_brick_count",
+        },
+        {
+          kind: "block",
+          type: "is_brick_color",
+        },
+        {
+          kind: "block",
+          type: "isn't_brick",
+        },
+        {
+          kind: "block",
+          type: "isn't_brick_count",
+        },
+        {
+          kind: "block",
+          type: "isn't_brick_color",
+        },
+        {
+          kind: "block",
+          type: "is_marker",
+        },
+        {
+          kind: "block",
+          type: "is_marker_color",
+        },
+        {
+          kind: "block",
+          type: "isn't_marker",
+        },
+        {
+          kind: "block",
+          type: "isn't_marker_color",
+        },
+        {
+          kind: "block",
+          type: "is_south",
+        },
+        {
+          kind: "block",
+          type: "is_north",
+        },
+        {
+          kind: "block",
+          type: "is_west",
+        },
+        {
+          kind: "block",
+          type: "is_ost",
+        },
+      ],
+    },
+    {
+      kind: "category",
+      name: "Bed. bei Tragfähigkeit",
+      contents: [
+        {
+          kind: "block",
+          type: "is_full",
+        },
+        {
+          kind: "block",
+          type: "isn't_full",
+        },
+        {
+          kind: "block",
+          type: "is_empty",
+        },
+        {
+          kind: "block",
+          type: "isn't_empty",
+        },
+        {
+          kind: "block",
+          type: "have_bricks",
+        },
+        {
+          kind: "block",
+          type: "have_bricks_count",
+        },
+      ],
     },
   ],
 };
