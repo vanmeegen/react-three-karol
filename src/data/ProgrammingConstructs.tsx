@@ -97,6 +97,30 @@ export const KAROL_TOOLBOX = {
           kind: "block",
           type: "repeat_times",
         },
+        {
+          kind: "block",
+          type: "while_do",
+        },
+        {
+          kind: "block",
+          type: "repeat_until",
+        },
+        {
+          kind: "block",
+          type: "repeat_while",
+        },
+        {
+          kind: "block",
+          type: "repeat_forever",
+        },
+        {
+          kind: "block",
+          type: "if_then",
+        },
+        {
+          kind: "block",
+          type: "if_then_else",
+        },
       ],
     },
     {

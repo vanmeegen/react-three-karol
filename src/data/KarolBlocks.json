@@ -10,7 +10,7 @@
         "min": 0
       }
     ],
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Gehe Anzahl Schritte geradeaus",
     "helpUrl": "",
     "previousStatement": null,
@@ -19,7 +19,7 @@
   {
     "type": "turnleft",
     "message0": "LinksDrehen",
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Drehe dich 90 Grad nach links",
     "helpUrl": "",
     "previousStatement": null,
@@ -28,7 +28,7 @@
   {
     "type": "turnright",
     "message0": "RechtsDrehen",
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Drehe dich 90 Grad nach rechts",
     "helpUrl": "",
     "previousStatement": null,
@@ -45,7 +45,7 @@
         "min": 0
       }
     ],
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Lege Anzahl Ziegel vor dich hin",
     "helpUrl": "",
     "previousStatement": null,
@@ -71,7 +71,7 @@
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Lege einen farbigen Ziegel vor dich hin",
     "helpUrl": ""
   },
@@ -86,7 +86,7 @@
         "min": 0
       }
     ],
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Hebe Anzahl Ziegel vor dir auf",
     "helpUrl": "",
     "previousStatement": null,
@@ -113,7 +113,7 @@
     "inputsInline": true,
     "previousStatement": null,
     "nextStatement": null,
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Setze eine farbige Marke unter dir",
     "helpUrl": ""
   },
@@ -128,7 +128,7 @@
         "min": 0
       }
     ],
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Lösche die Marke unter dir",
     "helpUrl": "",
     "previousStatement": null,
@@ -145,7 +145,7 @@
         "min": 0
       }
     ],
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Warte Anzahl Millisekunden",
     "helpUrl": "",
     "previousStatement": null,
@@ -154,7 +154,7 @@
   {
     "type": "beep",
     "message0": "Ton",
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Mach einen Ton",
     "helpUrl": "",
     "previousStatement": null,
@@ -163,7 +163,7 @@
   {
     "type": "stop",
     "message0": "Beenden",
-    "colour": 230,
+    "colour": 260,
     "tooltip": "Beende das Programm",
     "helpUrl": "",
     "previousStatement": null,
@@ -187,10 +187,142 @@
         "name": "STATEMENTS"
       }
     ],
-    "colour": 230,
-    "tooltip": "",
+    "colour": 120,
+    "tooltip": "Wiederhole n mal Anweisung",
     "helpUrl": "",
     "previousStatement": null,
     "nextStatement": null
+  },
+  {
+    "type": "while_do",
+    "message0": "wiederhole solange %1 %2",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "CONDITION"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 120,
+    "tooltip": "Wiederhole die Anweisungen solange die Bedingung wahr ist",
+    "helpUrl": ""
+  },
+  {
+    "type": "repeat_until",
+    "message0": "wiederhole %1 %2 bis %3",
+    "args0": [
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      },
+      {
+        "type": "input_value",
+        "name": "CONDITION"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 120,
+    "tooltip": "Wiederhole Anweisung bis Bedingung erfüllt",
+    "helpUrl": ""
+  },
+  {
+    "type": "repeat_while",
+    "message0": "wiederhole %1 %2 solange %3",
+    "args0": [
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      },
+      {
+        "type": "input_value",
+        "name": "CONDITION"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 120,
+    "tooltip": "Wiederhole Anweisung solange Bedingung erfüllt",
+    "helpUrl": ""
+  },
+  {
+    "type": "repeat_forever",
+    "message0": "wiederhole immer %1 %2",
+    "args0": [
+      {
+        "type": "input_dummy"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 120,
+    "tooltip": "Wiederhole bis programmabruch",
+    "helpUrl": ""
+  },
+  {
+    "type": "if_then",
+    "message0": "wenn %1 dann %2 %3",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "CONDITION"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      },
+      {
+        "type": "input_dummy"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 120,
+    "tooltip": "Wenn Bedingung wahr dann führe Anweisung aus",
+    "helpUrl": ""
+  },
+  {
+    "type": "if_then_else",
+    "message0": "wenn %1 dann %2 sonst %3",
+    "args0": [
+      {
+        "type": "input_value",
+        "name": "CONDITION"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS"
+      },
+      {
+        "type": "input_statement",
+        "name": "STATEMENTS_2"
+      }
+    ],
+    "inputsInline": true,
+    "previousStatement": null,
+    "nextStatement": null,
+    "colour": 120,
+    "tooltip": "Wenn Bedingung wahr dann führe Anweisung aus sonst führe andere Anweisung aus",
+    "helpUrl": ""
   }
 ]
