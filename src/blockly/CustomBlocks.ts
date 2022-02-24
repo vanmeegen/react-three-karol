@@ -1,6 +1,6 @@
 // noinspection JSUnusedLocalSymbols
 
-import blocks from "../data/KarolBlocks.json";
+import blocks from "./data/KarolBlocks.json";
 import Blockly, { Block } from "blockly";
 
 let karolGenerator: any;
@@ -40,18 +40,18 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
     (block: Block) =>
       "wiederhole \n" +
       karolGenerator.statementToCode(block, "STATEMENTS") +
-      +"\nbis " +
-      karolGenerator.valueToCode(block, "CONDITION", 0) +
-      "\nendewiederhole",
+      "\nendewiederhole" +
+      "\nbis " +
+      karolGenerator.valueToCode(block, "CONDITION", 0),
   ],
   [
     "repeat_while",
     (block: Block) =>
       "wiederhole \n" +
       karolGenerator.statementToCode(block, "STATEMENTS") +
-      +"\nsolange " +
-      karolGenerator.valueToCode(block, "CONDITION", 0) +
-      "\nendewiederhole",
+      "\nendewiederhole" +
+      "\nsolange " +
+      karolGenerator.valueToCode(block, "CONDITION", 0),
   ],
   [
     "repeat_forever",
