@@ -55,6 +55,8 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   const [fileName, setFileName] = useState("Untitled.karol");
   const [activeTab, setActiveTab] = useState(0);
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
+  /* will point to blockly workspace after first toXml, since BlocklyWorkspace component does not support refs */
+  let blocklyWorkspace: BlocklyWorkspace = undefined;
   const [xml, setXml] = useState("");
 
   function handleSettings() {
@@ -66,11 +68,16 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     props.model.updateSettings(newValues);
   }
 
+  function disposeBlocklyWorkspace() {
+    blocklyWorkspace = undefined;
+  }
+
   function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
     setProgram(evt.target.value);
   }
 
   function setBlocklyXml(workspace: Workspace): void {
+    blocklyWorkspace = workspace;
     console.log("workspace: ", workspace);
     const generated = (Blockly as any)["karol"].workspaceToCode(workspace);
     console.log("Generated: ", generated);
@@ -133,17 +140,25 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
 
   async function load() {
     const blob = await fileOpen({
-      mimeTypes: ["text/plain"],
-      extensions: [".karol", ".txt"],
+      mimeTypes: ["application/json"],
+      extensions: [".karol", ".json"],
       description: "Karol Code",
     });
     setFileName(blob.name);
-    textAreaRef.current!.value = await blob.text();
+    const result = JSON.parse(await blob.text());
+    setProgram(result.text);
+    if (blocklyWorkspace !== undefined && result.blockly !== undefined) {
+      blocklyWorkspace.clear();
+      (Blockly as any).Xml.domToWorkspace((Blockly as any).Xml.textToDom(result.blockly), blocklyWorkspace);
+    }
   }
 
   async function save() {
-    const text = textAreaRef.current!.value;
-    const blob = new Blob([text], { type: "text/plain" });
+    const jsonObject: { blockly?: string; text: string } = { text: program };
+    if (blocklyWorkspace) {
+      jsonObject.blockly = (Blockly as any).Xml.domToText((Blockly as any).Xml.workspaceToDom(blocklyWorkspace));
+    }
+    const blob = new Blob([JSON.stringify(jsonObject)], { type: "application/json" });
     const handle: FileSystemHandle | null = await fileSave(blob, {
       fileName: fileName,
       extensions: [".karol"],
@@ -154,7 +169,10 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   }
 
   function clear(): void {
-    textAreaRef.current!.value = "";
+    setProgram("");
+    if (blocklyWorkspace !== undefined) {
+      blocklyWorkspace.clear();
+    }
   }
 
   return (
@@ -249,6 +267,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
             initialXml={xml}
             onXmlChange={setXml}
             onWorkspaceChange={setBlocklyXml}
+            onDispose={disposeBlocklyWorkspace}
           />
         </div>
       ) : null}
