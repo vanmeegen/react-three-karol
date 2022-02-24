@@ -103,9 +103,9 @@ describe("The KarelInterpreter changes the World by programming", () => {
       expect(world.getField(1, 0, 0)).toEqual(FieldType.empty);
       expect(world.getField(1, 1, 0)).toEqual(FieldType.empty);
     });
-    it("'Warten(2)' waits for 2 sec", () => {
+    it("'Warten(2000)' waits for 2 sec", () => {
       const t = Date.now();
-      executeProgram("Warten(2)", karol);
+      executeProgram("Warten(2000)", karol);
       // should have waited at least 2000 ms
       expect(Date.now() - t).toBeGreaterThanOrEqual(2000);
     });
