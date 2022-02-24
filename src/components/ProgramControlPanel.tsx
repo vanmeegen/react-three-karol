@@ -6,18 +6,19 @@ import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerat
 import { KarolModel, KarolSettings } from "../models/KarolModel";
 import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contextmenu";
 import "./ProgramControlPanel.css";
-import { CONDITIONS, CONTROLSTRUCTURES, KAROL_TOOLBOX, STATEMENTS } from "../data/ProgrammingConstructs";
+import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
 import { IconButton, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import { Delete, DirectionsBike, DirectionsRun, DirectionsWalk, Save, Settings, Upload } from "@mui/icons-material";
-import { initCustomBlocks } from "./CustomBlocks";
-import "./blockly.css";
+import { initCustomBlocks } from "../blockly/CustomBlocks";
+import "../assets/blockly.css";
 
 import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
 // @ts-ignore
 import { BlocklyWorkspace } from "react-blockly";
 import Blockly from "blockly";
 import { Workspace } from "workspace";
+import { KAROL_TOOLBOX } from "../blockly/Toolbox";
 
 initCustomBlocks();
 

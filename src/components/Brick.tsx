@@ -7,7 +7,7 @@ import { RoundedBox } from "@react-three/drei";
 function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {
   return (
     <RoundedBox
-      position={[props.position[0] + 0.5, props.position[1] + 0.5*props.heightUnits, props.position[2] + 0.5]}
+      position={[props.position[0] + 0.5, props.position[1] + 0.5 * props.heightUnits, props.position[2] + 0.5]}
       scale={[1, props.heightUnits, 1]}
       radius={0.15}
     >
