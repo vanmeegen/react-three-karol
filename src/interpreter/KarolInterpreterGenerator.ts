@@ -419,6 +419,8 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       case "warten":
         waitSync(numberParam ?? 1000);
         break;
+      case "beenden":
+        throw Error("Programm wurde beendet");
       default:
         throw Error("Instruction " + ctx.getText() + " not implemented");
     }
