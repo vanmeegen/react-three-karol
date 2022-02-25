@@ -9,7 +9,18 @@ import "./ProgramControlPanel.css";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
 import { IconButton, Tab, Tabs, Tooltip, Typography } from "@mui/material";
-import { Delete, DirectionsBike, DirectionsRun, DirectionsWalk, Save, Settings, Upload } from "@mui/icons-material";
+import {
+  Delete,
+  DirectionsBike,
+  DirectionsRun,
+  DirectionsWalk,
+  Elderly,
+  Pause,
+  Save,
+  Settings,
+  Stop,
+  Upload
+} from "@mui/icons-material";
 import { initCustomBlocks } from "../blockly/CustomBlocks";
 import "../assets/blockly.css";
 
@@ -49,11 +60,15 @@ function getColOfLineIndex(text: string, line: number, column: number): number {
   return position;
 }
 
+let programStepper: Generator<StepResult> | undefined = undefined;
+let interruptExecution: boolean = false;
+
 export function ProgramControlPanel(props: { model: KarolModel; world: WorldModel; defaultValue: string }) {
   const [isOpen, setOpen] = useState(false);
   const [program, setProgram] = useState(props.defaultValue);
   const [fileName, setFileName] = useState("Untitled.karol");
   const [activeTab, setActiveTab] = useState(0);
+  const [programState, setProgramState] = useState("-");
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
   /* will point to blockly workspace after first toXml, since BlocklyWorkspace component does not support refs */
   let blocklyWorkspace: BlocklyWorkspace = undefined;
@@ -84,12 +99,57 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     setProgram(generated);
   }
 
-  function run(waitTime?: number) {
+  function setInterrupted(interrupted: boolean): void {
+    interruptExecution = interrupted;
+    setProgramState(interrupted ? "halt" : programStepper !== undefined ? "läuft" : "-");
+  }
+
+  /** prepare program start, keep execution state globally */
+  function startProgram(): boolean {
     const tree: ParserRuleContext | undefined = parseKarol(program);
     if (tree) {
-      const steps = executeSteps(tree, props.model);
-      const doStep = () => {
-        let result: IteratorResult<StepResult> = steps.next();
+      programStepper = executeSteps(tree, props.model);
+      console.log("Programm wurde gestartet");
+      setInterrupted(false);
+    } else {
+      alert("Das Programm enthält Syntaxfehler");
+    }
+    return tree !== undefined;
+  }
+
+  /** interrupt program execution, can be continued by one of the run buttons */
+  function interruptProgram(): void {
+    if (programStepper !== undefined) {
+      setInterrupted(true);
+    } else {
+      alert("Programm läuft nicht, daher ist Unterbrechen nicht möglich");
+    }
+  }
+
+  /** remove program execution context, interrupt running program */
+  function stopProgram(): void {
+    if (programStepper !== undefined) {
+      console.log("Das Programm wurde gestoppt");
+      programStepper = undefined;
+      setInterrupted(false);
+    } else {
+      alert("Programm läuft nicht, daher ist Stoppen nicht möglich");
+    }
+  }
+
+  function run(waitTime?: number, singleStep: boolean = false) {
+    setInterrupted(false);
+    if (programStepper === undefined) {
+      const started = startProgram();
+      if (!started) {
+        return;
+      }
+    }
+    // must be defined here
+    const doStep = () => {
+      if (!interruptExecution && programStepper !== undefined) {
+        const stepper = programStepper!;
+        let result: IteratorResult<StepResult> = stepper.next();
         if (!result.done) {
           const sourceRange = result.value.source;
           if (textAreaRef.current && sourceRange?.startLine) {
@@ -102,13 +162,19 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
             );
             textAreaRef.current.selectionEnd = getColOfLineIndex(program, sourceRange.endLine, sourceRange.endCol);
           }
+          if (!singleStep) {
+            waitTime !== undefined ? setTimeout(doStep, waitTime) : doStep();
+          } else {
+            setInterrupted(true);
+          }
+        } else {
+          console.log("Programm wurde beendet");
+          programStepper = undefined;
+          setInterrupted(false);
         }
-        waitTime !== undefined ? setTimeout(doStep, waitTime) : doStep();
-      };
-      doStep();
-    } else {
-      alert("Program contains Syntax Errors");
-    }
+      }
+    };
+    doStep();
   }
 
   function handleClick(evt: any, data: any) {
@@ -188,19 +254,34 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
             <Save />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Programmstart">
-          <IconButton onClick={handleError(() => run(0))}>
+        <Tooltip title="Einzelschritt">
+          <IconButton onClick={handleError(() => run(0, true))}>
+            <Elderly />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Programmstart langsam">
+          <IconButton onClick={handleError(() => run(200))}>
+            <DirectionsWalk />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Programmstart schnell">
+          <IconButton onClick={handleError(() => run(10))}>
             <DirectionsRun />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Schnelldurchlauf">
+        <Tooltip title="Programm Maximalgeschwindigkeit">
           <IconButton onClick={handleError(() => run())}>
             <DirectionsBike />
           </IconButton>
         </Tooltip>
-        <Tooltip title="Einzelschritt">
-          <IconButton onClick={handleError(() => run(200))}>
-            <DirectionsWalk />
+        <Tooltip title="Programm unterbrechen">
+          <IconButton onClick={handleError(() => interruptProgram())}>
+            <Pause />
+          </IconButton>
+        </Tooltip>
+        <Tooltip title="Programm stoppen">
+          <IconButton onClick={handleError(() => stopProgram())}>
+            <Stop />
           </IconButton>
         </Tooltip>
         <Tooltip title="Einstellungen Karol">
@@ -213,6 +294,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
             <Delete />
           </IconButton>
         </Tooltip>
+        <Typography variant="subtitle1">{programState}</Typography>
         <Typography variant="caption" style={{ margin: "auto" }}>
           {fileName}
         </Typography>
