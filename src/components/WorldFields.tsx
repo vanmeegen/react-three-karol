@@ -16,16 +16,16 @@ const Field = observer((props: { content: FieldType; karol: KarolModel; position
       result = <Brick key={key} position={props.position} color="red" heightUnits={0.5} />;
       break;
     case FieldType.brick_yellow:
-      result = <Brick key={key} position={props.position} color="yellow" heightUnits={0.5} />;
+      result = <Brick key={key} position={props.position} color="#faf32a" heightUnits={0.5} />;
       break;
     case FieldType.brick_blue:
-      result = <Brick key={key} position={props.position} color="blue" heightUnits={0.5} />;
+      result = <Brick key={key} position={props.position} color="#0464c4" heightUnits={0.5} />;
       break;
     case FieldType.brick_green:
-      result = <Brick key={key} position={props.position} color="green" heightUnits={0.5} />;
+      result = <Brick key={key} position={props.position} color="#03a81c" heightUnits={0.5} />;
       break;
     case FieldType.brick_black:
-      result = <Brick key={key} position={props.position} color="black" heightUnits={0.5} />;
+      result = <Brick key={key} position={props.position} color="#676973" heightUnits={0.5} />;
       break;
     case FieldType.karol:
       result = <Karol key={key} position={props.position} karol={props.karol} />;
