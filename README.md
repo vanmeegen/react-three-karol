@@ -19,8 +19,8 @@ Try it: https://vanmeegen.github.io/react-three-karol/
 - configurable world size up to 50x50x50
 - choice of several Karol Figures
 - Parameters in Statements
+- Parameters in Conditions
 - Object Syntax for Statements and Conditions (e.g. Karol.Schritt() instead of Schritt)
-- parameters in conditions
 - color of bricks and markers
 - configurable count of bricks Karol can pick up and lay down (currently unlimited)
 - load and save programs
@@ -28,9 +28,7 @@ Try it: https://vanmeegen.github.io/react-three-karol/
 - user defined functions
 - user defined conditions
 - Blockly based visual language
-
-## TODO (soon)
-- breakpoints and step by step execution
+- Step by Step Execution and interrupt program
 
 ## TODO (future)
 - Syntax Highlighting in Editor
