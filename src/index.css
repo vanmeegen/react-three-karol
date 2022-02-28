@@ -4,8 +4,32 @@ body {
     "Droid Sans", "Helvetica Neue", sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  height: 100%;
+  width: 100%;
+  padding: 0;
 }
 
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+#root {
+  height: 100%;
+  width: 100%;
+}
+
+.App {
+  height: 100%;
+  width: 100%;
+  display: flex;
+  flex: auto;
+  flex-direction: column;
+}
+
+.Main {
+  display: flex;
+  flex-direction: row;
+  columns: 2;
+  flex: auto;
+  overflow: hidden;
 }

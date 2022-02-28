@@ -42,15 +42,15 @@ export const World3D = observer((props: { world: WorldModel; karol: KarolModel }
   }, [props.world.dimensions.x, props.world.dimensions.y, props.world.dimensions.z]);
   // noinspection RequiredAttributes
   return (
-    <div style={{ width: 800, height: 800, border: "solid black 1px" }}>
+    <div style={{ width: "700px", height: "600px", borderTop: "solid black 1px" }}>
       <Canvas shadows={true}>
         <OrthographicCamera
-          zoom={960 / (max.x + max.z)}
+          zoom={920 / (max.x + max.z)}
           position={[max.x, max.y, max.z]}
           makeDefault={true}
           ref={cameraRef}
         />
-        <group key="all" position={[-5, -5, -5]}>
+        <group key="all" position={[-5, -3, -5]}>
           <ambientLight key="l1" intensity={0.2} />
           <pointLight key="l2" castShadow intensity={0.9} position={[60, 15, 25]} />
           <pointLight key="l3" castShadow intensity={0.9} position={[-60, 15, 25]} />

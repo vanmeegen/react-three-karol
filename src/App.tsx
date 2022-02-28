@@ -27,11 +27,11 @@ endewiederhole
         <h1 style={{ fontSize: "1.4em" }}>Karol Online</h1>
         <div>by Samuel and Marco van Meegen 2022</div>
       </div>
-      <div style={{ display: "flex", flexDirection: "row", columns: 2 }}>
+      <div className="Main">
         <ProgramControlPanel model={karol} world={world} defaultValue={exampleProgram} />
         <div>
-          <World3D world={world} karol={karol} />
           <WorldControlPanel karol={karol} world={world} />
+          <World3D world={world} karol={karol} />
         </div>
       </div>
     </div>

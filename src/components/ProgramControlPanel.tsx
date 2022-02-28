@@ -242,8 +242,10 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   }
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", flexGrow: 1 }}>
-      <div style={{ display: "flex", flexDirection: "row", margin: "5px" }}>
+    <div
+      style={{ display: "flex", flexDirection: "column", flexGrow: 1, border: "solid black 1px", minWidth: "320px" }}
+    >
+      <div style={{ display: "flex", flexDirection: "row", columns: 2, flexWrap: "wrap" }}>
         <Tooltip title="Programm laden">
           <IconButton onClick={load}>
             <Upload />
@@ -305,13 +307,13 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
         <Tab label="Blöcke" />
       </Tabs>
       {activeTab === 0 ? (
-        <div key="code" style={{ minWidth: "40em", flexGrow: 1 }}>
+        <div key="code" style={{ flexGrow: 1 }}>
           <ContextMenuTrigger id="menu_statements">
             <textarea
               ref={textAreaRef}
               value={program}
               onChange={onTextChanged}
-              style={{ flexGrow: 1, width: "100%", height: "100%" }}
+              style={{ flexGrow: 1, width: "100%", height: "100%", padding: "0px", resize: "none" }}
             />
           </ContextMenuTrigger>
           <ContextMenu id="menu_statements">
