@@ -25,11 +25,10 @@ import { initCustomBlocks } from "../blockly/CustomBlocks";
 import "../assets/blockly.css";
 
 import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
-// @ts-ignore
-import { BlocklyWorkspace } from "react-blockly";
+import { BlocklyWorkspace, WorkspaceSvg } from "react-blockly";
 import Blockly from "blockly";
-import { Workspace } from "workspace";
 import { KAROL_TOOLBOX } from "../blockly/Toolbox";
+import { INITIAL_BLOCKLY_XML } from "../data/BurgExample";
 
 initCustomBlocks();
 
@@ -71,8 +70,8 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
   const [programState, setProgramState] = useState("-");
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
   /* will point to blockly workspace after first toXml, since BlocklyWorkspace component does not support refs */
-  let blocklyWorkspace: BlocklyWorkspace = undefined;
-  const [xml, setXml] = useState("");
+  let blocklyWorkspace: WorkspaceSvg | undefined = undefined;
+  const [xml, setXml] = useState(INITIAL_BLOCKLY_XML);
 
   function handleSettings() {
     setOpen(true);
@@ -91,7 +90,7 @@ export function ProgramControlPanel(props: { model: KarolModel; world: WorldMode
     setProgram(evt.target.value);
   }
 
-  function setBlocklyXml(workspace: Workspace): void {
+  function setBlocklyXml(workspace: WorkspaceSvg): void {
     blocklyWorkspace = workspace;
     console.log("workspace: ", workspace);
     const generated = (Blockly as any)["karol"].workspaceToCode(workspace);

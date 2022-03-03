@@ -3361,15 +3361,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-blockly@npm:^7.0.0-alpha.1":
-  version: 7.0.0-alpha.1
-  resolution: "react-blockly@npm:7.0.0-alpha.1"
+"react-blockly@npm:^7.0.0-alpha.2":
+  version: 7.0.0-alpha.2
+  resolution: "react-blockly@npm:7.0.0-alpha.2"
   dependencies:
     blockly: ">= 3.20200024.0"
-    prop-types: ^15.7.2
   peerDependencies:
     react: ^16.8 || ^17.0
-  checksum: d63d904fc7a039ebfec7e00c7a29f7cb96d2bf9dae0b9d5552d905948ecf056588e1d2ead2266cc152e6dd550defcf5a5b2bd034727d1e88f2718d42df43024c
+  checksum: 989fafe504071cbfd27920ed732fe98065bf3de36987664b45a490c0c09a682b6002d25c145f46524938edfc1efb4227b91be46db660d58397b98873f9322370
   languageName: node
   linkType: hard
 
@@ -3483,7 +3482,7 @@ __metadata:
     mobx-react: ^7.3.0
     prettier: ^2.5.1
     react: ^18.0.0-rc.0-next-fe905f152-20220107
-    react-blockly: ^7.0.0-alpha.1
+    react-blockly: ^7.0.0-alpha.2
     react-contextmenu: ^2.14.0
     react-dom: ^18.0.0-rc.0-next-fe905f152-20220107
     three: ^0.137.5
