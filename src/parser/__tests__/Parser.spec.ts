@@ -6,7 +6,7 @@ describe("The Karol Parser", () => {
     // misssing BEGINNING-OF-EXECUTION End pair
     const input = "wenn END-OF-PROGRAM dann";
     // invalid program should return undefined
-    expect(parseKarol(input)).toBeUndefined();
+    expect(parseKarol(input)).toBeTypeOf("string");
   });
   it("correctly parses the example without syntax errors", () => {
     const input = "Programm Schritt *Programm";
@@ -37,7 +37,7 @@ describe("The Karol Parser", () => {
     });
     it("does not accept statement object syntax without brackets", () => {
       const input = "Karol.Hinlegen";
-      expect(parseKarol(input)).toBeUndefined();
+      expect(parseKarol(input)).toBeTypeOf("string");
     });
   });
   describe("it can parse object syntax for conditions", () => {
@@ -59,7 +59,7 @@ describe("The Karol Parser", () => {
     });
     it("does not accept condition object syntax without brackets", () => {
       const input = "wenn Karol.IstZiegel dann Schritt endewenn";
-      expect(parseKarol(input)).toBeUndefined();
+      expect(parseKarol(input)).toBeTypeOf("string");
     });
   });
 });

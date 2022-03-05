@@ -116,7 +116,7 @@ class MyErrorListener extends TypedErrorListener {
 export function parseKarol(
   input: string,
   startRule: "karol" | "conditionexpression" | "instruction" = "karol"
-): ParserRuleContext | undefined {
+): ParserRuleContext | string {
   const chars = new antlr4.InputStream(input);
   const lexer = new KarolLexer(chars);
   const tokens = new antlr4.CommonTokenStream(lexer);
@@ -125,7 +125,7 @@ export function parseKarol(
   parser.addErrorListener(myErrorListener);
   const tree = (parser as any)[startRule]();
   // console.log("Parse Tree: " + printParseTree(parser, tree));
-  return myErrorListener.errorCount === 0 && tree !== null ? tree : undefined;
+  return myErrorListener.errorCount === 0 && tree !== null ? tree : myErrorListener.errors.join("\n");
 }
 
 // usage:

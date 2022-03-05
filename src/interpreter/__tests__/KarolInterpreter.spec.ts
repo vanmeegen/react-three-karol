@@ -1,5 +1,5 @@
 import { parseKarol, TypedKarolParser } from "../../parser/KarolParserFacade";
-import { assertCondition, assertDefined } from "../../util/AssertCondition";
+import { assertCondition } from "../../util/AssertCondition";
 import { ParserRuleContext } from "antlr4";
 import { WorldModel } from "../../models/WorldModel";
 import { execute } from "../KarolInterpreterGenerator";
@@ -8,8 +8,12 @@ import { Direction, KarolModel } from "../../models/KarolModel";
 import { Color, Coord2d, FieldType } from "../../models/CommonTypes";
 
 function executeProgram(program: string, karol: KarolModel): void {
-  const tree: ParserRuleContext | undefined = parseKarol(program);
-  assertDefined(tree, "There were syntax errors parsing the program '" + program + "'");
+  const treeOrError: ParserRuleContext | string = parseKarol(program);
+  assertCondition(
+    !(typeof treeOrError === "string"),
+    "There were syntax errors parsing the program '" + program + "': " + (treeOrError as string)
+  );
+  const tree: ParserRuleContext = treeOrError as ParserRuleContext;
   const ruleStatement = tree.getChild(0);
   assertCondition(
     ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ||
@@ -20,8 +24,12 @@ function executeProgram(program: string, karol: KarolModel): void {
 }
 
 function executeCondition(condition: string, karol: KarolModel): boolean | undefined {
-  const tree: ParserRuleContext | undefined = parseKarol(condition, "conditionexpression");
-  assertDefined(tree, "There were syntax errors parsing the condition '" + condition + "'");
+  const treeOrError: ParserRuleContext | string = parseKarol(condition, "conditionexpression");
+  assertCondition(
+    !(typeof treeOrError === "string"),
+    "There were syntax errors parsing the condition '" + condition + "': " + (treeOrError as string)
+  );
+  const tree: ParserRuleContext = treeOrError as ParserRuleContext;
   assertCondition(
     tree.ruleIndex === TypedKarolParser.RULE_conditionexpression,
     "Internal Error: parse did not return a condition"

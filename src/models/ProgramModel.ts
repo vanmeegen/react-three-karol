@@ -57,15 +57,15 @@ export class ProgramModel {
 
   /** prepare program start, keep execution state globally */
   @action start(karol: KarolModel): boolean {
-    const tree: ParserRuleContext | undefined = parseKarol(this.sourceCode);
-    if (tree) {
-      this.stepper = executeSteps(tree, karol);
+    const treeOrError: ParserRuleContext | string = parseKarol(this.sourceCode);
+    if (typeof treeOrError !== "string") {
+      this.stepper = executeSteps(treeOrError, karol);
       console.log("Programm wurde gestartet");
       this.setInterrupted(false);
     } else {
-      alert("Das Programm enthält Syntaxfehler");
+      alert("Das Programm enthält Syntaxfehler:\n" + treeOrError);
     }
-    return tree !== undefined;
+    return typeof treeOrError !== "string";
   }
 
   /** interrupt program execution, can be continued by one of the run buttons */
