@@ -1,3 +1,16 @@
+export const INITIAL_SOURCE_EXAMPLE = `{Karol baut 'ne Burg}
+wiederhole 72 mal
+    Schritt
+    LinksDrehen
+    Hinlegen
+    RechtsDrehen
+    wenn IstWand dann
+        LinksDrehen
+        Aufheben
+    endewenn
+endewiederhole
+`;
+
 export const INITIAL_BLOCKLY_XML = `
 <xml xmlns="https://developers.google.com/blockly/xml">
     <block type="repeat_times" id="8j]=9,hXz+^qcv|I5,ss" x="30" y="10">
