@@ -14,7 +14,7 @@ export function executeProgram(program: string, karol: KarolModel): void {
   const ruleStatement = tree.getChild(0);
   assertCondition(
     ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ||
-    ruleStatement.ruleIndex === TypedKarolParser.RULE_definition,
+      ruleStatement.ruleIndex === TypedKarolParser.RULE_definition,
     "Internal Error: parse did not return a program"
   );
   execute(ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ? ruleStatement : tree, karol);

@@ -12,7 +12,8 @@ describe("It can execute full Karol 3.0 programs", () => {
     karol = new KarolModel(world);
   });
   it("can define a custom procedure and call it 2 times", () => {
-    const program = "{ Karol steht vor einem Viereck aus Ziegel. Er soll alle Steine einsammeln }\n" +
+    const program =
+      "{ Karol steht vor einem Viereck aus Ziegel. Er soll alle Steine einsammeln }\n" +
       "Anweisung AufhebenReihe\n" +
       "  wiederhole solange IstZiegel\n" +
       "    Aufheben\n" +
@@ -44,9 +45,9 @@ describe("It can execute full Karol 3.0 programs", () => {
     world.setField(1, 0, 1, FieldType.brick_first);
     world.setField(1, 0, 2, FieldType.brick_first);
     executeProgram(program, karol);
-    expect(world.getField(0,0,1)).toEqual(FieldType.empty);
-    expect(world.getField(0,0,2)).toEqual(FieldType.empty);
-    expect(world.getField(1,0,1)).toEqual(FieldType.empty);
-    expect(world.getField(1,0,2)).toEqual(FieldType.empty);
+    expect(world.getField(0, 0, 1)).toEqual(FieldType.empty);
+    expect(world.getField(0, 0, 2)).toEqual(FieldType.empty);
+    expect(world.getField(1, 0, 1)).toEqual(FieldType.empty);
+    expect(world.getField(1, 0, 2)).toEqual(FieldType.empty);
   });
 });

@@ -44,16 +44,15 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
 
   function switchTab(index: number): void {
     let change: boolean = true;
-    if (activeTab === 0 && index === 1 && textAreaRef.current && isDirty){
+    if (activeTab === 0 && index === 1 && textAreaRef.current && isDirty) {
       change = confirm("Der Wechsel zu Blockly löscht eingegebenen Code. Trotzdem wechseln ?");
-      if (change){
+      if (change) {
         setDirty(false);
       }
     }
-    if (change){
+    if (change) {
       setActiveTab(index);
     }
-
   }
 
   function handleSettings() {
@@ -108,7 +107,14 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
 
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", flexGrow: 1, border: "solid black 1px", borderTop: "none",minWidth: "320px" }}
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        flexGrow: 1,
+        border: "solid black 1px",
+        borderTop: "none",
+        minWidth: "320px",
+      }}
     >
       <div style={{ display: "flex", flexDirection: "row", columns: 2, flexWrap: "wrap" }}>
         <Tooltip title="Programm laden">

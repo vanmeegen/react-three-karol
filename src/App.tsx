@@ -17,7 +17,7 @@ function App() {
   return (
     <div className="App">
       <div className="App-header">
-        <div/>
+        <div />
         <div className="App-headline">Karol Online V{version}</div>
         <div className="App-copyright">by Samuel and Marco van Meegen &copy;2022</div>
       </div>
