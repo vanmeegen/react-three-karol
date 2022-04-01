@@ -57,15 +57,22 @@ export class ProgramModel {
 
   /** prepare program start, keep execution state globally */
   @action start(karol: KarolModel): boolean {
-    const treeOrError: ParserRuleContext | string = parseKarol(this.sourceCode);
-    if (typeof treeOrError !== "string") {
-      this.stepper = executeSteps(treeOrError, karol);
-      console.log("Programm wurde gestartet");
+    try {
+      const treeOrError: ParserRuleContext | string = parseKarol(this.sourceCode);
+      if (typeof treeOrError !== "string") {
+        this.stepper = executeSteps(treeOrError, karol);
+        console.log("Programm wurde gestartet");
+        this.setInterrupted(false);
+      } else {
+        alert("Das Programm enthält Syntaxfehler:\n" + treeOrError);
+      }
+      return typeof treeOrError !== "string";
+    } catch (e) {
+      alert(e);
+      this.stepper = undefined;
       this.setInterrupted(false);
-    } else {
-      alert("Das Programm enthält Syntaxfehler:\n" + treeOrError);
+      return false;
     }
-    return typeof treeOrError !== "string";
   }
 
   /** interrupt program execution, can be continued by one of the run buttons */
@@ -105,21 +112,28 @@ export class ProgramModel {
     const doStep = () => {
       if (!this.interruptExecution && this.stepper !== undefined) {
         const stepper = this.stepper!;
-        let result: IteratorResult<StepResult> = stepper.next();
-        if (!result.done && result.value?.source !== undefined) {
-          const sourceRange = result.value.source;
-          const selectionStart = getColOfLineIndex(this.sourceCode, sourceRange.startLine, sourceRange.startCol);
-          const selectionEnd = getColOfLineIndex(this.sourceCode, sourceRange.endLine, sourceRange.endCol);
-          selectCurrentStatement(selectionStart, selectionEnd);
-          if (!singleStep) {
-            waitTime !== undefined ? setTimeout(doStep, waitTime) : doStep();
+        try {
+          let result: IteratorResult<StepResult> = stepper.next();
+          if (!result.done && result.value?.source !== undefined) {
+            const sourceRange = result.value.source;
+            const selectionStart = getColOfLineIndex(this.sourceCode, sourceRange.startLine, sourceRange.startCol);
+            const selectionEnd = getColOfLineIndex(this.sourceCode, sourceRange.endLine, sourceRange.endCol);
+            selectCurrentStatement(selectionStart, selectionEnd);
+            if (!singleStep) {
+              waitTime !== undefined ? setTimeout(doStep, waitTime) : doStep();
+            } else {
+              this.setInterrupted(true);
+            }
           } else {
-            this.setInterrupted(true);
+            console.log("Programm wurde beendet");
+            this.stepper = undefined;
+            this.setInterrupted(false);
           }
-        } else {
-          console.log("Programm wurde beendet");
+        } catch (e) {
+          alert(e);
           this.stepper = undefined;
           this.setInterrupted(false);
+          return false;
         }
       }
     };
