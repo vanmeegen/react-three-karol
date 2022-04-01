@@ -39,7 +39,22 @@ function handleError(f: () => void): () => void {
 export const ProgramControlPanel = observer((props: { model: KarolModel; program: ProgramModel }) => {
   const [isOpen, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
+  const [isDirty, setDirty] = useState(false);
   const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
+
+  function switchTab(index: number): void {
+    let change: boolean = true;
+    if (activeTab === 0 && index === 1 && textAreaRef.current && isDirty){
+      change = confirm("Der Wechsel zu Blockly löscht eingegebenen Code. Trotzdem wechseln ?");
+      if (change){
+        setDirty(false);
+      }
+    }
+    if (change){
+      setActiveTab(index);
+    }
+
+  }
 
   function handleSettings() {
     setOpen(true);
@@ -52,6 +67,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
 
   function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
     props.program.setSourceCode(evt.target.value);
+    setDirty(true);
   }
 
   function handleClick(evt: any, data: any) {
@@ -92,7 +108,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
 
   return (
     <div
-      style={{ display: "flex", flexDirection: "column", flexGrow: 1, border: "solid black 1px", minWidth: "320px" }}
+      style={{ display: "flex", flexDirection: "column", flexGrow: 1, border: "solid black 1px", borderTop: "none",minWidth: "320px" }}
     >
       <div style={{ display: "flex", flexDirection: "row", columns: 2, flexWrap: "wrap" }}>
         <Tooltip title="Programm laden">
@@ -151,7 +167,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
         </Typography>
       </div>
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
-      <Tabs value={activeTab} onChange={(e, index) => setActiveTab(index)}>
+      <Tabs value={activeTab} onChange={(e, index) => switchTab(index)}>
         <Tab label="Code" />
         <Tab label="Blöcke" />
       </Tabs>
