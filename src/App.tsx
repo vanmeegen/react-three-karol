@@ -6,6 +6,7 @@ import { ProgramControlPanel } from "./components/ProgramControlPanel";
 import { KarolModel } from "./models/KarolModel";
 import { ProgramModel } from "./models/ProgramModel";
 import { INITIAL_SOURCE_EXAMPLE } from "./data/BurgExample";
+import { version } from "../package.json";
 
 const world = new WorldModel(10, 10, 10);
 const karol = new KarolModel(world);
@@ -16,8 +17,9 @@ function App() {
   return (
     <div className="App">
       <div className="App-header">
-        <h1 style={{ fontSize: "1.4em" }}>Karol Online</h1>
-        <div>by Samuel and Marco van Meegen 2022</div>
+        <div/>
+        <div className="App-headline">Karol Online V{version}</div>
+        <div className="App-copyright">by Samuel and Marco van Meegen &copy;2022</div>
       </div>
       <div className="Main">
         <ProgramControlPanel model={karol} program={programModel} />
