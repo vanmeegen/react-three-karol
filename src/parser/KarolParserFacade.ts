@@ -117,7 +117,7 @@ export function parseKarol(
   input: string,
   startRule: "karol" | "conditionexpression" | "instruction" = "karol"
 ): ParserRuleContext | string {
-  const chars = new antlr4.InputStream(input);
+  const chars = new antlr4.InputStream(input.toLowerCase());
   const lexer = new KarolLexer(chars);
   const tokens = new antlr4.CommonTokenStream(lexer);
   const parser: IKarolParser = new KarolParser(tokens);

@@ -1,8 +1,8 @@
 grammar Karol;
-options { caseInsensitive=true; }
+// does not work, thus done toLower before parsing: options { caseInsensitive=true; }
 
 karol
-   : definition* 'Programm' statement* ('endeProgramm' | '*Programm')
+   : definition* 'programm' statement* ('endeprogramm' | '*programm')
    | definition* statement*
    ;
 
@@ -12,12 +12,12 @@ definition
    ;
 
 methoddefinition
-   : 'Anweisung' IDENTIFIER statement* ('endeAnweisung' | '*Anweisung')
-   | 'Methode' IDENTIFIER statement* ('endeMethode' | '*Methode')
+   : 'anweisung' IDENTIFIER statement* ('endeanweisung' | '*anweisung')
+   | 'methode' IDENTIFIER statement* ('endemethode' | '*methode')
    ;
 
 conditiondefinition
-   : 'Bedingung' IDENTIFIER (statement | conditionexpression)+ ('endeBedingung' | '*Bedingung')
+   : 'bedingung' IDENTIFIER (statement | conditionexpression)+ ('endebedingung' | '*bedingung')
    ;
 
 statement
@@ -26,9 +26,9 @@ statement
    | conditional
    | instruction (';')?
    // object syntax
-   | 'Karol' '.' instruction '(' ')'(';')?
+   | 'karol' '.' instruction '(' ')'(';')?
    | parameterizedinstruction (';')?
-   | 'Karol' '.' parameterizedinstruction (';')?
+   | 'karol' '.' parameterizedinstruction (';')?
    | customMethodCall
    ;
 
@@ -51,35 +51,35 @@ conditional
    ;
 
 instruction
-   : 'Schritt'
-   | 'LinksDrehen'
-   | 'RechtsDrehen'
-   | 'Hinlegen'
-   | 'Aufheben'
-   | 'MarkeSetzen'
-   | 'MarkeLöschen'
-   | 'Warten'
-   | 'Ton'
-   | 'Beenden'
+   : 'schritt'
+   | 'linksdrehen'
+   | 'rechtsdrehen'
+   | 'hinlegen'
+   | 'aufheben'
+   | 'markesetzen'
+   | 'markelöschen'
+   | 'warten'
+   | 'ton'
+   | 'beenden'
    | 'schnell'
    | 'langsam'
    ;
 
 parameterizedinstruction
-   : 'Schritt' '(' number ')'
-   | 'Hinlegen' '(' (color | number) ')'
-   | 'Aufheben' '(' number ')'
-   | 'MarkeSetzen' '(' color ')'
-   | 'Warten' '(' number ')'
+   : 'schritt' '(' number ')'
+   | 'hinlegen' '(' (color | number) ')'
+   | 'aufheben' '(' number ')'
+   | 'markesetzen' '(' color ')'
+   | 'warten' '(' number ')'
    ;
 
 conditionexpression
    : 'nicht' conditionexpression
    | condition
    // object syntax
-   | 'Karol' '.' condition '(' ')'
+   | 'karol' '.' condition '(' ')'
    | parameterizedcondition
-   | 'Karol' '.' parameterizedcondition
+   | 'karol' '.' parameterizedcondition
    | customConditionCall
    ;
 
@@ -88,31 +88,31 @@ customConditionCall
    ;
 
 condition:
-    'IstWand'
-   | 'NichtIstWand'
-   | 'IstSüden'
-   | 'IstNorden'
-   | 'IstWesten'
-   | 'IstOsten'
-   | 'IstVoll'
-   | 'NichtIstVoll'
-   | 'IstLeer'
-   | 'NichtIstLeer'
-   | 'IstZiegel'
-   | 'NichtIstZiegel'
-   | 'IstMarke'
-   | 'NichtIstMarke'
-   | 'HatZiegel'
+    'istwand'
+   | 'nichtistwand'
+   | 'istsüden'
+   | 'istnorden'
+   | 'istwesten'
+   | 'istosten'
+   | 'istvoll'
+   | 'nichtistvoll'
+   | 'istleer'
+   | 'nichtistleer'
+   | 'istziegel'
+   | 'nichtistziegel'
+   | 'istmarke'
+   | 'nichtistmarke'
+   | 'hatziegel'
    | 'wahr'
    | 'falsch'
    ;
 
 parameterizedcondition
-   : 'IstZiegel' '(' (color | number) ')'
-   | 'NichtIstZiegel' '(' (color | number) ')'
-   | 'IstMarke' '(' color ')'
-   | 'NichtIstMarke' '(' color ')'
-   | 'HatZiegel' '(' number ')'
+   : 'istziegel' '(' (color | number) ')'
+   | 'nichtistziegel' '(' (color | number) ')'
+   | 'istmarke' '(' color ')'
+   | 'nichtistmarke' '(' color ')'
+   | 'hatziegel' '(' number ')'
    ;
 
 color
