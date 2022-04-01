@@ -5,7 +5,7 @@ import Blockly from "blockly";
 import { ParserRuleContext } from "antlr4";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
-import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
+import { fileOpen, fileSave } from "browser-fs-access";
 import { KarolModel } from "./KarolModel";
 
 /**

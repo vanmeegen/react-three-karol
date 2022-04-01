@@ -791,6 +791,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@pmndrs/cannon-worker-api@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@pmndrs/cannon-worker-api@npm:2.0.0"
+  peerDependencies:
+    three: ">=0.139"
+  checksum: 854019343f89cd469a0a20c9bad25b717b4d31eeb6dd162aed293a1c6566df4f0d3beec1001fc42f41ecdf4e8ed81871a15d975c75ebd25cb0c687e485204936
+  languageName: node
+  linkType: hard
+
 "@popperjs/core@npm:^2.11.4":
   version: 2.11.4
   resolution: "@popperjs/core@npm:2.11.4"
@@ -866,20 +875,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-three/cannon@npm:^5.1.0":
-  version: 5.1.0
-  resolution: "@react-three/cannon@npm:5.1.0"
+"@react-three/cannon@npm:^6.0.0":
+  version: 6.0.0
+  resolution: "@react-three/cannon@npm:6.0.0"
   dependencies:
-    "@react-three/fiber": ^7.0.26
-    react: ">=17.0"
-    three: ^0.137.0
-  checksum: d9790d4748df2270426af8668d437312796e04dd7826452d108a5596a8e3f094f9598052911cda1c87309b9717c8173f077f7ec4ef8ebad07f6e39fe109ebe9e
+    "@pmndrs/cannon-worker-api": ^2.0.0
+    cannon-es: ^0.19.0
+    cannon-es-debugger: ^1.0.0
+  peerDependencies:
+    "@react-three/fiber": ">=8"
+    react: ">=18"
+    three: ">=0.139"
+  checksum: 0f6c625d4576ae0e848ea86ac0fdc20ff90e5ed3647a680e0d4ab7140f21a259197ed50848f8ae642a55f934aac640b521d2772a5fe06ca41c74280c13301405
   languageName: node
   linkType: hard
 
-"@react-three/drei@npm:^9.0.1":
-  version: 9.0.1
-  resolution: "@react-three/drei@npm:9.0.1"
+"@react-three/drei@npm:^8.20.2":
+  version: 8.20.2
+  resolution: "@react-three/drei@npm:8.20.2"
   dependencies:
     "@babel/runtime": ^7.11.2
     "@react-spring/three": ^9.3.1
@@ -894,50 +907,25 @@ __metadata:
     stats.js: ^0.17.0
     suspend-react: ^0.0.8
     three-mesh-bvh: ^0.5.7
-    three-stdlib: ^2.8.12
+    three-stdlib: ^2.8.9
     troika-three-text: ^0.46.3
     utility-types: ^3.10.0
     zustand: ^3.5.13
   peerDependencies:
-    "@react-three/fiber": ">=8.0"
-    react: ">=18.0"
-    react-dom: ">=18.0"
+    "@react-three/fiber": ">=6.0"
+    react: ">=17.0"
+    react-dom: ">=17.0"
     three: ">=0.137"
   peerDependenciesMeta:
     react-dom:
       optional: true
-  checksum: 682885c9406d13cb29044ba1694787f6665241d9fb27514bff9592cae3dcfa0dd990add6749723d11deaa5e24e2fc9cd618648cc7dd22c55a75f410befe505d7
+  checksum: f9f180c9a416aeb4fdc638ddb9f15de6a6e17ff1c1389ea845d64ba5795d3f0cb5cac827a675a940ea4a3c920a18ea11e874f49133381a4d50edbcf9be855b58
   languageName: node
   linkType: hard
 
-"@react-three/fiber@npm:^7.0.26":
-  version: 7.0.26
-  resolution: "@react-three/fiber@npm:7.0.26"
-  dependencies:
-    "@babel/runtime": ^7.13.10
-    react-merge-refs: ^1.1.0
-    react-reconciler: ^0.26.2
-    react-three-fiber: 0.0.0-deprecated
-    react-use-measure: ^2.1.1
-    resize-observer-polyfill: ^1.5.1
-    scheduler: ^0.20.2
-    use-asset: ^1.0.4
-    utility-types: ^3.10.0
-    zustand: ^3.5.1
-  peerDependencies:
-    react: ">=17.0"
-    react-dom: ">=17.0"
-    three: ">=0.133"
-  peerDependenciesMeta:
-    react-dom:
-      optional: true
-  checksum: 72548c6d2aaf911f501ff7e53ab685934f734008b6c59a35c2d8941cea5211648e3e9d8ccecc10666f82349c7cc6d2a3eac4f8c581dde63c34ea07650769dc41
-  languageName: node
-  linkType: hard
-
-"@react-three/fiber@npm:^8.0.6":
-  version: 8.0.6
-  resolution: "@react-three/fiber@npm:8.0.6"
+"@react-three/fiber@npm:^8.0.7":
+  version: 8.0.7
+  resolution: "@react-three/fiber@npm:8.0.7"
   dependencies:
     "@babel/runtime": ^7.17.8
     "@types/react-reconciler": ^0.26.4
@@ -966,7 +954,7 @@ __metadata:
       optional: true
     react-native:
       optional: true
-  checksum: 36d2e5339d0aa86e3947675567d8caf5cee3838073d73709823ef24e73699c79d4b47ffb3afd937caf92347e41c80a38a3e04ff72fabed7176a5576cba715495
+  checksum: b1c4d585e89718d93dac54255867a4d317449b27586575fc781623fd7622a72e681de02717703e8cb4727f561a79ecc8b1d992332f953617c423bcf535c97a19
   languageName: node
   linkType: hard
 
@@ -1472,6 +1460,27 @@ __metadata:
   version: 1.0.30001299
   resolution: "caniuse-lite@npm:1.0.30001299"
   checksum: c770f60ebf3e0cc8043ba4db0ebec12d7a595a6b50cb4437c3c5c55b04de9d2413f711f2828be761e8c37bb46b927a8abe6b199b8f0ffc1a34af0ebdee84be27
+  languageName: node
+  linkType: hard
+
+"cannon-es-debugger@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "cannon-es-debugger@npm:1.0.0"
+  peerDependencies:
+    cannon-es: 0.x
+    three: 0.x
+    typescript: ">=3.8"
+  peerDependenciesMeta:
+    typescript:
+      optional: true
+  checksum: 4d50b1250db46e5f7f005980ba38bcb5b21682c8851bef7e6077a1c20c7490ed05dcd286ca36f47cb7c5f9de47ff77b633c18c49ef6b1b44297985a9f7b5f58b
+  languageName: node
+  linkType: hard
+
+"cannon-es@npm:^0.19.0":
+  version: 0.19.0
+  resolution: "cannon-es@npm:0.19.0"
+  checksum: 60f3868bc346c85701cba18d8413ff51b692ff6c5d0aec562ca9180b8e8e53da792477966d0d81eba9faed069f6b1e3d263e9ff2679e0a53d5b0e26c48903894
   languageName: node
   linkType: hard
 
@@ -2162,7 +2171,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fast-deep-equal@npm:^3.1.1, fast-deep-equal@npm:^3.1.3":
+"fast-deep-equal@npm:^3.1.1":
   version: 3.1.3
   resolution: "fast-deep-equal@npm:3.1.3"
   checksum: e21a9d8d84f53493b6aa15efc9cfd53dd5b714a1f23f67fb5dc8f574af80df889b3bce25dc081887c6d25457cce704e636395333abad896ccdec03abaf1f3f9d
@@ -3516,19 +3525,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-reconciler@npm:^0.26.2":
-  version: 0.26.2
-  resolution: "react-reconciler@npm:0.26.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-    scheduler: ^0.20.2
-  peerDependencies:
-    react: ^17.0.2
-  checksum: 2ebceace56f547f51eaf142becefef9cca980eae4f42d90ee5a966f54a375f5082d78b71b00c40bbd9bca69e0e0f698c7d4e81cc7373437caa19831fddc1d01b
-  languageName: node
-  linkType: hard
-
 "react-reconciler@npm:^0.27.0":
   version: 0.27.0
   resolution: "react-reconciler@npm:0.27.0"
@@ -3548,13 +3544,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-three-fiber@npm:0.0.0-deprecated":
-  version: 0.0.0-deprecated
-  resolution: "react-three-fiber@npm:0.0.0-deprecated"
-  checksum: edbc23c4a95289841abcd1a48ef08bc6c8bd1bad5643e6a7d45b50978d81da2497bc5df2536751d7dab50fd785ec0b553c626786e41af227e5f4567307ae12b9
-  languageName: node
-  linkType: hard
-
 "react-three-karol@workspace:.":
   version: 0.0.0-use.local
   resolution: "react-three-karol@workspace:."
@@ -3563,9 +3552,9 @@ __metadata:
     "@emotion/styled": ^11.8.1
     "@mui/icons-material": ^5.5.1
     "@mui/material": ^5.5.3
-    "@react-three/cannon": ^5.1.0
-    "@react-three/drei": ^9.0.1
-    "@react-three/fiber": ^8.0.6
+    "@react-three/cannon": ^6.0.0
+    "@react-three/drei": ^8.20.2
+    "@react-three/fiber": ^8.0.7
     "@types/antlr4": ^4.7.2
     "@types/node": ^17.0.23
     "@types/react": ^17.0.43
@@ -3616,7 +3605,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:>=17.0, react@npm:^18.0.0":
+"react@npm:^18.0.0":
   version: 18.0.0
   resolution: "react@npm:18.0.0"
   dependencies:
@@ -3706,13 +3695,6 @@ __metadata:
   version: 2.0.2
   resolution: "require-from-string@npm:2.0.2"
   checksum: a03ef6895445f33a4015300c426699bc66b2b044ba7b670aa238610381b56d3f07c686251740d575e22f4c87531ba662d06937508f0f3c0f1ddc04db3130560b
-  languageName: node
-  linkType: hard
-
-"resize-observer-polyfill@npm:^1.5.1":
-  version: 1.5.1
-  resolution: "resize-observer-polyfill@npm:1.5.1"
-  checksum: 57e7f79489867b00ba43c9c051524a5c8f162a61d5547e99333549afc23e15c44fd43f2f318ea0261ea98c0eb3158cca261e6f48d66e1ed1cd1f340a43977094
   languageName: node
   linkType: hard
 
@@ -3808,16 +3790,6 @@ __metadata:
   dependencies:
     xmlchars: ^2.1.1
   checksum: 3b69918c013fffae51c561f629a0f620c02dba70f762dab38f3cd92676dfe5edf1f0a523ca567882838f1a80e26e4671a8c2c689afa05c68f45a78261445aba0
-  languageName: node
-  linkType: hard
-
-"scheduler@npm:^0.20.2":
-  version: 0.20.2
-  resolution: "scheduler@npm:0.20.2"
-  dependencies:
-    loose-envify: ^1.1.0
-    object-assign: ^4.1.1
-  checksum: c4b35cf967c8f0d3e65753252d0f260271f81a81e427241295c5a7b783abf4ea9e905f22f815ab66676f5313be0a25f47be582254db8f9241b259213e999b8fc
   languageName: node
   linkType: hard
 
@@ -4064,7 +4036,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"three-stdlib@npm:^2.8.12":
+"three-stdlib@npm:^2.8.9":
   version: 2.9.1
   resolution: "three-stdlib@npm:2.9.1"
   dependencies:
@@ -4081,13 +4053,6 @@ __metadata:
   peerDependencies:
     three: ">=0.122.0"
   checksum: 64bae913b8053fef71a72cd968bb102fcc69a9bbe299918b5ffb255cb9ca72798cdbabc8862aec71f14c7dadeacd8635ac978bb3ac8600a4b91063fe8bde7e6a
-  languageName: node
-  linkType: hard
-
-"three@npm:^0.137.0":
-  version: 0.137.5
-  resolution: "three@npm:0.137.5"
-  checksum: e9fa478f54b50dae2ea745fd97fdec46cea9770292053a80c937ce9549670f4a3dfe238943bd42e535e2d57a10dacb531a51ae12aef42347303270f7f66da8c8
   languageName: node
   linkType: hard
 
@@ -4278,17 +4243,6 @@ __metadata:
   dependencies:
     punycode: ^2.1.0
   checksum: 7167432de6817fe8e9e0c9684f1d2de2bb688c94388f7569f7dbdb1587c9f4ca2a77962f134ec90be0cc4d004c939ff0d05acc9f34a0db39a3c797dada262633
-  languageName: node
-  linkType: hard
-
-"use-asset@npm:^1.0.4":
-  version: 1.0.4
-  resolution: "use-asset@npm:1.0.4"
-  dependencies:
-    fast-deep-equal: ^3.1.3
-  peerDependencies:
-    react: ">=17.0"
-  checksum: dc87a1ca3aa0af05765255b80c9f027c42b533da3e887362af17e7d9423edfedf11d48d00a181e32b067f66c5036d0442d551394d6f7540e3f5dc6a1a3ebfa9a
   languageName: node
   linkType: hard
 
@@ -4538,7 +4492,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zustand@npm:^3.5.1, zustand@npm:^3.5.13":
+"zustand@npm:^3.5.13":
   version: 3.6.9
   resolution: "zustand@npm:3.6.9"
   peerDependencies:

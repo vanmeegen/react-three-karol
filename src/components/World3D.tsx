@@ -19,6 +19,7 @@ const DashedLine = observer(
       dashSize={1}
       dashScale={10}
       dashOffset={1}
+      alphaWrite={true}
     />
   )
 );

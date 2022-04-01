@@ -15,9 +15,9 @@ import {
   Settings,
   TurnLeft,
   TurnRight,
-  Upload,
+  Upload
 } from "@mui/icons-material";
-import { fileOpen, fileSave, FileSystemHandle } from "browser-fs-access";
+import { fileOpen, fileSave } from "browser-fs-access";
 
 function handleError(f: () => void): () => void {
   return () => {
