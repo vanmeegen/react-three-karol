@@ -1431,6 +1431,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/use-sync-external-store@npm:^1":
+  version: 1.5.0
+  resolution: "@types/use-sync-external-store@npm:1.5.0"
+  checksum: 10/39e5be8dc2cca080b490f2f79fed4381ae7eebee3f981208e359856733eafb2479d229db07a552f6c99fe0b5c09b3e46a3e6a870e00a88b50f3e690e73d2649b
+  languageName: node
+  linkType: hard
+
 "@use-gesture/core@npm:10.2.4":
   version: 10.2.4
   resolution: "@use-gesture/core@npm:10.2.4"
@@ -3499,37 +3506,35 @@ __metadata:
   languageName: node
   linkType: hard
 
-"mobx-react-lite@npm:^4.1.0":
-  version: 4.1.0
-  resolution: "mobx-react-lite@npm:4.1.0"
-  dependencies:
-    use-sync-external-store: "npm:^1.4.0"
+"mobx-react-lite@npm:^3.4.0":
+  version: 3.4.3
+  resolution: "mobx-react-lite@npm:3.4.3"
   peerDependencies:
-    mobx: ^6.9.0
-    react: ^16.8.0 || ^17 || ^18 || ^19
+    mobx: ^6.1.0
+    react: ^16.8.0 || ^17 || ^18
   peerDependenciesMeta:
     react-dom:
       optional: true
     react-native:
       optional: true
-  checksum: 10/3194d53ab730624c3d313e0f1e1e389c8f832fac37163ffa837ffe33a19dffad403592afa1cd2b13f8278d1fdb5bcb5c1234d9945fae19ecf64db6706956aa97
+  checksum: 10/768ada82ab181330cf57562552c591065c57e59378cafe1a9d100660b1acf5d73fe9f5eeea8ea7b2adc5a87dd322bc1e119d853474c51e032021deef967b07e4
   languageName: node
   linkType: hard
 
-"mobx-react@npm:9.2.0":
-  version: 9.2.0
-  resolution: "mobx-react@npm:9.2.0"
+"mobx-react@npm:7.6.0":
+  version: 7.6.0
+  resolution: "mobx-react@npm:7.6.0"
   dependencies:
-    mobx-react-lite: "npm:^4.1.0"
+    mobx-react-lite: "npm:^3.4.0"
   peerDependencies:
-    mobx: ^6.9.0
-    react: ^16.8.0 || ^17 || ^18 || ^19
+    mobx: ^6.1.0
+    react: ^16.8.0 || ^17 || ^18
   peerDependenciesMeta:
     react-dom:
       optional: true
     react-native:
       optional: true
-  checksum: 10/5007b9f21aa96e9c8c5954dd6643384fff9a625846f73012879082aca89bfe13128f76763cff18bf667dc7dc133dfb370db602fa49b496414d8f4de7d5ba369b
+  checksum: 10/33cdc54d44714c87a2fd50fa20ac84114d1032b20a4f1e5a1147c37aaca25147e43a4b970f7aded42ddd8f55c6b3d09d157be6019c8527381a7da161e5c9a45d
   languageName: node
   linkType: hard
 
@@ -3950,15 +3955,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-dom@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "react-dom@npm:18.0.0"
+"react-dom@npm:18.3.1":
+  version: 18.3.1
+  resolution: "react-dom@npm:18.3.1"
   dependencies:
     loose-envify: "npm:^1.1.0"
-    scheduler: "npm:^0.21.0"
+    scheduler: "npm:^0.23.2"
   peerDependencies:
-    react: ^18.0.0
-  checksum: 10/b02837ceb6639d56778a7199e4d32a3d5cedff5345e369035cb72aa6361428be299955b77d2b87080f353b3fc9d3cea63b4c845ded7231979256cfb8f05925a9
+    react: ^18.3.1
+  checksum: 10/3f4b73a3aa083091173b29812b10394dd06f4ac06aff410b74702cfb3aa29d7b0ced208aab92d5272919b612e5cda21aeb1d54191848cf6e46e9e354f3541f81
   languageName: node
   linkType: hard
 
@@ -4026,19 +4031,21 @@ __metadata:
     "@types/react": "npm:^17.0.43"
     "@types/react-dom": "npm:^17.0.14"
     "@types/three": "npm:^0.139.0"
+    "@types/use-sync-external-store": "npm:^1"
     "@vitejs/plugin-react": "npm:4.7.0"
     antlr4: "npm:4.9.3"
     browser-fs-access: "npm:^0.38.0"
     gh-pages: "npm:^6.3.0"
     mobx: "npm:6.13.7"
-    mobx-react: "npm:9.2.0"
+    mobx-react: "npm:7.6.0"
     prettier: "npm:^3.6.2"
-    react: "npm:^18.0.0"
+    react: "npm:18.3.1"
     react-blockly: "npm:^7.0.0-alpha.2"
     react-contextmenu: "npm:^2.14.0"
-    react-dom: "npm:^18.0.0"
+    react-dom: "npm:18.3.1"
     three: "npm:^0.139.2"
     typescript: "npm:5.8.3"
+    use-sync-external-store: "npm:1.2.0"
     vite: "npm:7.0.5"
     vitest: "npm:3.2.4"
   languageName: unknown
@@ -4071,12 +4078,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react@npm:^18.0.0":
-  version: 18.0.0
-  resolution: "react@npm:18.0.0"
+"react@npm:18.3.1":
+  version: 18.3.1
+  resolution: "react@npm:18.3.1"
   dependencies:
     loose-envify: "npm:^1.1.0"
-  checksum: 10/569bf29a26e271630823f9fe45a487bdf1239b8b3db631b33559d6c5fa6b61910fc25658df864ecdae48b84f27e72044571660189db511bac7291cd9fdf93078
+  checksum: 10/261137d3f3993eaa2368a83110466fc0e558bc2c7f7ae7ca52d94f03aac945f45146bd85e5f481044db1758a1dbb57879e2fcdd33924e2dde1bdc550ce73f7bf
   languageName: node
   linkType: hard
 
@@ -4353,12 +4360,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"scheduler@npm:^0.21.0":
-  version: 0.21.0
-  resolution: "scheduler@npm:0.21.0"
+"scheduler@npm:^0.23.2":
+  version: 0.23.2
+  resolution: "scheduler@npm:0.23.2"
   dependencies:
     loose-envify: "npm:^1.1.0"
-  checksum: 10/216dbe36490f8c3133eee8352061803c377de6eb80d4a8f7f290819a721a21135aba145db28ad3e34056115f1a8c0d7e1cd477cebd3d01f6d98e28cc31fc702a
+  checksum: 10/e8d68b89d18d5b028223edf090092846868a765a591944760942b77ea1f69b17235f7e956696efbb62c8130ab90af7e0949bfb8eba7896335507317236966bc9
   languageName: node
   linkType: hard
 
@@ -4917,12 +4924,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.4.0":
-  version: 1.5.0
-  resolution: "use-sync-external-store@npm:1.5.0"
+"use-sync-external-store@npm:1.2.0":
+  version: 1.2.0
+  resolution: "use-sync-external-store@npm:1.2.0"
   peerDependencies:
-    react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/ddae7c4572511f7f641d6977bd0725340aa7dbeda8250418b54c1a57ec285083d96cf50d1a1acbd6cf729f7a87071b2302c6fbd29310432bf1b21a961a313279
+    react: ^16.8.0 || ^17.0.0 || ^18.0.0
+  checksum: 10/a676216affc203876bd47981103f201f28c2731361bb186367e12d287a7566763213a8816910c6eb88265eccd4c230426eb783d64c373c4a180905be8820ed8e
   languageName: node
   linkType: hard
 

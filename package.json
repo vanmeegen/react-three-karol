@@ -25,12 +25,13 @@
     "antlr4": "4.9.3",
     "browser-fs-access": "^0.38.0",
     "mobx": "6.13.7",
-    "mobx-react": "9.2.0",
-    "react": "^18.0.0",
+    "mobx-react": "7.6.0",
+    "react": "18.3.1",
     "react-blockly": "^7.0.0-alpha.2",
     "react-contextmenu": "^2.14.0",
-    "react-dom": "^18.0.0",
-    "three": "^0.139.2"
+    "react-dom": "18.3.1",
+    "three": "^0.139.2",
+    "use-sync-external-store": "1.2.0"
   },
   "devDependencies": {
     "@types/antlr4": "^4.7.2",
@@ -38,6 +39,7 @@
     "@types/react": "^17.0.43",
     "@types/react-dom": "^17.0.14",
     "@types/three": "^0.139.0",
+    "@types/use-sync-external-store": "^1",
     "@vitejs/plugin-react": "4.7.0",
     "gh-pages": "^6.3.0",
     "prettier": "^3.6.2",
