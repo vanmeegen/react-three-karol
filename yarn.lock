@@ -1304,12 +1304,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react-dom@npm:^17.0.14":
-  version: 17.0.14
-  resolution: "@types/react-dom@npm:17.0.14"
-  dependencies:
-    "@types/react": "npm:*"
-  checksum: 10/c93e60dbe5663f527873ce7742b223c83fca0c5cd6293654a9efa34c8f5da508a57548e06b77d0460bc8dfd4fce12afef10040a44c60beaf773a627e77bca9eb
+"@types/react-dom@npm:^18.3.0":
+  version: 18.3.7
+  resolution: "@types/react-dom@npm:18.3.7"
+  peerDependencies:
+    "@types/react": ^18.0.0
+  checksum: 10/317569219366d487a3103ba1e5e47154e95a002915fdcf73a44162c48fe49c3a57fcf7f57fc6979e70d447112681e6b13c6c3c1df289db8b544df4aab2d318f3
   languageName: node
   linkType: hard
 
@@ -1342,14 +1342,13 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:^17.0.43":
-  version: 17.0.43
-  resolution: "@types/react@npm:17.0.43"
+"@types/react@npm:^18.3.0":
+  version: 18.3.23
+  resolution: "@types/react@npm:18.3.23"
   dependencies:
     "@types/prop-types": "npm:*"
-    "@types/scheduler": "npm:*"
     csstype: "npm:^3.0.2"
-  checksum: 10/2e0f32e3c0b57ad17101bfea54a316c68ae383d79be48b160c2d64ab58442971173093013e415cfb3f73c83acd621c94dd2d8b512e5c589ad1f0866b71dd3217
+  checksum: 10/4b965dffe34a1f8aac8e2d7e976f113373f38134f9e37239f7e75d7ac6b3c2e1333a8df21febf1fe7749640f8de5708f7668cdfc70bffebda1cc4d3346724fd5
   languageName: node
   linkType: hard
 
@@ -3855,7 +3854,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-blockly@npm:^7.0.0-alpha.2":
+"react-blockly@npm:7.0.0-alpha.2":
   version: 7.0.0-alpha.2
   resolution: "react-blockly@npm:7.0.0-alpha.2"
   dependencies:
@@ -3964,8 +3963,8 @@ __metadata:
     "@react-three/fiber": "npm:^7.0.27"
     "@types/antlr4": "npm:^4.7.2"
     "@types/node": "npm:^17.0.23"
-    "@types/react": "npm:^17.0.43"
-    "@types/react-dom": "npm:^17.0.14"
+    "@types/react": "npm:^18.3.0"
+    "@types/react-dom": "npm:^18.3.0"
     "@types/three": "npm:^0.139.0"
     "@types/use-sync-external-store": "npm:^1"
     "@vitejs/plugin-react": "npm:4.7.0"
@@ -3976,7 +3975,7 @@ __metadata:
     mobx-react: "npm:7.6.0"
     prettier: "npm:^3.6.2"
     react: "npm:18.3.1"
-    react-blockly: "npm:^7.0.0-alpha.2"
+    react-blockly: "npm:7.0.0-alpha.2"
     react-contextmenu: "npm:^2.14.0"
     react-dom: "npm:18.3.1"
     three: "npm:^0.139.2"
