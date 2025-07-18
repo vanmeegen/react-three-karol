@@ -7,9 +7,9 @@ import Weltraumwesen3D, { DIRECTION_PARAMS as P2 } from "./modelwrapper/Weltraum
 import Saxophonist3D, { DIRECTION_PARAMS as P3 } from "./modelwrapper/Saxophonist3D";
 import Puppet3D, { DIRECTION_PARAMS as P4 } from "./modelwrapper/Puppet3D";
 import { ModelOffset } from "./modelwrapper/ModelOffset";
-import { Object3DNode } from "@react-three/fiber";
+// Object3DNode removed in @react-three/fiber v9 - using any for now
 
-const FIGURES: [FunctionComponent<Object3DNode<any, any>>, ModelOffset[]][] = [
+const FIGURES: [FunctionComponent<any>, ModelOffset[]][] = [
   [Robot3D, P0],
   [Dracula3D, P1],
   [Weltraumwesen3D, P2],

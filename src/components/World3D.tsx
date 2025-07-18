@@ -27,7 +27,7 @@ const DashedLine = observer(
 // declare function Plane(props: any): any;
 
 export const World3D = observer((props: { world: WorldModel; karol: KarolModel }) => {
-  const cameraRef: RefObject<{ updateProjectionMatrix: () => void }> = useRef(null);
+  const cameraRef = useRef<{ updateProjectionMatrix: () => void }>(null);
   const rangeX = [];
   const max = props.world.dimensions;
   for (let i = 0; i < max.x + 1; i++) {

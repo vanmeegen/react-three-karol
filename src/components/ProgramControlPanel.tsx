@@ -40,7 +40,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
   const [isOpen, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [isDirty, setDirty] = useState(false);
-  const textAreaRef: RefObject<HTMLTextAreaElement> = useRef(null);
+  const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   function switchTab(index: number): void {
     let change: boolean = true;
