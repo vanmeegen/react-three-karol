@@ -5,10 +5,10 @@ import { useState } from "react";
 function DimensionSlider(props: { label: string; value: number; onChange: (newValue: number) => void }) {
   return (
     <>
-      <Grid xs={3} alignItems="center">
+      <Grid size={3} alignItems="center">
         {props.label}
       </Grid>
-      <Grid xs={9}>
+      <Grid size={9}>
         <Slider
           style={{ width: 300, margin: 30 }}
           defaultValue={10}
