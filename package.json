@@ -15,8 +15,8 @@
     "generate:glb": "cd src/components/modelwrapper && npx gltfjsx --types ../../../public/<insertmyglbname>.glb"
   },
   "dependencies": {
-    "@emotion/react": "^11.8.2",
-    "@emotion/styled": "^11.8.1",
+    "@emotion/react": "11.14.0",
+    "@emotion/styled": "11.14.1",
     "@mui/icons-material": "^5.5.1",
     "@mui/material": "^5.5.3",
     "@react-three/cannon": "^6.0.0",
@@ -24,8 +24,8 @@
     "@react-three/fiber": "^7.0.27",
     "antlr4": "4.9.3",
     "browser-fs-access": "^0.38.0",
-    "mobx": "^6.5.0",
-    "mobx-react": "^7.3.0",
+    "mobx": "6.13.7",
+    "mobx-react": "9.2.0",
     "react": "^18.0.0",
     "react-blockly": "^7.0.0-alpha.2",
     "react-contextmenu": "^2.14.0",
