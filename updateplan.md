@@ -10,7 +10,7 @@ This document outlines the systematic update plan for all outdated packages in t
 - ✅ **Phase 4**: Completed - Material-UI packages (Grid API migration applied)
 - ✅ **Phase 5**: Completed - React ecosystem (react-blockly moved to Phase 8)
 - ✅ **Phase 6**: Completed - Three.js ecosystem  
-- ⏳ **Phase 7**: Pending - ANTLR4 investigation
+- ❌ **Phase 7**: Complete - ANTLR4 investigation (update not recommended)
 - ⏳ **Phase 8**: Pending - React component compatibility
 
 ## Current Package Versions vs Latest Available
@@ -204,20 +204,33 @@ yarn test && yarn build
 
 **Note:** Three.js 0.139 → 0.178 is a significant jump. Check [Three.js migration guide](https://github.com/mrdoob/three.js/wiki/Migration-Guide).
 
-### Phase 7: Parser Library (Future Investigation)
+### Phase 7: Parser Library (Investigation Complete)
 
 ```bash
-# antlr4 - REQUIRES INVESTIGATION
-# Current issue: Version 4.13.2 has Node.js-specific dependencies that break browser builds
-# The package tries to import 'node:module' which is not available in browser environments
-# 
-# Possible solutions to investigate:
-# 1. Wait for antlr4 to fix browser compatibility in future versions
-# 2. Use a different ANTLR4 JavaScript runtime build (web-specific)
-# 3. Configure build tools to properly handle Node.js polyfills
-# 4. Consider alternative parser generators with better browser support
+# ❌ ANTLR4 4.13.2 UPDATE NOT RECOMMENDED
+# Tested antlr4@4.13.2 - Critical compatibility issues identified:
 #
-# For now, keeping antlr4@4.9.3 which works with current setup
+# 1. Runtime Errors:
+#    - TypeError: default.PredictionContextCache is not a constructor
+#    - API breaking changes in generated parser code
+#
+# 2. TypeScript Compilation Errors:
+#    - Property 'symbol' does not exist on type 'ParseTree'
+#    - Property 'ruleIndex' does not exist on type 'ParserRuleContext'  
+#    - Generic type 'Recognizer<TSymbol>' requires 1 type argument(s)
+#    - Multiple type incompatibilities between ParseTree and ParserRuleContext
+#
+# 3. Browser Compatibility Issues:
+#    - Requires Node.js-specific polyfills
+#    - Module loading problems in browser environments
+#
+# RECOMMENDED ALTERNATIVES:
+# 1. antlr4ng - TypeScript-first, browser-friendly, 9-35% faster
+# 2. Stay with antlr4@4.9.3 (current working version)
+# 3. Wait for future ANTLR4 versions to fix browser compatibility
+#
+# DECISION: Keep antlr4@4.9.3 for stability
+# Consider antlr4ng migration in future major version update
 ```
 
 ## Potential Breaking Changes to Watch
