@@ -12,7 +12,7 @@ function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {
     >
       {[...Array(6)].map((_, index) => (
         <meshStandardMaterial
-          attachArray="material"
+          attach={`material-${index}`}
           map={props.texture}
           key={index}
           color={props.color ?? "white"}

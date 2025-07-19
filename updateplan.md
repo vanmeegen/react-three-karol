@@ -9,7 +9,7 @@ This document outlines the systematic update plan for all outdated packages in t
 - ✅ **Phase 3**: Completed - TypeScript, Vite, @vitejs/plugin-react, vitest
 - ✅ **Phase 4**: Completed - Material-UI packages (Grid API migration applied)
 - ✅ **Phase 5**: Completed - React ecosystem (react-blockly moved to Phase 8)
-- ⏳ **Phase 6**: Pending - Three.js ecosystem  
+- ✅ **Phase 6**: Completed - Three.js ecosystem  
 - ⏳ **Phase 7**: Pending - ANTLR4 investigation
 - ⏳ **Phase 8**: Pending - React component compatibility
 
@@ -184,14 +184,22 @@ yarn test && yarn build
 ### Phase 6: Three.js Ecosystem
 
 ```bash
-# Update Three.js and types together
+# ✅ COMPLETED: Update Three.js and types together
 yarn add three@^0.178.0
 yarn add -D @types/three@^0.178.1
 yarn test && yarn build
 
-# Update React Three Fiber ecosystem
-yarn add @react-three/fiber@^9.2.0 @react-three/drei@^10.5.1 @react-three/cannon@^6.6.0
+# ✅ COMPLETED: Update React Three Fiber ecosystem
+yarn add @react-three/fiber@^9.2.0 @react-three/drei@^10.5.1
 yarn test && yarn build
+
+# ✅ COMPLETED: Fixed API breaking changes:
+# - attachArray → attach prop syntax
+# - useGLTF hook URL paths (added leading slash)
+# - Object3DNode removal → React.JSX.IntrinsicElements["group"]
+# - Line component alphaWrite prop removal
+# - useRef<TYPE>(null) strict typing
+# - GLTF type casting compatibility
 ```
 
 **Note:** Three.js 0.139 → 0.178 is a significant jump. Check [Three.js migration guide](https://github.com/mrdoob/three.js/wiki/Migration-Guide).

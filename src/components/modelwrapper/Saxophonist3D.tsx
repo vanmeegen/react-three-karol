@@ -24,9 +24,9 @@ export const DIRECTION_PARAMS = [
   { rotation: -Math.PI / 2, dx: 0.8, dy: 0, dz: 0.8 },
 ];
 
-export default function Model({ ...props }: JSX.IntrinsicElements["group"]) {
-  const group = useRef<THREE.Group>();
-  const { nodes, materials } = useGLTF("Saxophonist3D.glb") as GLTFResult;
+export default function Model({ ...props }: React.JSX.IntrinsicElements["group"]) {
+  const group = useRef<THREE.Group>(null);
+  const { nodes, materials } = useGLTF("Saxophonist3D.glb") as any;
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh geometry={nodes.node_id30.geometry} material={materials["49"]} position={[-0.2, 0, 0.26]} scale={0.13} />
