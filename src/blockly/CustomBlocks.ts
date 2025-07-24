@@ -1,25 +1,26 @@
 // noinspection JSUnusedLocalSymbols
 
 import blocks from "./data/KarolBlocks.json";
-import Blockly, { Block } from "blockly";
+import * as Blockly from "blockly";
 
-let karolGenerator: any;
+// Export the generator so it can be used elsewhere
+export let karolGenerator: any;
 
-const blockToCode: [string, (x: Block) => string | [string, number]][] = [
-  ["step", (block: Block) => "Schritt(" + block.getFieldValue("COUNT") + ")"],
-  ["turnleft", (block: Block) => "LinksDrehen"],
-  ["turnright", (block: Block) => "RechtsDrehen"],
-  ["laydown", (block: Block) => "Hinlegen(" + block.getFieldValue("COUNT") + ")"],
-  ["laydown_color", (block: Block) => "Hinlegen(" + block.getFieldValue("COLOR") + ")"],
-  ["pickup", (block: Block) => "Aufheben(" + block.getFieldValue("COUNT") + ")"],
-  ["setmarker_color", (block: Block) => "MarkeSetzen(" + block.getFieldValue("COLOR") + ")"],
-  ["deletemarker", (block: Block) => "MarkeLöschen"],
-  ["wait", (block: Block) => "Warten(" + block.getFieldValue("COUNT") + ")"],
-  ["beep", (block: Block) => "Ton"],
-  ["stop", (block: Block) => "Beenden"],
+const blockToCode: [string, (x: Blockly.Block) => string | [string, number]][] = [
+  ["step", (block: Blockly.Block) => "Schritt(" + block.getFieldValue("COUNT") + ")"],
+  ["turnleft", (block: Blockly.Block) => "LinksDrehen"],
+  ["turnright", (block: Blockly.Block) => "RechtsDrehen"],
+  ["laydown", (block: Blockly.Block) => "Hinlegen(" + block.getFieldValue("COUNT") + ")"],
+  ["laydown_color", (block: Blockly.Block) => "Hinlegen(" + block.getFieldValue("COLOR") + ")"],
+  ["pickup", (block: Blockly.Block) => "Aufheben(" + block.getFieldValue("COUNT") + ")"],
+  ["setmarker_color", (block: Blockly.Block) => "MarkeSetzen(" + block.getFieldValue("COLOR") + ")"],
+  ["deletemarker", (block: Blockly.Block) => "MarkeLöschen"],
+  ["wait", (block: Blockly.Block) => "Warten(" + block.getFieldValue("COUNT") + ")"],
+  ["beep", (block: Blockly.Block) => "Ton"],
+  ["stop", (block: Blockly.Block) => "Beenden"],
   [
     "repeat_times",
-    (block: Block) =>
+    (block: Blockly.Block) =>
       "wiederhole " +
       block.getFieldValue("COUNT") +
       " mal\n" +
@@ -28,7 +29,7 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
   ],
   [
     "while_do",
-    (block: Block) =>
+    (block: Blockly.Block) =>
       "wiederhole solange " +
       karolGenerator.valueToCode(block, "CONDITION", 0) +
       "\n" +
@@ -37,7 +38,7 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
   ],
   [
     "repeat_until",
-    (block: Block) =>
+    (block: Blockly.Block) =>
       "wiederhole \n" +
       karolGenerator.statementToCode(block, "STATEMENTS") +
       "\nendewiederhole" +
@@ -46,7 +47,7 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
   ],
   [
     "repeat_while",
-    (block: Block) =>
+    (block: Blockly.Block) =>
       "wiederhole \n" +
       karolGenerator.statementToCode(block, "STATEMENTS") +
       "\nendewiederhole" +
@@ -55,11 +56,11 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
   ],
   [
     "repeat_forever",
-    (block: Block) => "wiederhole immer\n" + karolGenerator.statementToCode(block, "STATEMENTS") + "\nendewiederhole",
+    (block: Blockly.Block) => "wiederhole immer\n" + karolGenerator.statementToCode(block, "STATEMENTS") + "\nendewiederhole",
   ],
   [
     "if_then",
-    (block: Block) =>
+    (block: Blockly.Block) =>
       "wenn " +
       karolGenerator.valueToCode(block, "CONDITION", 0) +
       " dann\n" +
@@ -68,7 +69,7 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
   ],
   [
     "if_then_else",
-    (block: Block) =>
+    (block: Blockly.Block) =>
       "wenn  " +
       karolGenerator.valueToCode(block, "CONDITION", 0) +
       " dann\n" +
@@ -77,28 +78,28 @@ const blockToCode: [string, (x: Block) => string | [string, number]][] = [
       karolGenerator.statementToCode(block, "STATEMENTS_2") +
       "\nendewenn",
   ],
-  ["is_wall", (block: Block) => ["IstWand", 0]],
-  ["isn't_wall", (block: Block) => ["NichtIstWand", 0]],
-  ["is_brick", (block: Block) => ["IstZiegel", 0]],
-  ["is_brick_count", (block: Block) => ["IstZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
-  ["is_brick_color", (block: Block) => ["IstZiegel(" + block.getFieldValue("COLOR") + ")", 0]],
-  ["isn't_brick", (block: Block) => ["NichtIstZiegel", 0]],
-  ["isn't_brick_count", (block: Block) => ["NichtIstZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
-  ["isn't_brick_color", (block: Block) => ["NichtIstZiegel(" + block.getFieldValue("COLOR") + ")", 0]],
-  ["is_marker", (block: Block) => ["IstMarke", 0]],
-  ["is_marker_color", (block: Block) => ["IstMarke(" + block.getFieldValue("COLOR") + ")", 0]],
-  ["isn't_marker", (block: Block) => ["NichtIstMarke", 0]],
-  ["isn't_marker_color", (block: Block) => ["NichtIstMarke(" + block.getFieldValue("COLOR") + ")", 0]],
-  ["is_south", (block: Block) => ["IstSüden", 0]],
-  ["is_north", (block: Block) => ["IstNorden", 0]],
-  ["is_west", (block: Block) => ["IstWesten", 0]],
-  ["is_east", (block: Block) => ["IstOsten", 0]],
-  ["is_full", (block: Block) => ["IstVoll", 0]],
-  ["isn't_full", (block: Block) => ["NichtIstVoll", 0]],
-  ["is_empty", (block: Block) => ["IstLeer", 0]],
-  ["isn't_empty", (block: Block) => ["NichtIstLeer", 0]],
-  ["has_bricks", (block: Block) => ["HatZiegel", 0]],
-  ["has_bricks_count", (block: Block) => ["HatZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
+  ["is_wall", (block: Blockly.Block) => ["IstWand", 0]],
+  ["isn't_wall", (block: Blockly.Block) => ["NichtIstWand", 0]],
+  ["is_brick", (block: Blockly.Block) => ["IstZiegel", 0]],
+  ["is_brick_count", (block: Blockly.Block) => ["IstZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
+  ["is_brick_color", (block: Blockly.Block) => ["IstZiegel(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["isn't_brick", (block: Blockly.Block) => ["NichtIstZiegel", 0]],
+  ["isn't_brick_count", (block: Blockly.Block) => ["NichtIstZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
+  ["isn't_brick_color", (block: Blockly.Block) => ["NichtIstZiegel(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["is_marker", (block: Blockly.Block) => ["IstMarke", 0]],
+  ["is_marker_color", (block: Blockly.Block) => ["IstMarke(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["isn't_marker", (block: Blockly.Block) => ["NichtIstMarke", 0]],
+  ["isn't_marker_color", (block: Blockly.Block) => ["NichtIstMarke(" + block.getFieldValue("COLOR") + ")", 0]],
+  ["is_south", (block: Blockly.Block) => ["IstSüden", 0]],
+  ["is_north", (block: Blockly.Block) => ["IstNorden", 0]],
+  ["is_west", (block: Blockly.Block) => ["IstWesten", 0]],
+  ["is_east", (block: Blockly.Block) => ["IstOsten", 0]],
+  ["is_full", (block: Blockly.Block) => ["IstVoll", 0]],
+  ["isn't_full", (block: Blockly.Block) => ["NichtIstVoll", 0]],
+  ["is_empty", (block: Blockly.Block) => ["IstLeer", 0]],
+  ["isn't_empty", (block: Blockly.Block) => ["NichtIstLeer", 0]],
+  ["has_bricks", (block: Blockly.Block) => ["HatZiegel", 0]],
+  ["has_bricks_count", (block: Blockly.Block) => ["HatZiegel(" + block.getFieldValue("COUNT") + ")", 0]],
 ];
 
 export function initCustomBlocks() {
@@ -109,12 +110,20 @@ export function initCustomBlocks() {
       },
     };
   });
+  
+  // Initialize the generator
   karolGenerator = new Blockly.Generator("karol");
   karolGenerator.PRECEDENCE = 0;
+  
+  // Register all block code generators
   blockToCode.forEach(([blockName, codeGenFct]) => {
-    karolGenerator[blockName] = codeGenFct;
+    karolGenerator.forBlock[blockName] = codeGenFct;
   });
-  karolGenerator.scrub_ = function (block: Block, code: string) {
+  
+  // Debug: Log registered blocks
+  console.log("Registered blocks in karolGenerator:", Object.keys(karolGenerator.forBlock));
+  
+  karolGenerator.scrub_ = function (block: Blockly.Block, code: string) {
     const nextBlock = block.nextConnection && block.nextConnection.targetBlock();
     let nextCode = "";
     if (nextBlock) {
@@ -122,5 +131,4 @@ export function initCustomBlocks() {
     }
     return code + nextCode;
   };
-  (Blockly as any)["karol"] = karolGenerator;
 }

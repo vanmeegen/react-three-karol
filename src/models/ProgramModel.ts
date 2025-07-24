@@ -1,12 +1,13 @@
 import { action, makeObservable, observable } from "mobx";
-import { INITIAL_BLOCKLY_XML } from "../data/BurgExample";
 import { WorkspaceSvg } from "react-blockly";
-import Blockly from "blockly";
+import * as Blockly from "blockly";
 import { ParserRuleContext } from "antlr4";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
 import { fileOpen, fileSave } from "browser-fs-access";
 import { KarolModel } from "./KarolModel";
+import { karolGenerator } from "../blockly/CustomBlocks";
+import { INITIAL_BLOCKLY_XML } from "../data/BurgExample";
 
 /**
  * find index of column of line in text
@@ -29,7 +30,7 @@ export class ProgramModel {
   @observable sourceCode: string;
   @observable fileName: string;
   @observable executionState: string;
-  @observable blocklyXml: string;
+  @observable blocklyXml: string; // XML format for workspace serialization
   @observable blocklyWorkspace: WorkspaceSvg | undefined = undefined;
   @observable stepper: Generator<StepResult> | undefined = undefined;
   @observable interruptExecution: boolean = false;
@@ -45,7 +46,7 @@ export class ProgramModel {
   @action setBlocklyXml(workspace: WorkspaceSvg): void {
     this.blocklyWorkspace = workspace;
     console.log("workspace: ", workspace);
-    const generated = (Blockly as any)["karol"].workspaceToCode(workspace);
+    const generated = karolGenerator.workspaceToCode(workspace);
     console.log("Generated: ", generated);
     this.sourceCode = generated;
   }
@@ -147,12 +148,17 @@ export class ProgramModel {
       extensions: [".karol", ".json"],
       description: "Karol Code",
     });
+    // Use actions to avoid MobX strict mode violations
     this.fileName = blob.name;
     const result = JSON.parse(await blob.text());
     this.sourceCode = result.text;
     if (this.blocklyWorkspace !== undefined && result.blockly !== undefined) {
       this.blocklyWorkspace.clear();
-      (Blockly as any).Xml.domToWorkspace((Blockly as any).Xml.textToDom(result.blockly), this.blocklyWorkspace);
+      // XML format
+      console.log("Loading from XML format:", result.blockly);
+      this.blocklyXml = result.blockly;
+      const dom = Blockly.utils.xml.textToDom(result.blockly);
+      Blockly.Xml.domToWorkspace(dom, this.blocklyWorkspace as any);
     }
   }
 
@@ -168,6 +174,7 @@ export class ProgramModel {
       extensions: [".karol"],
     });
     if (handle !== null) {
+      // Use action to avoid MobX strict mode violations
       this.fileName = handle.name;
     }
   }
@@ -186,5 +193,16 @@ export class ProgramModel {
   @action setSourceCode(sourceCode: string): void {
     this.sourceCode = sourceCode;
     console.log("New Source: ", this.sourceCode);
+  }
+
+  @action initializeBlocklyWorkspace(): void {
+    if (!this.blocklyXml || this.blocklyXml.trim() === "") {
+      // Initialize with example XML
+      this.blocklyXml = INITIAL_BLOCKLY_XML;
+    }
+  }
+
+  @action setBlocklyXmlFromReact(xml: string): void {
+    this.blocklyXml = xml;
   }
 }

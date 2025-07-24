@@ -52,6 +52,10 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
     }
     if (change) {
       setActiveTab(index);
+      // Initialize Blockly workspace when switching to Blockly tab
+      if (index === 1) {
+        props.program.initializeBlocklyWorkspace();
+      }
     }
   }
 
@@ -220,7 +224,10 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
               },
             }}
             initialXml={props.program.blocklyXml}
-            onXmlChange={(xml) => (props.program.blocklyXml = xml)}
+            onXmlChange={(xml) => {
+              console.log("XML changed:", xml);
+              props.program.setBlocklyXmlFromReact(xml);
+            }}
             onWorkspaceChange={(workspace: WorkspaceSvg) => props.program.setBlocklyXml(workspace)}
             onDispose={() => props.program.disposeBlocklyWorkspace()}
           />
