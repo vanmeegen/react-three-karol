@@ -167,4 +167,84 @@ describe("Karol can interact with the world", () => {
       expect(karol.brickCount).toEqual(4);
     });
   });
+
+  describe("it tracks total picked up bricks for race scoring", () => {
+    beforeEach(() => {
+      // Create a larger world for these tests
+      world = new WorldModel(5, 10, 5);
+      karol = new KarolModel(world);
+
+      // Setup some bricks in front of karol
+      for (let i = 0; i < 5; i++) {
+        world.setFieldByCoord({ x: 0, y: i, z: 1 }, FieldType.brick_red);
+      }
+    });
+
+    it("should start with pickedUpBricksTotal at 0", () => {
+      expect(karol.pickedUpBricksTotal).toBe(0);
+    });
+
+    it("should increment pickedUpBricksTotal when picking up a brick", () => {
+      karol.pickupBrick();
+      expect(karol.pickedUpBricksTotal).toBe(1);
+    });
+
+    it("should increment pickedUpBricksTotal by count when picking up multiple bricks", () => {
+      karol.pickupBrick(3);
+      expect(karol.pickedUpBricksTotal).toBe(3);
+    });
+
+    it("should accumulate pickedUpBricksTotal over multiple pickups", () => {
+      karol.pickupBrick(2);
+      expect(karol.pickedUpBricksTotal).toBe(2);
+      karol.pickupBrick(1);
+      expect(karol.pickedUpBricksTotal).toBe(3);
+      karol.pickupBrick(2);
+      expect(karol.pickedUpBricksTotal).toBe(5);
+    });
+
+    it("should reset pickedUpBricksTotal to 0 when reset is called", () => {
+      karol.pickupBrick(3);
+      expect(karol.pickedUpBricksTotal).toBe(3);
+
+      karol.reset();
+      expect(karol.pickedUpBricksTotal).toBe(0);
+    });
+
+    it("should track pickedUpBricksTotal independently from brickCount", () => {
+      // Karol picks up bricks
+      karol.pickupBrick(3);
+      expect(karol.brickCount).toBe(Infinity); // Still infinite
+      expect(karol.pickedUpBricksTotal).toBe(3); // But counter tracks them
+    });
+
+    it("should continue tracking even after laying bricks", () => {
+      karol.pickupBrick(2);
+      expect(karol.pickedUpBricksTotal).toBe(2);
+
+      // Lay a brick (doesn't affect pickedUpBricksTotal)
+      karol.layBrick();
+      expect(karol.pickedUpBricksTotal).toBe(2);
+
+      // Pick up more bricks
+      karol.pickupBrick(1);
+      expect(karol.pickedUpBricksTotal).toBe(3);
+    });
+
+    it("should track correctly with limited brick capacity", () => {
+      karol.maxBrickCount = 10;
+      karol.initialBrickCount = 5;
+      karol.reset();
+
+      // Pick up 3 bricks (5 + 3 = 8)
+      karol.pickupBrick(3);
+      expect(karol.brickCount).toBe(8);
+      expect(karol.pickedUpBricksTotal).toBe(3);
+
+      // Pick up 2 more (8 + 2 = 10, at max)
+      karol.pickupBrick(2);
+      expect(karol.brickCount).toBe(10);
+      expect(karol.pickedUpBricksTotal).toBe(5);
+    });
+  });
 });
