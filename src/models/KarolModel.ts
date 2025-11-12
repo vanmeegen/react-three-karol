@@ -45,6 +45,10 @@ export class KarolModel {
    */
   @observable jumpHeight: number;
   @observable figureIndex: number;
+  /**
+   * Total number of bricks picked up (for race scoring)
+   */
+  @observable pickedUpBricksTotal: number = 0;
 
   constructor(private world: WorldModel) {
     makeObservable(this);
@@ -60,6 +64,7 @@ export class KarolModel {
     this.position = { x: 0, y: 0, z: 0 };
     this.direction = Direction.South;
     this.brickCount = this.initialBrickCount;
+    this.pickedUpBricksTotal = 0;
     this.world.setFieldByCoord(this.position, FieldType.karol);
   }
 
@@ -143,6 +148,7 @@ export class KarolModel {
         if (this.maxBrickCount === Infinity || this.brickCount < this.maxBrickCount) {
           this.world.setFieldByCoord(lastBrickPosition, FieldType.empty);
           this.brickCount += 1;
+          this.pickedUpBricksTotal += 1;
         } else {
           throw Error("Karol kann nicht mehr als " + this.maxBrickCount + " Ziegel tragen.");
         }

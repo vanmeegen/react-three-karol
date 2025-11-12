@@ -33,6 +33,7 @@ Zwei Spieler programmieren jeweils einen Roboter. Beide Programme werden gleichz
 - `program2: ProgramModel`
 - Getrennte Blockly-Workspaces
 - Getrennte Code-Editoren
+- **Tab-basierte Ansicht**: Spieler programmieren nacheinander
 
 ### 4. **Parallele Ausführungs-Engine (NEU)**
 ```typescript
@@ -53,76 +54,190 @@ class RaceExecutor {
 - **Race-Controls**: "Bereit", "Start Race", "Neustart"
 
 ### 6. **Welt-Setup**
-- Zwei Startpositionen definieren
-- Symmetrisches oder asymmetrisches Layout
-- Genügend Blöcke zum Aufheben platzieren (mindestens 10+ pro Spieler)
+- Zwei Startpositionen auf gegenüberliegenden Seiten (z.B. x=1 und x=8)
+- **Blöcke in der Mitte** zwischen den Robotern
+- Beide Roboter konkurrieren um dieselbe Ressource
+- Mindestens 15-20 Blöcke in der Mitte zum Aufheben
 
-## 🔧 Technische Implementierungsschritte
+## 🧪 Test-Driven Development (TDD) Ansatz
 
-### **Schritt 1: GameModel erstellen**
-- Neue Datei: `src/models/GameModel.ts`
-- Verwaltet Spielzustand, Spieler-Wechsel, Scores, Gewinner
-- MobX Observable für reaktive UI-Updates
+**Prinzip**: Red-Green-Refactor + Verify
+1. 🔴 **Red**: Test schreiben der fehlschlägt
+2. 🟢 **Green**: Minimale Implementation um Test zu bestehen
+3. ✅ **Verify**: Tests ausführen (`npm test`)
+4. 🏗️ **Build**: Build durchführen (`npm run build`)
+5. 🔵 **Refactor**: Code verbessern, Tests müssen weiterhin bestehen
 
-### **Schritt 2: RaceExecutor erstellen**
-- Neue Datei: `src/interpreter/RaceExecutor.ts`
-- Führt zwei Programme parallel aus (Generator-basiert)
-- Zählt `pickupBrick()`-Aufrufe für jeden Spieler
-- Prüft Gewinnbedingung kontinuierlich
-- Unterstützt verschiedene Geschwindigkeiten
+### Test-Framework Setup
+- **Vitest** für Unit-Tests
+- **@testing-library/react** für Component-Tests
+- **@testing-library/user-event** für User-Interaktionen
 
-### **Schritt 3: KarolModel erweitern**
-- Tracking für aufgehobene Blöcke hinzufügen
-- `pickedUpBricksTotal: number` Property
-- Update in `pickupBrick()` Methode
+### Workflow pro Schritt
+1. Test schreiben
+2. Test ausführen (sollte fehlschlagen) → `npm test`
+3. Implementation schreiben
+4. Test ausführen (sollte erfolgreich sein) → `npm test`
+5. Build durchführen → `npm run build`
+6. Bei Erfolg: Commit & Push
+7. Bei Fehler: Fixen und wiederholen
 
-### **Schritt 4: TwoPlayerGame Component**
-- Hauptkomponente für Zwei-Spieler-Modus
-- Zwei Programmier-Panels (nacheinander oder Tabs)
-- Spielfluss-Steuerung
-- Integration mit GameModel
+## 🔧 Technische Implementierungsschritte (TDD)
 
-### **Schritt 5: UI-Komponenten**
-- **ScoreBoard**: Zeigt Scores beider Spieler live
-- **WinnerDialog**: Modal für Gewinner-Anzeige
-- **PlayerIndicator**: Zeigt aktiven Spieler
-- **RaceControls**: Start, Pause, Reset Buttons
+### **Schritt 1: GameModel (TDD)**
+1. 📝 Test schreiben: `GameModel.test.ts`
+   - Test: Initial state ist 'setup'
+   - Test: startPlayerProgramming() setzt currentPlayer
+   - Test: updatePlayer1Score() erhöht Score
+   - Test: checkWinCondition() setzt winner bei Score >= 10
+   - Test: reset() setzt alles zurück
+2. ✅ Implementation: `GameModel.ts`
+3. ♻️ Refactor falls nötig
 
-### **Schritt 6: World3D Anpassungen**
-- Zwei Karol-Komponenten rendern
-- Unterschiedliche Modelle/Farben
-- Kamera-Position anpassen für beide Roboter
+### **Schritt 2: KarolModel erweitern (TDD)**
+1. 📝 Test schreiben: `KarolModel.test.ts` (erweitern)
+   - Test: pickedUpBricksTotal startet bei 0
+   - Test: pickupBrick() erhöht pickedUpBricksTotal
+   - Test: reset() setzt pickedUpBricksTotal zurück
+2. ✅ Implementation: `KarolModel.ts` erweitern
+3. ♻️ Refactor falls nötig
 
-### **Schritt 7: Standard-Welt erstellen**
-- Zwei Startpositionen (z.B. x=2 und x=8)
-- Symmetrisches Layout mit Blöcken
-- Mindestens 10-15 Blöcke zum Aufheben pro Seite
+### **Schritt 3: RaceExecutor (TDD)**
+1. 📝 Test schreiben: `RaceExecutor.test.ts`
+   - Test: Führt beide Programme abwechselnd aus
+   - Test: Zählt pickupBrick() für beide Spieler
+   - Test: Stoppt bei Gewinnbedingung
+   - Test: Aktualisiert GameModel Scores
+2. ✅ Implementation: `RaceExecutor.ts`
+3. ♻️ Refactor falls nötig
 
-### **Schritt 8: Hauptmenü erweitern**
-- Button: "Einzelspieler" / "Zwei-Spieler"
-- Routing zwischen Modi
+### **Schritt 4: ScoreBoard Component (TDD)**
+1. 📝 Test schreiben: `ScoreBoard.test.tsx`
+   - Test: Zeigt beide Spieler-Scores an
+   - Test: Aktualisiert bei Score-Änderung
+   - Test: Hebt Führenden hervor
+2. ✅ Implementation: `ScoreBoard.tsx`
+3. ♻️ Refactor falls nötig
+
+### **Schritt 5: WinnerDialog Component (TDD)**
+1. 📝 Test schreiben: `WinnerDialog.test.tsx`
+   - Test: Zeigt Gewinner an
+   - Test: Zeigt Final-Scores
+   - Test: "Neustart" Button funktioniert
+2. ✅ Implementation: `WinnerDialog.tsx`
+3. ♻️ Refactor falls nötig
+
+### **Schritt 6: TwoPlayerGame Component (TDD)**
+1. 📝 Test schreiben: `TwoPlayerGame.test.tsx`
+   - Test: Zeigt Spieler 1 Programmierung zuerst
+   - Test: Wechsel zu Spieler 2 funktioniert
+   - Test: "Start Race" startet RaceExecutor
+   - Test: ScoreBoard wird während Rennen aktualisiert
+   - Test: WinnerDialog erscheint bei Gewinn
+2. ✅ Implementation: `TwoPlayerGame.tsx`
+3. ♻️ Refactor falls nötig
+
+### **Schritt 7: World3D Anpassungen (TDD)**
+1. 📝 Test schreiben: `World3D.test.tsx` (erweitern)
+   - Test: Rendert zwei Karol-Instanzen
+   - Test: Verschiedene Modelle für beide Spieler
+2. ✅ Implementation: `World3D.tsx` erweitern
+3. ♻️ Refactor falls nötig
+
+### **Schritt 8: Standard Zwei-Spieler Welt (TDD)**
+1. 📝 Test schreiben: `TwoPlayerWorld.test.ts`
+   - Test: Erstellt Welt mit zwei Startpositionen
+   - Test: Platziert Blöcke in der Mitte
+   - Test: Mindestens 15-20 Blöcke vorhanden
+2. ✅ Implementation: `TwoPlayerWorld.ts`
+3. ♻️ Refactor falls nötig
+
+### **Schritt 9: Integration Tests**
+1. 📝 Test schreiben: `TwoPlayerIntegration.test.tsx`
+   - Test: Kompletter Spielfluss von Start bis Gewinn
+   - Test: Beide Spieler programmieren und Race läuft
+2. ✅ Bugfixes und Anpassungen
+3. ♻️ Refactor
+
+### **Schritt 10: Hauptmenü erweitern**
+1. 📝 Test schreiben: `App.test.tsx` (erweitern)
+   - Test: Spielmodus-Auswahl erscheint
+   - Test: Wechsel zwischen Modi funktioniert
+2. ✅ Implementation: `App.tsx` erweitern
+3. ♻️ Refactor falls nötig
 
 ## 🎨 UI-Mockup Konzept
 
+### Phase 1: Spieler 1 Programmierung
 ```
 ┌─────────────────────────────────────────────────────────┐
 │  [Einzelspieler] [Zwei-Spieler] ◄── Mode Selector       │
 ├─────────────────────────────────────────────────────────┤
+│  📍 Jetzt programmiert: Spieler 1                       │
+│  ────────────────────────────────────────────────────   │
 │                                                          │
-│  Spieler 1: █████ 7/10    Spieler 2: ███ 3/10          │
-│                                                          │
-│  ┌──────────────────────┐  ┌──────────────────────┐    │
-│  │   Spieler 1          │  │   Spieler 2          │    │
-│  │   Programm           │  │   Programm           │    │
-│  │   (Blockly/Code)     │  │   (Blockly/Code)     │    │
-│  └──────────────────────┘  └──────────────────────┘    │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │   Spieler 1 Programm (Blockly/Code)              │  │
+│  │   [Blockly] [Code]                               │  │
+│  │                                                   │  │
+│  │   wiederhole 5 mal                                │  │
+│  │     Schritt                                       │  │
+│  │     Aufheben                                      │  │
+│  │   *ende                                           │  │
+│  └──────────────────────────────────────────────────┘  │
 │                                                          │
 │  ┌────────────────────────────────────────────────┐    │
-│  │         3D Welt mit 2 Robotern                 │    │
-│  │    🤖 (Robot)           🧛 (Dracula)           │    │
+│  │         3D Welt - Vorschau                      │    │
+│  │    🤖 (links)    [BLÖCKE]    (rechts)           │    │
 │  └────────────────────────────────────────────────┘    │
 │                                                          │
-│  [◄ Spieler 1]  [Spieler 2 ►]  [▶ Start Race]         │
+│  [Fertig → Spieler 2]                                   │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Phase 2: Spieler 2 Programmierung
+```
+┌─────────────────────────────────────────────────────────┐
+│  [Einzelspieler] [Zwei-Spieler] ◄── Mode Selector       │
+├─────────────────────────────────────────────────────────┤
+│  📍 Jetzt programmiert: Spieler 2                       │
+│  ────────────────────────────────────────────────────   │
+│                                                          │
+│  ┌──────────────────────────────────────────────────┐  │
+│  │   Spieler 2 Programm (Blockly/Code)              │  │
+│  │   [Blockly] [Code]                               │  │
+│  │                                                   │  │
+│  │   wiederhole 10 mal                               │  │
+│  │     Schritt                                       │  │
+│  │   *ende                                           │  │
+│  └──────────────────────────────────────────────────┘  │
+│                                                          │
+│  ┌────────────────────────────────────────────────┐    │
+│  │         3D Welt - Vorschau                      │    │
+│  │    🤖 (links)    [BLÖCKE]    🧛 (rechts)        │    │
+│  └────────────────────────────────────────────────┘    │
+│                                                          │
+│  [◄ Zurück zu Spieler 1]  [Bereit → Start Race]        │
+└─────────────────────────────────────────────────────────┘
+```
+
+### Phase 3: Rennen läuft
+```
+┌─────────────────────────────────────────────────────────┐
+│  🏁 RENNEN LÄUFT! 🏁                                    │
+├─────────────────────────────────────────────────────────┤
+│                                                          │
+│  Spieler 1: 🟦🟦🟦🟦🟦🟦🟦 7/10                         │
+│  Spieler 2: 🟩🟩🟩🟩🟩 5/10                             │
+│                                                          │
+│  ┌────────────────────────────────────────────────┐    │
+│  │         3D Welt - Live Action                   │    │
+│  │    🤖 →→→    [BLÖCKE]    ←←← 🧛                 │    │
+│  │         (beide bewegen sich)                    │    │
+│  └────────────────────────────────────────────────┘    │
+│                                                          │
+│  Geschwindigkeit: [Langsam][Mittel][Schnell]            │
+│  [⏸ Pause]  [⏹ Stopp]                                   │
 └─────────────────────────────────────────────────────────┘
 ```
 
@@ -170,28 +285,60 @@ async function executeRace() {
 5. **Replay-Funktion**: Rennen nochmal abspielen
 6. **Statistiken**: Anzahl Schritte, Zeit, Effizienz
 
-## ❓ Offene Entscheidungsfragen
+## ✅ Getroffene Design-Entscheidungen
 
-1. **UI-Layout**: Sollen beide Programmier-Bereiche gleichzeitig sichtbar sein (Split-Screen) oder nacheinander (Tab-basiert)?
+1. **UI-Layout**: ✅ **Nacheinander/Tab-basiert**
+   - Spieler 1 programmiert zuerst
+   - Dann wechselt die Ansicht zu Spieler 2
+   - Voller Platz für jeden Editor
+   - Spieler 2 sieht Strategie von Spieler 1 nicht während der Programmierung
 
-2. **Welt-Design**: Soll die Welt symmetrisch sein (faire Bedingungen) oder unterschiedliche Herausforderungen bieten?
+2. **Welt-Design**: ✅ **Blöcke in der Mitte**
+   - Roboter starten auf gegenüberliegenden Seiten
+   - **Blöcke befinden sich zwischen den Robotern**
+   - Beide konkurrieren um dieselben Ressourcen
+   - Macht das Spiel strategischer und spannender
 
-3. **Gewinnbedingung**: Nur "10 Blöcke aufheben" oder auch alternative Bedingungen (z.B. "erreiche Zielpunkt")?
+3. **Gewinnbedingung**: ✅ **Einfach**
+   - Nur eine Bedingung: Wer zuerst 10 Blöcke aufhebt, gewinnt
+   - Klare, leicht verständliche Regel
 
-4. **Programmier-Zeit**: Soll es ein Zeitlimit für die Programmierung geben oder unbegrenzt?
+4. **Programmier-Zeit**: ✅ **Unbegrenzt**
+   - Spieler haben so viel Zeit wie sie brauchen
+   - Kein Zeitdruck beim Programmieren
 
-5. **Execution Speed**: Soll die Ausführungsgeschwindigkeit fest sein oder einstellbar?
+5. **Execution Speed**: ✅ **Einstellbar**
+   - Regler für verschiedene Geschwindigkeiten (langsam/mittel/schnell)
+   - Wie im Einzelspieler-Modus
 
-## 📋 Implementierungs-Todos
+## 📋 Implementierungs-Todos (TDD)
 
-- [ ] GameModel erstellen
-- [ ] RaceExecutor erstellen
-- [ ] KarolModel erweitern (Score-Tracking)
-- [ ] TwoPlayerGame Component erstellen
-- [ ] ScoreBoard Component erstellen
-- [ ] WinnerDialog Component erstellen
-- [ ] World3D für zwei Roboter anpassen
-- [ ] Standard Zwei-Spieler Welt erstellen
-- [ ] Hauptmenü erweitern (Spielmodus-Auswahl)
-- [ ] End-to-End Tests
+### Phase 1: Core Models
+- [ ] Test: GameModel.test.ts schreiben
+- [ ] ✅ Implement: GameModel.ts
+- [ ] Test: KarolModel.test.ts erweitern (pickedUpBricksTotal)
+- [ ] Implement: KarolModel.ts erweitern
+- [ ] Test: RaceExecutor.test.ts schreiben
+- [ ] Implement: RaceExecutor.ts
+
+### Phase 2: UI Components
+- [ ] Test: ScoreBoard.test.tsx schreiben
+- [ ] Implement: ScoreBoard.tsx
+- [ ] Test: WinnerDialog.test.tsx schreiben
+- [ ] Implement: WinnerDialog.tsx
+- [ ] Test: TwoPlayerGame.test.tsx schreiben
+- [ ] Implement: TwoPlayerGame.tsx
+
+### Phase 3: 3D World & Integration
+- [ ] Test: World3D.test.tsx erweitern
+- [ ] Implement: World3D.tsx anpassen
+- [ ] Test: TwoPlayerWorld.test.ts schreiben
+- [ ] Implement: TwoPlayerWorld.ts
+- [ ] Test: TwoPlayerIntegration.test.tsx schreiben
+- [ ] Fixes basierend auf Integration Tests
+
+### Phase 4: Main App & Polish
+- [ ] Test: App.test.tsx erweitern
+- [ ] Implement: App.tsx (Spielmodus-Auswahl)
 - [ ] Beispiel-Programme erstellen
+- [ ] Dokumentation aktualisieren
