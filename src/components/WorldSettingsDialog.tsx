@@ -5,7 +5,7 @@ import { useState } from "react";
 function DimensionSlider(props: { label: string; value: number; onChange: (newValue: number) => void }) {
   return (
     <>
-      <Grid size={3} alignItems="center">
+      <Grid size={3} sx={{ display: "flex", alignItems: "center" }}>
         {props.label}
       </Grid>
       <Grid size={9}>

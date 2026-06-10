@@ -1,10 +1,8 @@
-import { ChangeEvent, RefObject, useRef, useState } from "react";
+import { ChangeEvent, MouseEvent, ReactElement, useRef, useState } from "react";
 import { KarolModel, KarolSettings } from "../models/KarolModel";
-import { ContextMenu, ContextMenuTrigger, MenuItem, SubMenu } from "react-contextmenu";
-import "./ProgramControlPanel.css";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
-import { IconButton, Tab, Tabs, Tooltip, Typography } from "@mui/material";
+import { Divider, IconButton, ListSubheader, Menu, MenuItem, Tab, Tabs, Tooltip, Typography } from "@mui/material";
 import {
   Delete,
   DirectionsBike,
@@ -36,10 +34,31 @@ function handleError(f: () => void): () => void {
   };
 }
 
+/** entries of one section of the code insert menu; undefined renders a divider */
+function menuSection(
+  title: string,
+  entries: (string | undefined)[],
+  onInsert: (text: string) => void
+): ReactElement[] {
+  return [
+    <ListSubheader key={title}>{title}</ListSubheader>,
+    ...entries.map((entry, index) =>
+      entry ? (
+        <MenuItem key={`${title}_${index}`} onClick={() => onInsert(entry)}>
+          {entry}
+        </MenuItem>
+      ) : (
+        <Divider key={`${title}_${index}`} />
+      )
+    ),
+  ];
+}
+
 export const ProgramControlPanel = observer((props: { model: KarolModel; program: ProgramModel }) => {
   const [isOpen, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [isDirty, setDirty] = useState(false);
+  const [menuPosition, setMenuPosition] = useState<{ top: number; left: number } | undefined>(undefined);
   const textAreaRef = useRef<HTMLTextAreaElement>(null);
 
   function switchTab(index: number): void {
@@ -73,31 +92,19 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
     setDirty(true);
   }
 
-  function handleClick(evt: any, data: any) {
-    const textArea = textAreaRef.current;
-    if (textArea) {
-      if (textArea.selectionStart || textArea.selectionStart == 0) {
-        const startPos = textArea.selectionStart;
-        const endPos = textArea.selectionEnd;
-        textArea.value =
-          textArea.value.substring(0, startPos) +
-          data.text +
-          " " +
-          textArea.value.substring(endPos, textArea.value.length);
-      } else {
-        textArea.value += data.text + " ";
-      }
-    }
+  function openInsertMenu(evt: MouseEvent): void {
+    evt.preventDefault();
+    setMenuPosition({ top: evt.clientY, left: evt.clientX });
   }
 
-  function MenuEntry(props: { title?: string }) {
-    return props.title ? (
-      <MenuItem data={{ text: props.title }} onClick={handleClick}>
-        {props.title}
-      </MenuItem>
-    ) : (
-      <MenuItem divider />
-    );
+  function insertAtCursor(text: string): void {
+    const textArea = textAreaRef.current;
+    const source = props.program.sourceCode;
+    const startPos = textArea?.selectionStart ?? source.length;
+    const endPos = textArea?.selectionEnd ?? startPos;
+    props.program.setSourceCode(source.substring(0, startPos) + text + " " + source.substring(endPos));
+    setDirty(true);
+    setMenuPosition(undefined);
   }
 
   function selectCurrentStatement(selectionStart: number, selectionEnd: number): void {
@@ -183,31 +190,24 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
       </Tabs>
       {activeTab === 0 ? (
         <div key="code" style={{ flexGrow: 1 }}>
-          <ContextMenuTrigger id="menu_statements">
-            <textarea
-              ref={textAreaRef}
-              value={props.program.sourceCode}
-              onChange={onTextChanged}
-              style={{ flexGrow: 1, width: "100%", height: "100%", padding: "0px", resize: "none" }}
-            />
-          </ContextMenuTrigger>
-          <ContextMenu id="menu_statements">
-            <SubMenu key="aw" title="Anweisungen">
-              {STATEMENTS.map((s, index) => (
-                <MenuEntry title={s} key={index} />
-              ))}
-            </SubMenu>
-            <SubMenu key="ks" title="Kontrollstrukturen">
-              {CONTROLSTRUCTURES.map((s, index) => (
-                <MenuEntry title={s} key={index} />
-              ))}
-            </SubMenu>
-            <SubMenu key="bd" title="Bedingungen">
-              {CONDITIONS.map((s, index) => (
-                <MenuEntry title={s} key={index} />
-              ))}
-            </SubMenu>
-          </ContextMenu>
+          <textarea
+            ref={textAreaRef}
+            value={props.program.sourceCode}
+            onChange={onTextChanged}
+            onContextMenu={openInsertMenu}
+            style={{ flexGrow: 1, width: "100%", height: "100%", padding: "0px", resize: "none" }}
+          />
+          <Menu
+            open={menuPosition !== undefined}
+            onClose={() => setMenuPosition(undefined)}
+            anchorReference="anchorPosition"
+            anchorPosition={menuPosition}
+            slotProps={{ list: { dense: true } }}
+          >
+            {menuSection("Anweisungen", STATEMENTS, insertAtCursor)}
+            {menuSection("Kontrollstrukturen", CONTROLSTRUCTURES, insertAtCursor)}
+            {menuSection("Bedingungen", CONDITIONS, insertAtCursor)}
+          </Menu>
         </div>
       ) : null}
       {activeTab === 1 ? (
