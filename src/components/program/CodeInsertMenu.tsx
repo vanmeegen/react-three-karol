@@ -41,6 +41,7 @@ export function CodeInsertMenu(props: {
       onClose={props.onClose}
       anchorReference="anchorPosition"
       anchorPosition={props.position}
+      transitionDuration={0}
       slotProps={{ list: { dense: true } }}
     >
       {menuSection("Anweisungen", STATEMENTS, props.onInsert)}
