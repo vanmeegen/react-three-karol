@@ -3,11 +3,12 @@ import { WorkspaceSvg } from "react-blockly";
 import * as Blockly from "blockly";
 import { ParserRuleContext } from "antlr4ng";
 import { parseKarol } from "../parser/KarolParserFacade";
-import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
+import { executeSteps, SourceLineRange } from "../interpreter/KarolInterpreterGenerator";
 import { fileOpen, fileSave } from "browser-fs-access";
 import { KarolModel } from "./KarolModel";
 import { karolGenerator } from "../blockly/CustomBlocks";
 import { INITIAL_BLOCKLY_XML } from "../data/BurgExample";
+import { ProgramExecutor } from "./ProgramExecutor";
 
 /**
  * find index of column of line in text
@@ -32,7 +33,7 @@ export class ProgramModel {
   @observable executionState: string;
   @observable blocklyXml: string; // XML format for workspace serialization
   @observable blocklyWorkspace: WorkspaceSvg | undefined = undefined;
-  @observable stepper: Generator<StepResult> | undefined = undefined;
+  @observable.ref executor: ProgramExecutor | undefined = undefined;
   @observable interruptExecution: boolean = false;
 
   constructor(startSourceCode: string) {
@@ -50,23 +51,43 @@ export class ProgramModel {
 
   @action setInterrupted(interrupted: boolean): void {
     this.interruptExecution = interrupted;
-    this.executionState = interrupted ? "halt" : this.stepper !== undefined ? "läuft" : "-";
+    this.executionState = interrupted ? "halt" : this.executor !== undefined ? "läuft" : "-";
   }
 
-  /** prepare program start, keep execution state globally */
-  @action start(karol: KarolModel): boolean {
+  /**
+   * parse the program and create an executor for it
+   * @param karol model the program operates on
+   * @param selectCurrentStatement called with the source selection of every executed statement
+   */
+  @action start(karol: KarolModel, selectCurrentStatement: (selectionStart: number, selectionEnd: number) => void): boolean {
     try {
       const treeOrError: ParserRuleContext | string = parseKarol(this.sourceCode);
-      if (typeof treeOrError !== "string") {
-        this.stepper = executeSteps(treeOrError, karol);
-        this.setInterrupted(false);
-      } else {
+      if (typeof treeOrError === "string") {
         alert("Das Programm enthält Syntaxfehler:\n" + treeOrError);
+        return false;
       }
-      return typeof treeOrError !== "string";
+      this.executor = new ProgramExecutor(executeSteps(treeOrError, karol), {
+        onStep: (range: SourceLineRange) => {
+          const selectionStart = getColOfLineIndex(this.sourceCode, range.startLine, range.startCol);
+          const selectionEnd = getColOfLineIndex(this.sourceCode, range.endLine, range.endCol);
+          selectCurrentStatement(selectionStart, selectionEnd);
+        },
+        onPause: action(() => this.setInterrupted(true)),
+        onFinished: action(() => {
+          this.executor = undefined;
+          this.setInterrupted(false);
+        }),
+        onError: action((e: unknown) => {
+          alert(e);
+          this.executor = undefined;
+          this.setInterrupted(false);
+        }),
+      });
+      this.setInterrupted(false);
+      return true;
     } catch (e) {
       alert(e);
-      this.stepper = undefined;
+      this.executor = undefined;
       this.setInterrupted(false);
       return false;
     }
@@ -74,7 +95,8 @@ export class ProgramModel {
 
   /** interrupt program execution, can be continued by one of the run buttons */
   @action pause(): void {
-    if (this.stepper !== undefined) {
+    if (this.executor !== undefined) {
+      this.executor.pause();
       this.setInterrupted(true);
     } else {
       alert("Programm läuft nicht, daher ist Unterbrechen nicht möglich");
@@ -83,8 +105,9 @@ export class ProgramModel {
 
   /** remove program execution context, interrupt running program */
   @action stop(): void {
-    if (this.stepper !== undefined) {
-      this.stepper = undefined;
+    if (this.executor !== undefined) {
+      this.executor.pause();
+      this.executor = undefined;
       this.setInterrupted(false);
     } else {
       alert("Programm läuft nicht, daher ist Stoppen nicht möglich");
@@ -98,41 +121,10 @@ export class ProgramModel {
     singleStep: boolean = false
   ) {
     this.setInterrupted(false);
-    if (this.stepper === undefined) {
-      const started = this.start(karol);
-      if (!started) {
-        return;
-      }
+    if (this.executor === undefined && !this.start(karol, selectCurrentStatement)) {
+      return;
     }
-    // must be defined here
-    const doStep = () => {
-      if (!this.interruptExecution && this.stepper !== undefined) {
-        const stepper = this.stepper!;
-        try {
-          let result: IteratorResult<StepResult> = stepper.next();
-          if (!result.done && result.value?.source !== undefined) {
-            const sourceRange = result.value.source;
-            const selectionStart = getColOfLineIndex(this.sourceCode, sourceRange.startLine, sourceRange.startCol);
-            const selectionEnd = getColOfLineIndex(this.sourceCode, sourceRange.endLine, sourceRange.endCol);
-            selectCurrentStatement(selectionStart, selectionEnd);
-            if (!singleStep) {
-              waitTime !== undefined ? setTimeout(doStep, waitTime) : doStep();
-            } else {
-              this.setInterrupted(true);
-            }
-          } else {
-            this.stepper = undefined;
-            this.setInterrupted(false);
-          }
-        } catch (e) {
-          alert(e);
-          this.stepper = undefined;
-          this.setInterrupted(false);
-          return false;
-        }
-      }
-    };
-    doStep();
+    this.executor!.run(waitTime, singleStep);
   }
 
   @action

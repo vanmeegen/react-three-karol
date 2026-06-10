@@ -1,5 +1,5 @@
 import { ChangeEvent, MouseEvent, ReactElement, useRef, useState } from "react";
-import { KarolModel, KarolSettings } from "../models/KarolModel";
+import { KarolSettings } from "../models/KarolModel";
 import { CONDITIONS, CONTROLSTRUCTURES, STATEMENTS } from "../data/ProgrammingConstructs";
 import { KarolSettingsDialog } from "./KarolSettingsDialog";
 import { Divider, IconButton, ListSubheader, Menu, MenuItem, Tab, Tabs, Tooltip, Typography } from "@mui/material";
@@ -19,20 +19,11 @@ import { initCustomBlocks } from "../blockly/CustomBlocks";
 import "../assets/blockly.css";
 import { BlocklyWorkspace, WorkspaceSvg } from "react-blockly";
 import { KAROL_TOOLBOX } from "../blockly/Toolbox";
-import { ProgramModel } from "../models/ProgramModel";
 import { observer } from "mobx-react";
+import { handleError } from "../util/handleError";
+import { useStores } from "../StoreContext";
 
 initCustomBlocks();
-
-function handleError(f: () => void): () => void {
-  return () => {
-    try {
-      f();
-    } catch (e) {
-      alert("Error" + e);
-    }
-  };
-}
 
 /** entries of one section of the code insert menu; undefined renders a divider */
 function menuSection(
@@ -54,7 +45,8 @@ function menuSection(
   ];
 }
 
-export const ProgramControlPanel = observer((props: { model: KarolModel; program: ProgramModel }) => {
+export const ProgramControlPanel = observer(() => {
+  const { karol, program } = useStores();
   const [isOpen, setOpen] = useState(false);
   const [activeTab, setActiveTab] = useState(0);
   const [isDirty, setDirty] = useState(false);
@@ -73,7 +65,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
       setActiveTab(index);
       // Initialize Blockly workspace when switching to Blockly tab
       if (index === 1) {
-        props.program.initializeBlocklyWorkspace();
+        program.initializeBlocklyWorkspace();
       }
     }
   }
@@ -84,11 +76,11 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
 
   function handleClose(newValues: KarolSettings) {
     setOpen(false);
-    props.model.updateSettings(newValues);
+    karol.updateSettings(newValues);
   }
 
   function onTextChanged(evt: ChangeEvent<HTMLTextAreaElement>) {
-    props.program.setSourceCode(evt.target.value);
+    program.setSourceCode(evt.target.value);
     setDirty(true);
   }
 
@@ -99,10 +91,10 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
 
   function insertAtCursor(text: string): void {
     const textArea = textAreaRef.current;
-    const source = props.program.sourceCode;
+    const source = program.sourceCode;
     const startPos = textArea?.selectionStart ?? source.length;
     const endPos = textArea?.selectionEnd ?? startPos;
-    props.program.setSourceCode(source.substring(0, startPos) + text + " " + source.substring(endPos));
+    program.setSourceCode(source.substring(0, startPos) + text + " " + source.substring(endPos));
     setDirty(true);
     setMenuPosition(undefined);
   }
@@ -129,42 +121,42 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
     >
       <div style={{ display: "flex", flexDirection: "row", columns: 2, flexWrap: "wrap" }}>
         <Tooltip title="Programm laden">
-          <IconButton onClick={() => props.program.load()}>
+          <IconButton onClick={() => program.load()}>
             <Upload />
           </IconButton>
         </Tooltip>
         <Tooltip title="Programm speichern">
-          <IconButton onClick={() => props.program.save()}>
+          <IconButton onClick={() => program.save()}>
             <Save />
           </IconButton>
         </Tooltip>
         <Tooltip title="Einzelschritt">
-          <IconButton onClick={handleError(() => props.program.run(0, props.model, selectCurrentStatement, true))}>
+          <IconButton onClick={handleError(() => program.run(0, karol, selectCurrentStatement, true))}>
             <Elderly />
           </IconButton>
         </Tooltip>
         <Tooltip title="Programmstart langsam">
-          <IconButton onClick={handleError(() => props.program.run(200, props.model, selectCurrentStatement))}>
+          <IconButton onClick={handleError(() => program.run(200, karol, selectCurrentStatement))}>
             <DirectionsWalk />
           </IconButton>
         </Tooltip>
         <Tooltip title="Programmstart schnell">
-          <IconButton onClick={handleError(() => props.program.run(10, props.model, selectCurrentStatement))}>
+          <IconButton onClick={handleError(() => program.run(10, karol, selectCurrentStatement))}>
             <DirectionsRun />
           </IconButton>
         </Tooltip>
         <Tooltip title="Programm Maximalgeschwindigkeit">
-          <IconButton onClick={handleError(() => props.program.run(undefined, props.model, selectCurrentStatement))}>
+          <IconButton onClick={handleError(() => program.run(undefined, karol, selectCurrentStatement))}>
             <DirectionsBike />
           </IconButton>
         </Tooltip>
         <Tooltip title="Programm unterbrechen">
-          <IconButton onClick={handleError(() => props.program.pause())}>
+          <IconButton onClick={handleError(() => program.pause())}>
             <Pause />
           </IconButton>
         </Tooltip>
         <Tooltip title="Programm stoppen">
-          <IconButton onClick={handleError(() => props.program.stop())}>
+          <IconButton onClick={handleError(() => program.stop())}>
             <Stop />
           </IconButton>
         </Tooltip>
@@ -174,16 +166,16 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
           </IconButton>
         </Tooltip>
         <Tooltip title="Programm löschen">
-          <IconButton onClick={() => props.program.clear()}>
+          <IconButton onClick={() => program.clear()}>
             <Delete />
           </IconButton>
         </Tooltip>
-        <Typography variant="subtitle1">{props.program.executionState}</Typography>
+        <Typography variant="subtitle1">{program.executionState}</Typography>
         <Typography variant="caption" style={{ margin: "auto" }}>
-          {props.program.fileName}
+          {program.fileName}
         </Typography>
       </div>
-      <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={props.model} onCancel={() => setOpen(false)} />
+      <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={karol} onCancel={() => setOpen(false)} />
       <Tabs value={activeTab} onChange={(e, index) => switchTab(index)}>
         <Tab label="Code" />
         <Tab label="Blöcke" />
@@ -192,7 +184,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
         <div key="code" style={{ flexGrow: 1 }}>
           <textarea
             ref={textAreaRef}
-            value={props.program.sourceCode}
+            value={program.sourceCode}
             onChange={onTextChanged}
             onContextMenu={openInsertMenu}
             style={{ flexGrow: 1, width: "100%", height: "100%", padding: "0px", resize: "none" }}
@@ -223,10 +215,10 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
                 snap: true,
               },
             }}
-            initialXml={props.program.blocklyXml}
-            onXmlChange={(xml) => props.program.setBlocklyXmlFromReact(xml)}
-            onWorkspaceChange={(workspace: WorkspaceSvg) => props.program.setBlocklyXml(workspace)}
-            onDispose={() => props.program.disposeBlocklyWorkspace()}
+            initialXml={program.blocklyXml}
+            onXmlChange={(xml) => program.setBlocklyXmlFromReact(xml)}
+            onWorkspaceChange={(workspace: WorkspaceSvg) => program.setBlocklyXml(workspace)}
+            onDispose={() => program.disposeBlocklyWorkspace()}
           />
         </div>
       ) : null}
