@@ -119,10 +119,7 @@ export function initCustomBlocks() {
   blockToCode.forEach(([blockName, codeGenFct]) => {
     karolGenerator.forBlock[blockName] = codeGenFct;
   });
-  
-  // Debug: Log registered blocks
-  console.log("Registered blocks in karolGenerator:", Object.keys(karolGenerator.forBlock));
-  
+
   karolGenerator.scrub_ = function (block: Blockly.Block, code: string) {
     const nextBlock = block.nextConnection && block.nextConnection.targetBlock();
     let nextCode = "";

@@ -45,10 +45,7 @@ export class ProgramModel {
 
   @action setBlocklyXml(workspace: WorkspaceSvg): void {
     this.blocklyWorkspace = workspace;
-    console.log("workspace: ", workspace);
-    const generated = karolGenerator.workspaceToCode(workspace);
-    console.log("Generated: ", generated);
-    this.sourceCode = generated;
+    this.sourceCode = karolGenerator.workspaceToCode(workspace);
   }
 
   @action setInterrupted(interrupted: boolean): void {
@@ -62,7 +59,6 @@ export class ProgramModel {
       const treeOrError: ParserRuleContext | string = parseKarol(this.sourceCode);
       if (typeof treeOrError !== "string") {
         this.stepper = executeSteps(treeOrError, karol);
-        console.log("Programm wurde gestartet");
         this.setInterrupted(false);
       } else {
         alert("Das Programm enthält Syntaxfehler:\n" + treeOrError);
@@ -88,7 +84,6 @@ export class ProgramModel {
   /** remove program execution context, interrupt running program */
   @action stop(): void {
     if (this.stepper !== undefined) {
-      console.log("Das Programm wurde gestoppt");
       this.stepper = undefined;
       this.setInterrupted(false);
     } else {
@@ -126,7 +121,6 @@ export class ProgramModel {
               this.setInterrupted(true);
             }
           } else {
-            console.log("Programm wurde beendet");
             this.stepper = undefined;
             this.setInterrupted(false);
           }
@@ -154,8 +148,6 @@ export class ProgramModel {
     this.sourceCode = result.text;
     if (this.blocklyWorkspace !== undefined && result.blockly !== undefined) {
       this.blocklyWorkspace.clear();
-      // XML format
-      console.log("Loading from XML format:", result.blockly);
       this.blocklyXml = result.blockly;
       const dom = Blockly.utils.xml.textToDom(result.blockly);
       Blockly.Xml.domToWorkspace(dom, this.blocklyWorkspace as any);
@@ -192,7 +184,6 @@ export class ProgramModel {
 
   @action setSourceCode(sourceCode: string): void {
     this.sourceCode = sourceCode;
-    console.log("New Source: ", this.sourceCode);
   }
 
   @action initializeBlocklyWorkspace(): void {

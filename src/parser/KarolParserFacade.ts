@@ -124,7 +124,6 @@ export function parseKarol(
   const myErrorListener = new MyErrorListener();
   parser.addErrorListener(myErrorListener);
   const tree = (parser as any)[startRule]();
-  // console.log("Parse Tree: " + printParseTree(parser, tree));
   return myErrorListener.errorCount === 0 && tree !== null ? tree : myErrorListener.errors.join("\n");
 }
 

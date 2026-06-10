@@ -52,11 +52,6 @@ export function execute(tree: ParserRuleContext, model: KarolModel): boolean | u
   let result: IteratorResult<StepResult> = { done: false, value: { source: undefined, result: undefined } };
   do {
     result = generator.next();
-    // console.log("Result: ", result);
-    const source = result.value?.source;
-    if (source) {
-      // console.log("STEP: " + tree.getText().substring(source.start, source.end));
-    }
   } while (!result.done);
   return result.value;
 }
@@ -102,7 +97,6 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
         yield* visit(ctx[i]);
       }
     } else {
-      // console.log("Visiting node: " + ctx.getText() + ", ruleIndex: " + ctx.ruleIndex);
       switch (ctx.ruleIndex) {
         case TypedKarolParser.RULE_definition:
           // define a custom method or condition, store subtree in map
@@ -245,13 +239,11 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     }
     const condition = yield* visitConditionexpression(ctx.getChild(1));
     if (condition) {
-      // console.log("executing then statements");
       // condition true: evaluate all statements before sonstIndex or all if no sonst
       for (let i = 3; i < (sonstIndex ?? ctx.getChildCount() - 1); i++) {
         yield* visit(ctx.getChild(i));
       }
     } else {
-      // console.log("executing else statements");
       if (sonstIndex !== undefined) {
         // condition false: evaluate all statements before sonstIndex or all if no sonst
         for (let i = sonstIndex + 1; i < ctx.getChildCount() - 1; i++) {

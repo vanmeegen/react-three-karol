@@ -19,7 +19,6 @@ const FIGURES: [FunctionComponent<any>, ModelOffset[]][] = [
 
 export const Karol = observer(
   (props: { position: [number, number, number]; karol: KarolModel; color?: string; opacity?: number }) => {
-    // console.log("Rendering Karol");
     const [Model, PARAMS] = FIGURES[props.karol.figureIndex];
     const d = PARAMS[props.karol.direction];
     return (

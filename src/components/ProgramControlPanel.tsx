@@ -224,10 +224,7 @@ export const ProgramControlPanel = observer((props: { model: KarolModel; program
               },
             }}
             initialXml={props.program.blocklyXml}
-            onXmlChange={(xml) => {
-              console.log("XML changed:", xml);
-              props.program.setBlocklyXmlFromReact(xml);
-            }}
+            onXmlChange={(xml) => props.program.setBlocklyXmlFromReact(xml)}
             onWorkspaceChange={(workspace: WorkspaceSvg) => props.program.setBlocklyXml(workspace)}
             onDispose={() => props.program.disposeBlocklyWorkspace()}
           />

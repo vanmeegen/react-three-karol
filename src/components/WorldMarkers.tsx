@@ -10,7 +10,6 @@ Object.entries(Color).forEach(([key, value]) => ColorMap.set(value, key));
 
 export const WorldMarkers = observer((props: { model: WorldModel }) => {
   const list = props.model.markers;
-  // console.log("rendering " + list.length + " markers");
   return (
     <>
       {list.map((markerInfo) => (

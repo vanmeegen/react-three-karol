@@ -10,7 +10,6 @@ import { Karol } from "./Karol";
 const Field = observer((props: { content: FieldType; karol: KarolModel; position: [number, number, number] }) => {
   let result;
   const key = `${props.position[0]}_${props.position[1]}_${props.position[2]}`;
-  // console.log("Rendering field " + key);
   switch (props.content) {
     case FieldType.brick_red:
       result = <Brick key={key} position={props.position} color="red" heightUnits={0.5} />;
