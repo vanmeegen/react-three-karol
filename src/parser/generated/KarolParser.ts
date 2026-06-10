@@ -643,6 +643,7 @@ export class KarolParser extends antlr.Parser {
             this.errorHandler.sync(this);
             switch (this.interpreter.adaptivePredict(this.tokenStream, 20, this.context) ) {
             case 1:
+                localContext = new WhileLoopContext(localContext);
                 this.enterOuterAlt(localContext, 1);
                 {
                 this.state = 137;
@@ -677,6 +678,7 @@ export class KarolParser extends antlr.Parser {
                 }
                 break;
             case 2:
+                localContext = new DoWhileLoopContext(localContext);
                 this.enterOuterAlt(localContext, 2);
                 {
                 this.state = 148;
@@ -711,6 +713,7 @@ export class KarolParser extends antlr.Parser {
                 }
                 break;
             case 3:
+                localContext = new DoUntilLoopContext(localContext);
                 this.enterOuterAlt(localContext, 3);
                 {
                 this.state = 158;
@@ -1592,6 +1595,18 @@ export class LoopContext extends antlr.ParserRuleContext {
     public constructor(parent: antlr.ParserRuleContext | null, invokingState: number) {
         super(parent, invokingState);
     }
+    public override get ruleIndex(): number {
+        return KarolParser.RULE_loop;
+    }
+    public override copyFrom(ctx: LoopContext): void {
+        super.copyFrom(ctx);
+    }
+}
+export class WhileLoopContext extends LoopContext {
+    public constructor(ctx: LoopContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
     public conditionexpression(): ConditionexpressionContext {
         return this.getRuleContext(0, ConditionexpressionContext)!;
     }
@@ -1604,8 +1619,41 @@ export class LoopContext extends antlr.ParserRuleContext {
 
         return this.getRuleContext(i, StatementContext);
     }
-    public override get ruleIndex(): number {
-        return KarolParser.RULE_loop;
+}
+export class DoWhileLoopContext extends LoopContext {
+    public constructor(ctx: LoopContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
+    public conditionexpression(): ConditionexpressionContext {
+        return this.getRuleContext(0, ConditionexpressionContext)!;
+    }
+    public statement(): StatementContext[];
+    public statement(i: number): StatementContext | null;
+    public statement(i?: number): StatementContext[] | StatementContext | null {
+        if (i === undefined) {
+            return this.getRuleContexts(StatementContext);
+        }
+
+        return this.getRuleContext(i, StatementContext);
+    }
+}
+export class DoUntilLoopContext extends LoopContext {
+    public constructor(ctx: LoopContext) {
+        super(ctx.parent, ctx.invokingState);
+        super.copyFrom(ctx);
+    }
+    public conditionexpression(): ConditionexpressionContext {
+        return this.getRuleContext(0, ConditionexpressionContext)!;
+    }
+    public statement(): StatementContext[];
+    public statement(i: number): StatementContext | null;
+    public statement(i?: number): StatementContext[] | StatementContext | null {
+        if (i === undefined) {
+            return this.getRuleContexts(StatementContext);
+        }
+
+        return this.getRuleContext(i, StatementContext);
     }
 }
 

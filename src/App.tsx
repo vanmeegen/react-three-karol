@@ -1,8 +1,8 @@
 import "./App.css";
 import { useState } from "react";
 import { World3D } from "./components/World3D";
-import { WorldControlPanel } from "./components/WorldControlPanel";
-import { ProgramControlPanel } from "./components/ProgramControlPanel";
+import { WorldControlPanel } from "./components/world/WorldControlPanel";
+import { ProgramControlPanel } from "./components/program/ProgramControlPanel";
 import { RootStore } from "./models/RootStore";
 import { StoreProvider } from "./StoreContext";
 import { version } from "../package.json";

@@ -1,6 +1,7 @@
 import { ParserRuleContext, ParseTree } from "antlr4ng";
 import { assertCondition, assertDefined } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
+import { DoUntilLoopContext, DoWhileLoopContext, WhileLoopContext } from "../parser/generated/KarolParser";
 import { Direction, KarolModel } from "../models/KarolModel";
 import { Color, FieldType } from "../models/CommonTypes";
 
@@ -220,34 +221,24 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     return result;
   }
 
-  // Visit a parse tree produced by karelParser#loop.
+  // Visit a parse tree produced by karelParser#loop; the labeled grammar
+  // alternatives map to one context class per loop form
   function* visitLoop(ctx: ParserRuleContext) {
-    // check which kind of loop
-    let solangeIndex = undefined;
-    let bisIndex = undefined;
-    for (let i = 0; i < ctx.getChildCount(); i++) {
-      const text = ctx.getChild(i)!.getText();
-      if (text === "solange") {
-        solangeIndex = i;
-      } else if (text === "bis") {
-        bisIndex = i;
+    if (ctx instanceof WhileLoopContext) {
+      // wiederhole solange BED statement* endewiederhole
+      while (yield* visitConditionexpression(ctx.conditionexpression())) {
+        yield* visit(ctx.statement());
       }
-    }
-    if (solangeIndex === 1) {
-      // wiederhole solange conditionExpression statement*
-      while (yield* visitConditionexpression(ruleChild(ctx, 2))) {
-        yield* visitChildren(ctx);
-      }
-    } else if (solangeIndex !== undefined && solangeIndex > 1) {
-      // wiederhole statement* endewiederhole solange condition
+    } else if (ctx instanceof DoWhileLoopContext) {
+      // wiederhole statement* endewiederhole solange BED
       do {
-        yield* visitChildren(ctx);
-      } while (yield* visitConditionexpression(ruleChild(ctx, solangeIndex + 1)));
-    } else if (bisIndex !== undefined) {
-      // wiederhole statement* endewiederhole bis condition
+        yield* visit(ctx.statement());
+      } while (yield* visitConditionexpression(ctx.conditionexpression()));
+    } else if (ctx instanceof DoUntilLoopContext) {
+      // wiederhole statement* endewiederhole bis BED
       do {
-        yield* visitChildren(ctx);
-      } while (!(yield* visitConditionexpression(ruleChild(ctx, bisIndex + 1))));
+        yield* visit(ctx.statement());
+      } while (!(yield* visitConditionexpression(ctx.conditionexpression())));
     } else {
       throw Error("Interner Fehler: Dieses Schleifenkonstrukt sollte vom Parser nicht erlaubt sein");
     }
