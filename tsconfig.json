@@ -15,7 +15,7 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client","vitest/globals"],
+    "types": ["vite/client", "bun"],
     "experimentalDecorators": true,
     "incremental": true,
     "sourceMap": true,

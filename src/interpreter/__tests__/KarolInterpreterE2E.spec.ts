@@ -1,7 +1,7 @@
+import { describe, it, expect, beforeEach } from "bun:test";
 import { KarolModel } from "../../models/KarolModel";
 import { executeProgram } from "./TestUtil";
 import { WorldModel } from "../../models/WorldModel";
-import { beforeEach } from "vitest";
 import { FieldType } from "../../models/CommonTypes";
 
 describe("It can execute full Karol 3.0 programs", () => {

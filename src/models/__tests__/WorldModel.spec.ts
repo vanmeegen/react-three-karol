@@ -1,6 +1,6 @@
+import { describe, it, expect, beforeEach } from "bun:test";
 import { initEmpty3DArray, WorldModel } from "../WorldModel";
 import { Color, FieldType } from "../CommonTypes";
-import { beforeEach } from "vitest";
 
 describe("The world model initializes a 3dimensional array correctly", () => {
   let world: WorldModel;

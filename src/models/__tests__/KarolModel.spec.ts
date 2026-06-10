@@ -1,5 +1,5 @@
+import { describe, it, expect, beforeEach } from "bun:test";
 import { WorldModel } from "../WorldModel";
-import { beforeEach } from "vitest";
 import { Direction, KarolModel } from "../KarolModel";
 import { Color, FieldType } from "../CommonTypes";
 
