@@ -1,4 +1,4 @@
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext, ParseTree } from "antlr4ng";
 import { assertCondition, assertDefined } from "../util/AssertCondition";
 import { TypedKarolParser } from "../parser/KarolParserFacade";
 import { Direction, KarolModel } from "../models/KarolModel";
@@ -16,21 +16,47 @@ export type StepResult = {
   source: SourceLineRange | undefined;
 };
 
+/** rule index of a parse tree node, -1 for terminals and missing nodes */
+function ruleIndexOf(node: ParseTree | null): number {
+  return node instanceof ParserRuleContext ? node.ruleIndex : -1;
+}
+
+/** child as ParserRuleContext; the grammar guarantees a rule node at the given index */
+function ruleChild(ctx: ParserRuleContext, index: number): ParserRuleContext {
+  const child = ctx.getChild(index);
+  assertCondition(child instanceof ParserRuleContext, "Internal Error: expected a rule node at index " + index);
+  return child as ParserRuleContext;
+}
+
 /**
- * determine source line and col range from child token indices
+ * source line and col range covered by the whole context
  * @param ctx
- * @param from
- * @param to
  */
-function getSourceRange(ctx: ParserRuleContext, from: number, to: number): SourceLineRange {
-  const startSymbol = ctx.getChild(from).symbol;
-  const endSymbol = ctx.getChild(to).symbol;
-  const length = ctx.getChild(to).getText().length;
+function getSourceRange(ctx: ParserRuleContext): SourceLineRange {
+  const startToken = ctx.start;
+  const stopToken = ctx.stop ?? ctx.start;
+  assertDefined(startToken, "Internal Error: parse tree node without start token");
+  assertDefined(stopToken, "Internal Error: parse tree node without stop token");
   return {
-    startLine: startSymbol.line,
-    startCol: startSymbol.column,
-    endLine: endSymbol.line,
-    endCol: endSymbol.column + length,
+    startLine: startToken.line,
+    startCol: startToken.column,
+    endLine: stopToken.line,
+    endCol: stopToken.column + (stopToken.text?.length ?? 0),
+  };
+}
+
+/**
+ * source position of the first token of the context
+ * @param ctx
+ */
+function getStartTokenRange(ctx: ParserRuleContext): SourceLineRange {
+  const startToken = ctx.start;
+  assertDefined(startToken, "Internal Error: parse tree node without start token");
+  return {
+    startLine: startToken.line,
+    startCol: startToken.column,
+    endLine: startToken.line,
+    endCol: startToken.column + (startToken.text?.length ?? 0),
   };
 }
 
@@ -91,20 +117,23 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   const methodMap: Map<string, ParserRuleContext> = new Map();
   return yield* visit(tree);
 
-  function* visit(ctx: ParserRuleContext | ParserRuleContext[]): Generator<StepResult, boolean | undefined> {
+  function* visit(ctx: ParseTree | ParseTree[]): Generator<StepResult, boolean | undefined> {
     if (Array.isArray(ctx)) {
       for (let i = 0; i < ctx.length; i++) {
         yield* visit(ctx[i]);
       }
+    } else if (!(ctx instanceof ParserRuleContext)) {
+      // terminal nodes (keywords, punctuation) carry no semantics of their own
+      return undefined;
     } else {
       switch (ctx.ruleIndex) {
         case TypedKarolParser.RULE_definition:
           // define a custom method or condition, store subtree in map
-          const type = ctx.getChild(0).ruleIndex;
-          if (type === TypedKarolParser.RULE_conditiondefinition) {
-            visitConditionDefinition(ctx.getChild(0));
-          } else if (type === TypedKarolParser.RULE_methoddefinition) {
-            visitMethodDefinition(ctx.getChild(0));
+          const definition = ruleChild(ctx, 0);
+          if (definition.ruleIndex === TypedKarolParser.RULE_conditiondefinition) {
+            visitConditionDefinition(definition);
+          } else if (definition.ruleIndex === TypedKarolParser.RULE_methoddefinition) {
+            visitMethodDefinition(definition);
           } else {
             throw new Error("Internal Error: Definition type unknown");
           }
@@ -142,16 +171,12 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     startIndex: number = 0,
     endIndex?: number
   ): Generator<StepResult, boolean | undefined> {
-    if ((ctx as any).children) {
-      const children = (ctx as any).children as ParserRuleContext[];
-      let result = undefined;
-      for (let i = startIndex; i < (endIndex ?? children.length); i++) {
-        result = yield* visit(children[i]);
-      }
-      return result;
-    } else {
-      return undefined;
+    const children = ctx.children;
+    let result = undefined;
+    for (let i = startIndex; i < (endIndex ?? children.length); i++) {
+      result = yield* visit(children[i]);
     }
+    return result;
   }
 
   /**
@@ -159,7 +184,7 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
    * @param ctx
    */
   function visitConditionDefinition(ctx: ParserRuleContext) {
-    const value = ctx.getChild(1).getText();
+    const value = ctx.getChild(1)!.getText();
     conditionMap.set(value, ctx);
   }
 
@@ -168,12 +193,12 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
    * @param ctx
    */
   function visitMethodDefinition(ctx: ParserRuleContext) {
-    const value = ctx.getChild(1).getText();
+    const value = ctx.getChild(1)!.getText();
     methodMap.set(value, ctx);
   }
 
   function* visitMethodCall(ctx: ParserRuleContext) {
-    const methodName = ctx.getChild(0).getText();
+    const methodName = ctx.getChild(0)!.getText();
     const tree = methodMap.get(methodName);
     if (tree) {
       yield* visitChildren(tree, 2, tree.getChildCount() - 1);
@@ -185,11 +210,11 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   // Visit a parse tree produced by karelParser#iteration.
   function* visitIteration(ctx: ParserRuleContext) {
     let result = undefined;
-    const iterations = ctx.getChild(1).getText();
+    const iterations = ctx.getChild(1)!.getText();
     const value = Number.parseInt(iterations);
     assertCondition(!isNaN(value), "Keine Zahl: " + value);
     for (let i = 0; i < value; i++) {
-      yield { source: getSourceRange(ctx, 0, ctx.getChildCount() - 1), isFinished: false, result: undefined };
+      yield { source: getSourceRange(ctx), isFinished: false, result: undefined };
       result = yield* visitChildren(ctx);
     }
     return result;
@@ -201,7 +226,7 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     let solangeIndex = undefined;
     let bisIndex = undefined;
     for (let i = 0; i < ctx.getChildCount(); i++) {
-      const text = ctx.getChild(i).getText();
+      const text = ctx.getChild(i)!.getText();
       if (text === "solange") {
         solangeIndex = i;
       } else if (text === "bis") {
@@ -210,19 +235,19 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     }
     if (solangeIndex === 1) {
       // wiederhole solange conditionExpression statement*
-      while (yield* visitConditionexpression(ctx.getChild(2))) {
+      while (yield* visitConditionexpression(ruleChild(ctx, 2))) {
         yield* visitChildren(ctx);
       }
     } else if (solangeIndex !== undefined && solangeIndex > 1) {
       // wiederhole statement* endewiederhole solange condition
       do {
         yield* visitChildren(ctx);
-      } while (yield* visitConditionexpression(ctx.getChild(solangeIndex + 1)));
+      } while (yield* visitConditionexpression(ruleChild(ctx, solangeIndex + 1)));
     } else if (bisIndex !== undefined) {
       // wiederhole statement* endewiederhole bis condition
       do {
         yield* visitChildren(ctx);
-      } while (!(yield* visitConditionexpression(ctx.getChild(bisIndex + 1))));
+      } while (!(yield* visitConditionexpression(ruleChild(ctx, bisIndex + 1))));
     } else {
       throw Error("Interner Fehler: Dieses Schleifenkonstrukt sollte vom Parser nicht erlaubt sein");
     }
@@ -232,39 +257,39 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
     // wenn cond dann statement* (sonst statement*) endewenn
     let sonstIndex;
     for (let i = 0; i < ctx.getChildCount(); i++) {
-      const text = ctx.getChild(i).getText();
+      const text = ctx.getChild(i)!.getText();
       if (text === "sonst") {
         sonstIndex = i;
       }
     }
-    const condition = yield* visitConditionexpression(ctx.getChild(1));
+    const condition = yield* visitConditionexpression(ruleChild(ctx, 1));
     if (condition) {
       // condition true: evaluate all statements before sonstIndex or all if no sonst
       for (let i = 3; i < (sonstIndex ?? ctx.getChildCount() - 1); i++) {
-        yield* visit(ctx.getChild(i));
+        yield* visit(ctx.getChild(i)!);
       }
     } else {
       if (sonstIndex !== undefined) {
         // condition false: evaluate all statements before sonstIndex or all if no sonst
         for (let i = sonstIndex + 1; i < ctx.getChildCount() - 1; i++) {
-          yield* visit(ctx.getChild(i));
+          yield* visit(ctx.getChild(i)!);
         }
       }
     }
   }
 
   function* visitConditionexpression(ctx: ParserRuleContext): Generator<StepResult, boolean | undefined> {
-    if (ctx.getChild(0).getText().toLowerCase() === "nicht") {
+    if (ctx.getChild(0)!.getText().toLowerCase() === "nicht") {
       assertCondition(ctx.getChildCount() === 2, "Internal Error: Negated condition expression has not length 2");
-      return !(yield* visitConditionexpression(ctx.getChild(1)));
+      return !(yield* visitConditionexpression(ruleChild(ctx, 1)));
     } else {
       for (let i = 0; i < ctx.getChildCount(); i++) {
-        const child = ctx.getChild(i);
-        if (child.ruleIndex === TypedKarolParser.RULE_condition) {
-          return visitCondition(child);
-        } else if (child.ruleIndex === TypedKarolParser.RULE_parameterizedcondition) {
-          return visitParameterizedCondition(child);
-        } else if (child.ruleIndex === TypedKarolParser.RULE_customConditionCall) {
+        const child = ctx.getChild(i)!;
+        if (ruleIndexOf(child) === TypedKarolParser.RULE_condition) {
+          return visitCondition(child as ParserRuleContext);
+        } else if (ruleIndexOf(child) === TypedKarolParser.RULE_parameterizedcondition) {
+          return visitParameterizedCondition(child as ParserRuleContext);
+        } else if (ruleIndexOf(child) === TypedKarolParser.RULE_customConditionCall) {
           const customConditionName = child.getText();
           const tree = conditionMap.get(customConditionName);
           if (tree) {
@@ -355,12 +380,12 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       default:
         throw Error("Instruction " + ctx.getText() + " not implemented");
     }
-    yield { isFinished: false, source: getSourceRange(ctx, 0, 0), result: undefined };
+    yield { isFinished: false, source: getStartTokenRange(ctx), result: undefined };
   }
 
   function visitParameterizedCondition(ctx: ParserRuleContext): boolean {
-    const instruction = ctx.getChild(0);
-    let { numberParam, colorParam } = getNumberOrColor(ctx.getChild(2));
+    const instruction = ctx.getChild(0)!;
+    let { numberParam, colorParam } = getNumberOrColor(ruleChild(ctx, 2));
     switch (instruction.getText().toLowerCase()) {
       case "istziegel":
         if (colorParam !== undefined) {
@@ -393,8 +418,8 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
   }
 
   function* visitParameterizedInstruction(ctx: ParserRuleContext) {
-    const instruction = ctx.getChild(0);
-    let { numberParam, colorParam } = getNumberOrColor(ctx.getChild(2));
+    const instruction = ctx.getChild(0)!;
+    let { numberParam, colorParam } = getNumberOrColor(ruleChild(ctx, 2));
     switch (instruction.getText().toLowerCase()) {
       case "schritt":
         karol.move(numberParam);
@@ -416,6 +441,6 @@ export function* executeSteps(tree: ParserRuleContext, karol: KarolModel): Gener
       default:
         throw Error("Instruction " + ctx.getText() + " not implemented");
     }
-    yield { isFinished: false, source: getSourceRange(ctx, 0, 0), result: undefined };
+    yield { isFinished: false, source: getStartTokenRange(ctx), result: undefined };
   }
 }

@@ -1,7 +1,7 @@
 import { action, makeObservable, observable } from "mobx";
 import { WorkspaceSvg } from "react-blockly";
 import * as Blockly from "blockly";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { parseKarol } from "../parser/KarolParserFacade";
 import { executeSteps, StepResult } from "../interpreter/KarolInterpreterGenerator";
 import { fileOpen, fileSave } from "browser-fs-access";
