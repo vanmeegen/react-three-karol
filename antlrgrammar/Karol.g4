@@ -41,9 +41,9 @@ iteration
    ;
 
 loop
-   : 'wiederhole' 'solange' conditionexpression statement* ('endewiederhole' | '*wiederhole')
-   | 'wiederhole' statement* ('endewiederhole' | '*wiederhole') 'solange' conditionexpression
-   | 'wiederhole' statement* ('endewiederhole' | '*wiederhole') 'bis' conditionexpression
+   : 'wiederhole' 'solange' conditionexpression statement* ('endewiederhole' | '*wiederhole') # WhileLoop
+   | 'wiederhole' statement* ('endewiederhole' | '*wiederhole') 'solange' conditionexpression # DoWhileLoop
+   | 'wiederhole' statement* ('endewiederhole' | '*wiederhole') 'bis' conditionexpression     # DoUntilLoop
    ;
 
 conditional

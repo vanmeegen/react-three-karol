@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Suspense } from "react";
+import { FunctionComponent, Suspense } from "react";
 import { observer } from "mobx-react";
 import { KarolModel } from "../models/KarolModel";
 import Robot3D, { DIRECTION_PARAMS as P0 } from "./modelwrapper/Robot3D";
@@ -19,7 +19,6 @@ const FIGURES: [FunctionComponent<any>, ModelOffset[]][] = [
 
 export const Karol = observer(
   (props: { position: [number, number, number]; karol: KarolModel; color?: string; opacity?: number }) => {
-    // console.log("Rendering Karol");
     const [Model, PARAMS] = FIGURES[props.karol.figureIndex];
     const d = PARAMS[props.karol.direction];
     return (

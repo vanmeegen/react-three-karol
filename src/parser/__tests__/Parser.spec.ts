@@ -1,3 +1,4 @@
+import { describe, it, expect } from "bun:test";
 import { parseKarol } from "../KarolParserFacade";
 import fs from "fs";
 

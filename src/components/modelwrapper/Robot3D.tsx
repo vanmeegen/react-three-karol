@@ -17,7 +17,7 @@ export const DIRECTION_PARAMS = [
 
 export default function Model(props: React.JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null);
-  const { nodes, materials } = useGLTF("Robot3D.glb") as any;
+  const { nodes } = useGLTF("Robot3D.glb") as any;
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh

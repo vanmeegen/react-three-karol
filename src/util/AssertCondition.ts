@@ -22,14 +22,6 @@ export function assertDefined<T>(value: T, format: string, ...args: any): assert
   }
 }
 
-export function assertNeverReached(format: string, ...args: any): never {
-  throwAssertionViolation(format, 2, ...args);
-}
-
-export function assertNotImplemented(): never {
-  throwAssertionViolation("Not implemented", 2);
-}
-
 function throwAssertionViolation(format: string, framesToPop: number, ...args: any): never {
   if (format === undefined) {
     throw new Error("invariant requires an error message argument");

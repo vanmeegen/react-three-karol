@@ -1,6 +1,6 @@
 // noinspection RequiredAttributes
 
-import React, { RefObject, useEffect, useRef } from "react";
+import { useEffect, useRef } from "react";
 import { WorldModel } from "../models/WorldModel";
 import { observer } from "mobx-react";
 import { Canvas } from "@react-three/fiber";

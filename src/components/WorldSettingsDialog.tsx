@@ -5,7 +5,7 @@ import { useState } from "react";
 function DimensionSlider(props: { label: string; value: number; onChange: (newValue: number) => void }) {
   return (
     <>
-      <Grid size={3} alignItems="center">
+      <Grid size={3} sx={{ display: "flex", alignItems: "center" }}>
         {props.label}
       </Grid>
       <Grid size={9}>
@@ -13,7 +13,7 @@ function DimensionSlider(props: { label: string; value: number; onChange: (newVa
           style={{ width: 300, margin: 30 }}
           defaultValue={10}
           value={props.value}
-          onChange={(evt, value) => props.onChange(value as number)}
+          onChange={(_evt, value) => props.onChange(value as number)}
           step={1}
           marks={[0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50].map((x) => ({ value: x }))}
           size="medium"

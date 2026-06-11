@@ -1,5 +1,5 @@
 import { KarolModel } from "../../models/KarolModel";
-import { ParserRuleContext } from "antlr4";
+import { ParserRuleContext } from "antlr4ng";
 import { parseKarol, TypedKarolParser } from "../../parser/KarolParserFacade";
 import { assertCondition } from "../../util/AssertCondition";
 import { execute } from "../KarolInterpreterGenerator";
@@ -11,12 +11,14 @@ export function executeProgram(program: string, karol: KarolModel): void {
     "There were syntax errors parsing the program '" + program + "': " + (treeOrError as string)
   );
   const tree: ParserRuleContext = treeOrError as ParserRuleContext;
-  const ruleStatement = tree.getChild(0);
+  const firstChild = tree.getChild(0);
   assertCondition(
-    ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ||
-      ruleStatement.ruleIndex === TypedKarolParser.RULE_definition,
+    firstChild instanceof ParserRuleContext &&
+      (firstChild.ruleIndex === TypedKarolParser.RULE_statement ||
+        firstChild.ruleIndex === TypedKarolParser.RULE_definition),
     "Internal Error: parse did not return a program"
   );
+  const ruleStatement = firstChild as ParserRuleContext;
   execute(ruleStatement.ruleIndex === TypedKarolParser.RULE_statement ? ruleStatement : tree, karol);
 }
 
