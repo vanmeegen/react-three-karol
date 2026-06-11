@@ -1,9 +1,8 @@
 // noinspection RequiredAttributes
-import React from "react";
 import { observer } from "mobx-react";
 import { RoundedBox } from "@react-three/drei";
 
-function BrickInternal<T>(props: any | { texture: any; heightUnits: number }) {
+function BrickInternal(props: any | { texture: any; heightUnits: number }) {
   return (
     <RoundedBox
       position={[props.position[0] + 0.5, props.position[1] + 0.5 * props.heightUnits, props.position[2] + 0.5]}

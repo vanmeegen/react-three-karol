@@ -26,7 +26,7 @@ type GLTFResult = GLTF & {
 
 export default function Model({ ...props }: React.JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null);
-  const { nodes, materials } = useGLTF("Dracula3D.glb") as any;
+  const { nodes, materials } = useGLTF("Dracula3D.glb") as unknown as GLTFResult;
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh geometry={nodes.node_id30.geometry} material={materials["107"]} position={[0, 0, 0]} scale={0.4} />

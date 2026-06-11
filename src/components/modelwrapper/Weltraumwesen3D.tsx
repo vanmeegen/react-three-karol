@@ -25,7 +25,7 @@ export const DIRECTION_PARAMS = [
 
 export default function Model({ ...props }: React.JSX.IntrinsicElements["group"]) {
   const group = useRef<THREE.Group>(null);
-  const { nodes, materials } = useGLTF("Weltraumwesen3D.glb") as any;
+  const { nodes, materials } = useGLTF("Weltraumwesen3D.glb") as unknown as GLTFResult;
   return (
     <group ref={group} {...props} dispose={null}>
       <mesh geometry={nodes.node_id30.geometry} material={materials["78"]} position={[-0.25, 0, 0.25]} scale={0.14} />

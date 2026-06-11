@@ -2,7 +2,7 @@ import { fileOpen, fileSave } from "browser-fs-access";
 import { SerializedWorld, WorldModel } from "./WorldModel";
 import { KarolModel, SerializedKarol } from "./KarolModel";
 
-export interface SerializedWorldAndKarol {
+interface SerializedWorldAndKarol {
   karol: SerializedKarol;
   world: SerializedWorld;
 }

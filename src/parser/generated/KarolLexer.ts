@@ -1,6 +1,5 @@
 
 import * as antlr from "antlr4ng";
-import { Token } from "antlr4ng";
 
 
 export class KarolLexer extends antlr.Lexer {

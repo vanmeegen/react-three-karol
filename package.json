@@ -13,7 +13,7 @@
     "build": "tsgo --noEmit && vite build",
     "preview": "vite preview",
     "prettier": "prettier -w src",
-    "generate:parser": "antlr-ng -D language=TypeScript --generate-listener false --generate-visitor false -o src/parser/generated antlrgrammar/Karol.g4",
+    "generate:parser": "antlr-ng -D language=TypeScript --generate-listener false --generate-visitor false -o src/parser/generated antlrgrammar/Karol.g4 && bun scripts/fix-generated-parser.ts",
     "deploy": "bun run build && gh-pages -d dist",
     "generate:glb": "cd src/components/modelwrapper && npx gltfjsx --types ../../../public/<insertmyglbname>.glb"
   },
@@ -25,13 +25,15 @@
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.6.1",
     "antlr4ng": "^3.0.16",
+    "blockly": "^12.5.1",
     "browser-fs-access": "^0.38.0",
     "mobx": "^6.16.1",
     "mobx-react": "^9.2.2",
     "react": "^19.2.7",
     "react-blockly": "9.0.0",
     "react-dom": "^19.2.7",
-    "three": "^0.184.0"
+    "three": "^0.184.0",
+    "three-stdlib": "^2.36.1"
   },
   "devDependencies": {
     "@happy-dom/global-registrator": "^20.10.2",

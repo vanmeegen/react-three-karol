@@ -18,12 +18,12 @@ class MyErrorListener extends BaseErrorListener {
   private _errors: string[] = [];
 
   override syntaxError<S extends Token, T extends ATNSimulator>(
-    recognizer: Recognizer<T>,
-    offendingSymbol: S | null,
+    _recognizer: Recognizer<T>,
+    _offendingSymbol: S | null,
     line: number,
     column: number,
     msg: string,
-    e: RecognitionException | null
+    _e: RecognitionException | null
   ): void {
     this._errors.push("Error " + msg + "in line " + line + ":" + column);
   }

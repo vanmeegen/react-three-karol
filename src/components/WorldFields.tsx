@@ -1,7 +1,6 @@
 import { observer } from "mobx-react";
 import { FieldType } from "../models/CommonTypes";
 import { KarolModel } from "../models/KarolModel";
-import React from "react";
 import { Brick } from "./Brick";
 import { Karol } from "./Karol";
 

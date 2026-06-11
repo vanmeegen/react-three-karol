@@ -69,7 +69,7 @@ export const ProgramControlPanel = observer(() => {
     >
       <ProgramToolbar program={program} onRun={run} onOpenSettings={() => setOpen(true)} />
       <KarolSettingsDialog onClose={handleClose} open={isOpen} karol={karol} onCancel={() => setOpen(false)} />
-      <Tabs value={activeTab} onChange={(e, index) => switchTab(index)}>
+      <Tabs value={activeTab} onChange={(_e, index) => switchTab(index)}>
         <Tab label="Code" />
         <Tab label="Blöcke" />
       </Tabs>

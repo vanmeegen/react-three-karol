@@ -1,4 +1,4 @@
-import React, { FunctionComponent, Suspense } from "react";
+import { FunctionComponent, Suspense } from "react";
 import { observer } from "mobx-react";
 import { KarolModel } from "../models/KarolModel";
 import Robot3D, { DIRECTION_PARAMS as P0 } from "./modelwrapper/Robot3D";

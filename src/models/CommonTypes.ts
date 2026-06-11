@@ -50,11 +50,6 @@ export enum Color {
 
 const colorToBrickIndex: Color[] = [Color.red, Color.yellow, Color.blue, Color.green, Color.black];
 
-export function getColor(fieldType: FieldType) {
-  assertCondition(fieldType >= FieldType.brick_first, "Cannot get a color from a field type which is not a brick");
-  return colorToBrickIndex[fieldType - FieldType.brick_first];
-}
-
 export function getBrickFieldType(color: Color): FieldType {
   const index = colorToBrickIndex.indexOf(color);
   assertCondition(index >= 0, "Internal Error: Color index not found in colorToBrickIndex");
@@ -79,14 +74,4 @@ export function keyToCoord2d(key2d: string): Coord2d {
   coords.splice(1, 1);
   const [x, z] = coords.map((n) => parseInt(n));
   return { x, z };
-}
-
-/**
- *
- * @param coordKey
- * @return position parsed from x,y,z value in coordKey
- */
-export function keyToCoord(coordKey: string): Coord3d {
-  const [x, y, z] = coordKey.split("_").map((n) => parseInt(n));
-  return { x, y, z };
 }
